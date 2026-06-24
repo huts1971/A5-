@@ -105,7 +105,7 @@ const mockDashboard: AdminDashboardData = {
   summary: {
     totalQuestions: 38,
     todayQuestions: 6,
-    spotCount: 22,
+    spotCount: 24,
     routeCount: 4,
     knowledgeDocCount: 28,
     knowledgeChunkCount: 184,

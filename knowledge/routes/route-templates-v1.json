@@ -1,0 +1,150 @@
+{
+  "data_version": "route-templates-v1",
+  "routes": [
+    {
+      "id": "route_classic",
+      "map_id": "ling-shan",
+      "name": "灵山经典初游路线",
+      "theme": "经典初游",
+      "duration_minutes": 150,
+      "suitable_crowd": ["历史文化游", "轻松游"],
+      "description": "沿景区中轴串联动态演艺、核心地标与寺院空间，适合第一次到访。",
+      "spots": [
+        {"spot_id": "spot_ls_entrance", "stay_minutes": 5, "reason": "从景区入口开始并确认游览方向。"},
+        {"spot_id": "spot_ls_001", "stay_minutes": 15, "reason": "从景区门户建立整体方位感。"},
+        {"spot_id": "spot_nine_dragons", "stay_minutes": 25, "reason": "通过动态演艺快速进入灵山文化语境。"},
+        {"spot_id": "spot_xiangfu_temple", "stay_minutes": 30, "reason": "体验安静的寺院空间与礼佛氛围。"},
+        {"spot_id": "spot_ling_shan_buddha", "stay_minutes": 45, "reason": "抵达灵山核心地标，完成经典游览。"}
+      ]
+    },
+    {
+      "id": "route_culture_deep",
+      "map_id": "ling-shan",
+      "name": "灵山佛教文化路线",
+      "theme": "佛教文化",
+      "duration_minutes": 180,
+      "suitable_crowd": ["历史文化游"],
+      "description": "从佛教故事、寺院空间到造像艺术，形成完整的文化理解脉络。",
+      "spots": [
+        {"spot_id": "spot_ls_entrance", "stay_minutes": 5, "reason": "从景区入口进入中轴游览路线。"},
+        {"spot_id": "spot_ls_003", "stay_minutes": 15, "reason": "从佛足文化认识礼佛传统。"},
+        {"spot_id": "spot_nine_dragons", "stay_minutes": 25, "reason": "用动态景观理解佛陀诞生故事。"},
+        {"spot_id": "spot_ls_008", "stay_minutes": 15, "reason": "补充佛教传播历史背景。"},
+        {"spot_id": "spot_xiangfu_temple", "stay_minutes": 35, "reason": "进入真实寺院空间感受礼佛秩序。"},
+        {"spot_id": "spot_ls_012", "stay_minutes": 35, "reason": "通过展陈系统了解佛教文化。"},
+        {"spot_id": "spot_ling_shan_buddha", "stay_minutes": 40, "reason": "以核心造像收束文化路线。"}
+      ]
+    },
+    {
+      "id": "route_ls_family_show",
+      "map_id": "ling-shan",
+      "name": "灵山亲子演艺路线",
+      "theme": "亲子演艺",
+      "duration_minutes": 120,
+      "suitable_crowd": ["亲子游"],
+      "description": "选择故事性、动态感和互动性较强的景点，降低儿童理解门槛。",
+      "spots": [
+        {"spot_id": "spot_ls_entrance", "stay_minutes": 5, "reason": "从景区入口集合并开始亲子游览。"},
+        {"spot_id": "spot_nine_dragons", "stay_minutes": 30, "reason": "动态演艺适合作为亲子游览开场。"},
+        {"spot_id": "spot_ls_007", "stay_minutes": 15, "reason": "通过人物浮雕讲述具象故事。"},
+        {"spot_id": "spot_ls_009", "stay_minutes": 20, "reason": "生动活泼的群雕适合亲子观察互动。"},
+        {"spot_id": "spot_ling_shan_buddha", "stay_minutes": 35, "reason": "在核心地标完成合影和文化讲解。"}
+      ]
+    },
+    {
+      "id": "route_ls_architecture_photo",
+      "map_id": "ling-shan",
+      "name": "灵山建筑摄影路线",
+      "theme": "建筑摄影",
+      "duration_minutes": 180,
+      "suitable_crowd": ["摄影游", "历史文化游"],
+      "description": "串联汉传、藏传、南传佛教建筑与大型艺术空间，强调构图和建筑差异。",
+      "spots": [
+        {"spot_id": "spot_ls_entrance", "stay_minutes": 5, "reason": "从景区入口开始规划拍摄动线。"},
+        {"spot_id": "spot_five_mudra_mandala", "stay_minutes": 35, "reason": "拍摄水景与藏式建筑的鲜明对比。"},
+        {"spot_id": "spot_ls_015", "stay_minutes": 20, "reason": "观察南传佛教塔群的造型节奏。"},
+        {"spot_id": "spot_brahma_palace", "stay_minutes": 50, "reason": "重点体验大型建筑空间与艺术装饰。"},
+        {"spot_id": "spot_xiangfu_temple", "stay_minutes": 30, "reason": "补充传统寺院建筑和安静庭院构图。"}
+      ]
+    },
+    {
+      "id": "route_ls_easy_walk",
+      "map_id": "ling-shan",
+      "name": "灵山轻松少步行路线",
+      "theme": "轻松休闲",
+      "duration_minutes": 90,
+      "suitable_crowd": ["轻松游", "亲子游"],
+      "description": "优先选择中轴附近相邻景点，减少绕行并保留核心体验。",
+      "spots": [
+        {"spot_id": "spot_ls_entrance", "stay_minutes": 5, "reason": "从景区入口开始，避免额外折返。"},
+        {"spot_id": "spot_ls_003", "stay_minutes": 15, "reason": "从中轴入口附近开始，减少额外绕行。"},
+        {"spot_id": "spot_ls_004", "stay_minutes": 15, "reason": "相邻景点衔接短，适合低体力游览。"},
+        {"spot_id": "spot_ls_005", "stay_minutes": 15, "reason": "沿平缓中轴步道继续前行。"},
+        {"spot_id": "spot_nine_dragons", "stay_minutes": 30, "reason": "保留最具代表性的动态核心景观。"}
+      ]
+    },
+    {
+      "id": "route_nh_classic",
+      "map_id": "nianhua-bay",
+      "name": "拈花湾小镇经典路线",
+      "theme": "经典初游",
+      "duration_minutes": 100,
+      "suitable_crowd": ["历史文化游", "轻松游"],
+      "description": "从门户广场进入核心街区，再抵达水景与花海。",
+      "spots": [
+        {"spot_id": "spot_nh_entrance", "stay_minutes": 5, "reason": "从景区入口开始并确认小镇游览方向。"},
+        {"spot_id": "spot_nh_001", "stay_minutes": 20, "reason": "从小镇门户了解整体布局。"},
+        {"spot_id": "spot_nh_003", "stay_minutes": 25, "reason": "体验小镇最具代表性的禅意街巷。"},
+        {"spot_id": "spot_nh_005", "stay_minutes": 25, "reason": "在核心水景区域感受昼夜氛围。"},
+        {"spot_id": "spot_nh_002", "stay_minutes": 20, "reason": "以自然花海作为路线收束。"}
+      ]
+    },
+    {
+      "id": "route_nh_flower_photo",
+      "map_id": "nianhua-bay",
+      "name": "拈花湾花海摄影路线",
+      "theme": "自然摄影",
+      "duration_minutes": 90,
+      "suitable_crowd": ["摄影游", "轻松游"],
+      "description": "兼顾花海、水景与街巷构图，适合拍照打卡。",
+      "spots": [
+        {"spot_id": "spot_nh_entrance", "stay_minutes": 5, "reason": "从景区入口开始安排拍摄顺序。"},
+        {"spot_id": "spot_nh_001", "stay_minutes": 15, "reason": "在门户广场完成标志性合影。"},
+        {"spot_id": "spot_nh_003", "stay_minutes": 20, "reason": "拍摄白墙黛瓦与街巷层次。"},
+        {"spot_id": "spot_nh_002", "stay_minutes": 30, "reason": "预留更多时间进行花海摄影。"},
+        {"spot_id": "spot_nh_005", "stay_minutes": 20, "reason": "补充水景和夜间灯光构图。"}
+      ]
+    },
+    {
+      "id": "route_nh_zen_relax",
+      "map_id": "nianhua-bay",
+      "name": "拈花湾禅意休闲路线",
+      "theme": "禅意休闲",
+      "duration_minutes": 80,
+      "suitable_crowd": ["轻松游", "历史文化游"],
+      "description": "减少景点数量，保留静心、慢行与临水休息体验。",
+      "spots": [
+        {"spot_id": "spot_nh_entrance", "stay_minutes": 5, "reason": "从景区入口缓慢进入小镇氛围。"},
+        {"spot_id": "spot_nh_001", "stay_minutes": 15, "reason": "从入口缓慢进入小镇氛围。"},
+        {"spot_id": "spot_nh_004", "stay_minutes": 25, "reason": "安排静坐、抄经或禅茶体验。"},
+        {"spot_id": "spot_nh_005", "stay_minutes": 25, "reason": "在湖边休息并欣赏水景。"}
+      ]
+    },
+    {
+      "id": "route_nh_nature_walk",
+      "map_id": "nianhua-bay",
+      "name": "拈花湾自然漫游路线",
+      "theme": "自然漫游",
+      "duration_minutes": 150,
+      "suitable_crowd": ["摄影游", "轻松游"],
+      "description": "从小镇核心逐步进入花海与山林，适合时间充足的自然体验。",
+      "spots": [
+        {"spot_id": "spot_nh_entrance", "stay_minutes": 5, "reason": "从景区入口开始自然漫游路线。"},
+        {"spot_id": "spot_nh_001", "stay_minutes": 15, "reason": "从游客集散区域确认游览方向。"},
+        {"spot_id": "spot_nh_005", "stay_minutes": 25, "reason": "沿水景区域进入自然游览节奏。"},
+        {"spot_id": "spot_nh_002", "stay_minutes": 30, "reason": "在花海中慢行与拍摄。"},
+        {"spot_id": "spot_nh_006", "stay_minutes": 35, "reason": "前往较安静的山林区域深度漫游。"}
+      ]
+    }
+  ]
+}

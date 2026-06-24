@@ -1,0 +1,136 @@
+{
+  "map": {
+    "id": "ling-shan",
+    "name": "灵山胜境建筑参照图",
+    "image_url": "/scenic/maps/ling-shan-overview-v1.webp",
+    "version": "ling-shan-overview-v1",
+    "width": 941,
+    "height": 1672,
+    "center_lat": 31.421388,
+    "center_lng": 120.102499,
+    "authorization_status": "pending_confirmation",
+    "source_note": "临时资源提取自《灵山胜境智能路线系统升级方案》内嵌无标记鸟瞰图；发布前需替换或确认独立原图授权。",
+    "is_active": true
+  },
+  "points": [
+    {
+      "spot_id": "spot_ls_entrance",
+      "x_ratio": 0.462791,
+      "y_ratio": 0.969331,
+      "point_type": "entrance",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_001",
+      "x_ratio": 0.478509,
+      "y_ratio": 0.836011,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_002",
+      "x_ratio": 0.477632,
+      "y_ratio": 0.808365,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_003",
+      "x_ratio": 0.484211,
+      "y_ratio": 0.734312,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_004",
+      "x_ratio": 0.487281,
+      "y_ratio": 0.700741,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_005",
+      "x_ratio": 0.489035,
+      "y_ratio": 0.670626,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nine_dragons",
+      "x_ratio": 0.490789,
+      "y_ratio": 0.578801,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_007",
+      "x_ratio": 0.493421,
+      "y_ratio": 0.520546,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_008",
+      "x_ratio": 0.495175,
+      "y_ratio": 0.472165,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_009",
+      "x_ratio": 0.536842,
+      "y_ratio": 0.404036,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_xiangfu_temple",
+      "x_ratio": 0.499561,
+      "y_ratio": 0.367997,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ling_shan_buddha",
+      "x_ratio": 0.501316,
+      "y_ratio": 0.163117,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_012",
+      "x_ratio": 0.501316,
+      "y_ratio": 0.19027,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_brahma_palace",
+      "x_ratio": 0.737281,
+      "y_ratio": 0.449949,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_five_mudra_mandala",
+      "x_ratio": 0.6642,
+      "y_ratio": 0.6663,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_015",
+      "x_ratio": 0.806579,
+      "y_ratio": 0.608422,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_016",
+      "x_ratio": 0.430263,
+      "y_ratio": 0.266297,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    }
+  ]
+}

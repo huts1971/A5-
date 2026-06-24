@@ -1,5 +1,26 @@
 [
   {
+    "raw_id": "LS-000",
+    "entity_id": "spot_ls_entrance",
+    "name": "景区入口",
+    "scenic_area": "灵山胜境",
+    "location": "灵山胜境鸟瞰图最南侧的游客入口道路。",
+    "summary": "灵山胜境游览路线的统一起点，用于计算从入口到各景点的步行路径。",
+    "story": "从这里进入灵山胜境，系统会根据游览时间、体力和兴趣安排后续景点。",
+    "tags": [
+      "服务",
+      "休闲"
+    ],
+    "visit_minutes": 5,
+    "crowd_types": [
+      "历史文化游",
+      "轻松游",
+      "摄影游",
+      "亲子游"
+    ],
+    "source_ref": "manual_map_calibration"
+  },
+  {
     "raw_id": "LS-001",
     "entity_id": "spot_ls_001",
     "name": "灵山大照壁",
@@ -322,6 +343,27 @@
       "摄影游"
     ],
     "source_ref": "raw_doc_ling_shan_structured"
+  },
+  {
+    "raw_id": "NH-000",
+    "entity_id": "spot_nh_entrance",
+    "name": "景区入口",
+    "scenic_area": "拈花湾禅意小镇",
+    "location": "拈花湾鸟瞰图最南侧的游客入口道路。",
+    "summary": "拈花湾游览路线的统一起点，用于计算从入口到小镇各景点的步行路径。",
+    "story": "从这里进入拈花湾，系统会根据游览时间、体力和兴趣安排后续景点。",
+    "tags": [
+      "服务",
+      "休闲"
+    ],
+    "visit_minutes": 5,
+    "crowd_types": [
+      "历史文化游",
+      "轻松游",
+      "摄影游",
+      "亲子游"
+    ],
+    "source_ref": "manual_map_calibration"
   },
   {
     "raw_id": "NH-001",

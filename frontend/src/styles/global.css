@@ -450,6 +450,7 @@ a {
   width: 100%;
   height: 100%;
   min-height: inherit;
+  pointer-events: none;
   transform: translate3d(var(--guide-model-x), var(--guide-model-y), 0) scale(var(--guide-model-scale));
   transform-origin: center bottom;
   backface-visibility: hidden;

@@ -67,7 +67,6 @@ function toBackendChatRequest(input: ChatRequest) {
     spot_id: input.spotId,
     session_id: input.sessionId,
     profile: {
-      visitor_type: input.visitorType,
       preference: input.preference,
       current_spot_name: input.currentSpotName,
     },

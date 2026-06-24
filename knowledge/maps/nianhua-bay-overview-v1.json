@@ -1,0 +1,66 @@
+{
+  "map": {
+    "id": "nianhua-bay",
+    "name": "拈花湾禅意小镇建筑参照图",
+    "image_url": "/scenic/maps/nianhua-bay-overview-v1.png",
+    "version": "nianhua-bay-overview-v1",
+    "width": 941,
+    "height": 1672,
+    "center_lat": 31.49,
+    "center_lng": 120.06,
+    "authorization_status": "pending_confirmation",
+    "source_note": "用户于 2026-06-20 提供的拈花湾禅意小镇完整鸟瞰图；发布前仍需确认图片来源与授权。",
+    "is_active": true
+  },
+  "points": [
+    {
+      "spot_id": "spot_nh_entrance",
+      "x_ratio": 0.326357,
+      "y_ratio": 0.850663,
+      "point_type": "entrance",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_001",
+      "x_ratio": 0.38374,
+      "y_ratio": 0.564316,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_002",
+      "x_ratio": 0.468293,
+      "y_ratio": 0.639585,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_003",
+      "x_ratio": 0.367073,
+      "y_ratio": 0.622426,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_004",
+      "x_ratio": 0.387805,
+      "y_ratio": 0.550589,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_005",
+      "x_ratio": 0.463415,
+      "y_ratio": 0.500257,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_006",
+      "x_ratio": 0.691463,
+      "y_ratio": 0.271019,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import SpotReel from '../../components/scenic/SpotReel';
 import { getSpots } from '../../api/spots';
 import type { ScenicSpot } from '../../types/scenic';
 
+const routeOnlySpotIds = new Set(['spot_ls_entrance', 'spot_nh_entrance']);
+
 export default function SpotListPage() {
   const [spots, setSpots] = useState<ScenicSpot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,7 @@ export default function SpotListPage() {
     setLoading(true);
     setError('');
     getSpots()
-      .then(setSpots)
+      .then((items) => setSpots(items.filter((spot) => !routeOnlySpotIds.has(spot.id))))
       .catch(() => setError('景点数据加载失败，请稍后重试。'))
       .finally(() => setLoading(false));
   };

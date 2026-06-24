@@ -40,6 +40,8 @@ def initialize_database(engine: Engine) -> None:
 
     Base.metadata.create_all(bind=engine)
     _ensure_sqlite_chat_message_columns(engine)
+    _ensure_sqlite_route_columns(engine)
+    _ensure_sqlite_route_draft_columns(engine)
 
 
 def _ensure_sqlite_chat_message_columns(engine: Engine) -> None:
@@ -54,6 +56,48 @@ def _ensure_sqlite_chat_message_columns(engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
                 text("ALTER TABLE chat_message ADD COLUMN metrics_json JSON DEFAULT '{}'")
+            )
+
+
+def _ensure_sqlite_route_columns(engine: Engine) -> None:
+    if engine.dialect.name != "sqlite":
+        return
+
+    columns = {
+        column["name"]
+        for column in inspect(engine).get_columns("route")
+    }
+    if "map_id" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    "ALTER TABLE route ADD COLUMN map_id VARCHAR(64) "
+                    "DEFAULT 'ling-shan'"
+                )
+            )
+            connection.execute(
+                text(
+                    "UPDATE route SET map_id = 'ling-shan' "
+                    "WHERE map_id IS NULL OR map_id = ''"
+                )
+            )
+
+
+def _ensure_sqlite_route_draft_columns(engine: Engine) -> None:
+    if engine.dialect.name != "sqlite":
+        return
+
+    columns = {
+        column["name"]
+        for column in inspect(engine).get_columns("route_draft")
+    }
+    if "preference_json" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    "ALTER TABLE route_draft ADD COLUMN "
+                    "preference_json JSON DEFAULT '{}'"
+                )
             )
 
 

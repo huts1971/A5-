@@ -1,0 +1,25 @@
+{
+  "data_version": "road-time-anchors-v1",
+  "anchors": [
+    {
+      "id": "anchor_ling_shan_001",
+      "map_id": "ling-shan",
+      "from_spot_id": "spot_ls_003",
+      "to_spot_id": "spot_ling_shan_buddha",
+      "observed_minutes": 25,
+      "measurement_type": "rough_reference",
+      "confidence": 0.55,
+      "source_note": "用户提供：佛足坛到灵山大佛正常步行约25分钟。"
+    },
+    {
+      "id": "anchor_nianhua_bay_001",
+      "map_id": "nianhua-bay",
+      "from_spot_id": "spot_nh_001",
+      "to_spot_id": "spot_nh_002",
+      "observed_minutes": 10,
+      "measurement_type": "rough_reference",
+      "confidence": 0.55,
+      "source_note": "用户提供：拈花广场到梵天花海正常步行约10分钟。"
+    }
+  ]
+}

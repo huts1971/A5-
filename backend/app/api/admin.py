@@ -311,6 +311,7 @@ def _replace_route_spots(db: Session, payload: RouteUpsert) -> None:
 def _route_payload(route: Route, payload: RouteUpsert) -> dict:
     return {
         "id": route.id,
+        "map_id": route.map_id,
         "name": route.name,
         "theme": route.theme,
         "duration_minutes": route.duration_minutes,

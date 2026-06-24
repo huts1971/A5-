@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
 import { gsap } from 'gsap';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties, KeyboardEvent, PointerEvent, WheelEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { fallbackSpotImage } from '../../api/spotImages';
 import type { ScenicSpot } from '../../types/scenic';
@@ -265,12 +265,18 @@ export default function SpotDetailSlider({ spot, photos, questions }: SpotDetail
     return () => window.clearInterval(interval);
   }, [go, reducedMotion, slides.length]);
 
-  const handleWheel = (event: WheelEvent<HTMLElement>) => {
-    if (slides.length < 2 || event.ctrlKey || event.metaKey) return;
-    event.preventDefault();
-    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-    if (Math.abs(delta) > 4) go(delta > 0 ? 'next' : 'prev');
-  };
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    const handleWheel = (event: globalThis.WheelEvent) => {
+      if (slides.length < 2 || event.ctrlKey || event.metaKey) return;
+      event.preventDefault();
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (Math.abs(delta) > 4) go(delta > 0 ? 'next' : 'prev');
+    };
+    root.addEventListener('wheel', handleWheel, { passive: false });
+    return () => root.removeEventListener('wheel', handleWheel);
+  }, [go, slides.length]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
@@ -321,7 +327,6 @@ export default function SpotDetailSlider({ spot, photos, questions }: SpotDetail
       tabIndex={0}
       aria-label={`${spot.name}照片导览`}
       onKeyDown={handleKeyDown}
-      onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={updateCursor}

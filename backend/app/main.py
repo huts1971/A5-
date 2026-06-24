@@ -11,8 +11,11 @@ from app.api.chat import router as chat_router
 from app.api.health import router as health_router
 from app.api.knowledge import router as knowledge_router
 from app.api.logs import router as logs_router
+from app.api.maps import router as maps_router
+from app.api.route_drafts import router as route_drafts_router
 from app.api.routes import router as routes_router
 from app.api.spots import router as spots_router
+from app.api.tours import router as tours_router
 from app.api.tts import router as tts_router
 from app.core.config import Settings, settings
 from app.core.errors import ApiError, api_error_handler
@@ -70,6 +73,9 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
     app.include_router(admin_router)
     app.include_router(knowledge_router)
     app.include_router(logs_router)
+    app.include_router(maps_router)
+    app.include_router(route_drafts_router)
+    app.include_router(tours_router)
     app.include_router(tts_router)
     Path(active_settings.tts_output_dir).mkdir(parents=True, exist_ok=True)
     app.mount(

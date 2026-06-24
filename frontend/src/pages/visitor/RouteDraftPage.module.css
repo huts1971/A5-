@@ -1,0 +1,255 @@
+.page {
+  display: grid;
+  width: min(1500px, calc(100vw - 56px));
+  margin-inline: 50%;
+  gap: 18px;
+  transform: translateX(-50%);
+}
+
+.heading {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.heading h1 {
+  margin: 6px 0 0 !important;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(480px, 1.05fr) minmax(430px, 0.95fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.mapPanel {
+  overflow: hidden;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.mapHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 14px;
+  color: #f2f0e9;
+  background: #0b0d0b;
+}
+
+.mapHeader strong {
+  display: block;
+  font: 700 13px/1.4 "Microsoft YaHei", sans-serif;
+}
+
+.mapSwitcher {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(78px, 1fr));
+  border: 1px solid rgba(242, 240, 233, 0.18);
+}
+
+.mapSwitch {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: rgba(242, 240, 233, 0.54);
+  font: 11px/1.2 "Microsoft YaHei", sans-serif;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(242, 240, 233, 0.14);
+  cursor: pointer;
+}
+
+.mapSwitch:last-child {
+  border-right: 0;
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  color: #f2f0e9;
+  background: rgba(242, 240, 233, 0.05);
+  outline: none;
+}
+
+.mapSwitchActive {
+  color: #f2f0e9;
+  background: rgba(185, 137, 49, 0.12);
+  box-shadow: inset 0 -2px 0 #b98931;
+}
+
+.editor {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.addRow {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(150px, 0.72fr) auto;
+  gap: 8px;
+}
+
+.darkSelect {
+  color: #f2f0e9;
+}
+
+.darkSelect :global(.ant-select-selector) {
+  color: #f2f0e9 !important;
+  background: #080a08 !important;
+  border-color: rgba(242, 240, 233, 0.34) !important;
+}
+
+.darkSelect :global(.ant-select-selection-item),
+.darkSelect :global(.ant-select-selection-placeholder),
+.darkSelect :global(.ant-select-selection-search-input),
+.darkSelect :global(.ant-select-arrow) {
+  color: #f2f0e9 !important;
+}
+
+.darkSelect :global(.ant-select-selection-placeholder) {
+  opacity: 0.68;
+}
+
+.darkSelectPopup {
+  color: #f2f0e9 !important;
+  background: #080a08 !important;
+  border: 1px solid rgba(242, 240, 233, 0.28);
+  border-radius: 0 !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.48);
+}
+
+.darkSelectPopup :global(.ant-select-item) {
+  color: rgba(242, 240, 233, 0.82) !important;
+  background: #080a08 !important;
+}
+
+.darkSelectPopup :global(.ant-select-item-option-active),
+.darkSelectPopup :global(.ant-select-item-option-selected) {
+  color: #ffffff !important;
+  background: #20251f !important;
+}
+
+.darkSelectPopup :global(.ant-select-item-option-content) {
+  color: inherit !important;
+}
+
+.darkSelectPopup :global(.ant-select-item-empty) {
+  color: rgba(242, 240, 233, 0.54) !important;
+}
+
+.spotList {
+  display: grid;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.emptyRoute {
+  padding: 28px 20px;
+  color: rgba(242, 240, 233, 0.58);
+  font: 12px/1.7 "Microsoft YaHei", sans-serif;
+  text-align: center;
+  background: rgba(13, 15, 13, 0.78);
+}
+
+.spotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(13, 15, 13, 0.78);
+  border-bottom: 1px solid rgba(242, 240, 233, 0.12);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.spotRow:last-child {
+  border-bottom: 0;
+}
+
+.spotRowActive {
+  background: rgba(185, 137, 49, 0.1);
+  box-shadow: inset 3px 0 0 #b98931;
+}
+
+.spotMain {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  color: #f2f0e9;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.spotMain strong,
+.spotMain small {
+  display: block;
+}
+
+.spotMain .missingPoint {
+  color: #d5bd82;
+}
+
+.spotMain small {
+  margin-top: 4px;
+  color: rgba(242, 240, 233, 0.52);
+  font: 10px/1.4 Consolas, monospace;
+}
+
+.sequence {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: #d5bd82;
+  font: 700 10px/1 Consolas, monospace;
+  border: 1px solid rgba(213, 189, 130, 0.42);
+  border-radius: 50%;
+}
+
+@media (max-width: 1120px) {
+  .page {
+    width: 100%;
+    margin: 0;
+    transform: none;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .mapPanel {
+    width: min(100%, 720px);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .addRow {
+    grid-template-columns: 1fr;
+  }
+
+  .mapHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mapSwitcher {
+    width: 100%;
+  }
+
+  .spotRow {
+    grid-template-columns: 1fr;
+  }
+}

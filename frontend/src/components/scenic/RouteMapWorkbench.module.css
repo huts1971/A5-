@@ -1,0 +1,194 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(500px, 1.08fr) minmax(410px, 0.92fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.mapPanel {
+  position: relative;
+  min-width: 0;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 13px 14px;
+  color: #f2f0e9;
+  background: #0b0d0b;
+  border: 0;
+  border-bottom: 0;
+}
+
+.mapTitle {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mapSwitcher {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(78px, 1fr));
+  border: 1px solid rgba(242, 240, 233, 0.18);
+}
+
+.mapSwitch {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: rgba(242, 240, 233, 0.54);
+  font: 11px/1.2 "Microsoft YaHei", sans-serif;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(242, 240, 233, 0.14);
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.mapSwitch:last-child {
+  border-right: 0;
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  color: #f2f0e9;
+  background: rgba(242, 240, 233, 0.05);
+  outline: none;
+}
+
+.mapSwitch:active {
+  transform: translateY(1px);
+}
+
+.mapSwitchActive {
+  color: #f2f0e9;
+  background: rgba(185, 137, 49, 0.12);
+  box-shadow: inset 0 -2px 0 #b98931;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 420px;
+  color: rgba(242, 240, 233, 0.6);
+  background:
+    linear-gradient(110deg, #111410 25%, #1a1d18 42%, #111410 58%);
+  background-size: 240% 100%;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+  animation: mapLoading 1.8s linear infinite;
+}
+
+.routePanel {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.routeCard :global(.route-card:hover) {
+  transform: none;
+}
+
+.routeActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.startButton,
+.editButton {
+  flex: none;
+  padding: 9px 12px;
+  font: 700 10px/1.2 Consolas, monospace;
+  cursor: pointer;
+}
+
+.startButton {
+  color: #fff8df;
+  background: #8b6726;
+  border: 1px solid #b98931;
+}
+
+.editButton {
+  color: #090a09;
+  background: #f2f0e9;
+  border: 1px solid #f2f0e9;
+}
+
+.startButton:hover,
+.startButton:focus-visible {
+  background: #a47a2d;
+  outline: 1px solid #f2d184;
+  outline-offset: 2px;
+}
+
+.editButton:hover,
+.editButton:focus-visible {
+  background: #ffffff;
+  outline: 1px solid #b98931;
+  outline-offset: 2px;
+}
+
+.startButton:disabled,
+.editButton:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@keyframes mapLoading {
+  to {
+    background-position-x: -240%;
+  }
+}
+
+@media (max-width: 1420px) {
+  .shell {
+    grid-template-columns: minmax(430px, 1fr) minmax(380px, 0.92fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .mapPanel {
+    width: min(100%, 720px);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .mapHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mapSwitcher {
+    width: 100%;
+  }
+
+  .routeActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .startButton,
+  .editButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: none;
+  }
+}

@@ -85,13 +85,22 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
   const consoleErrors = [];
   const pageErrors = [];
+  const responseErrors = [];
 
   page.on('console', (message) => {
     if (message.type() === 'error') {
-      consoleErrors.push(message.text());
+      const location = message.location();
+      consoleErrors.push(
+        `${message.text()}${location.url ? ` @ ${location.url}:${location.lineNumber ?? 0}` : ''}`,
+      );
     }
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('response', (response) => {
+    if (response.status() >= 400) {
+      responseErrors.push(`${response.status()} ${response.url()}`);
+    }
+  });
 
   try {
     const routeResults = [];
@@ -175,7 +184,7 @@ async function main() {
 
         const activeCard = page.locator('.spot-reel__card[aria-current="true"]');
         const activeHref = await activeCard.getAttribute('href');
-        await activeCard.click();
+        await activeCard.click({ force: true });
         await page.waitForURL(`**${activeHref}`);
         await page.goBack({ waitUntil: 'networkidle' });
       }
@@ -274,7 +283,10 @@ async function main() {
     await page.getByTestId('spot-reel').waitFor({ timeout: 5000 });
     await page.screenshot({ path: path.join(outputDir, '10-spots-mobile.png'), fullPage: true });
 
-    failIf(consoleErrors.length > 0, `Browser console errors:\n${consoleErrors.join('\n')}`);
+    failIf(
+      consoleErrors.length > 0 || responseErrors.length > 0,
+      `Browser request/console errors:\n${[...responseErrors, ...consoleErrors].join('\n')}`,
+    );
     failIf(pageErrors.length > 0, `Browser page errors:\n${pageErrors.join('\n')}`);
 
     console.log(

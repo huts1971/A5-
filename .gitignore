@@ -1,5 +1,8 @@
 .DS_Store
 .tools/
+.cache/
+.release/
+.visual-check/
 cpython-*-install_only.tar.gz
 
 backend/.env
@@ -15,9 +18,12 @@ backend/*.pid
 backend/.venv/
 backend/__pycache__/
 backend/.pytest_cache/
+backend/.inspect-*/
+backend/.pytest-integration*/
 
 frontend/.env.local
 frontend/.vite-cache/
+frontend/.*-build/
 frontend/node_modules/
 frontend/test-results/
 frontend/*.log

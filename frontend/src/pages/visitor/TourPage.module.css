@@ -1,0 +1,143 @@
+.page {
+  display: grid;
+  width: min(1440px, calc(100vw - 56px));
+  margin-inline: 50%;
+  gap: 18px;
+  transform: translateX(-50%);
+}
+
+.heading {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.heading h1 {
+  margin: 6px 0 0 !important;
+}
+
+.progressPanel {
+  display: grid;
+  grid-template-columns: auto minmax(200px, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 12px 14px;
+  color: rgba(242, 240, 233, 0.72);
+  font: 11px/1.4 Consolas, monospace;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(480px, 1.04fr) minmax(410px, 0.96fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.mapPanel {
+  overflow: hidden;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 14px;
+  color: #f2f0e9;
+  background: #0b0d0b;
+}
+
+.mapHeader span:last-child {
+  color: rgba(242, 240, 233, 0.56);
+  font: 10px/1.4 Consolas, monospace;
+}
+
+.sessionPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.currentCard h2 {
+  margin-top: 0 !important;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.timeline {
+  display: grid;
+  border: 1px solid rgba(242, 240, 233, 0.16);
+}
+
+.timelineItem {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  padding: 11px 12px;
+  color: rgba(242, 240, 233, 0.5);
+  background: rgba(13, 15, 13, 0.76);
+  border-bottom: 1px solid rgba(242, 240, 233, 0.1);
+}
+
+.timelineItem:last-child {
+  border-bottom: 0;
+}
+
+.timelineItem > span {
+  color: rgba(213, 189, 130, 0.62);
+  font: 700 10px/1.5 Consolas, monospace;
+}
+
+.timelineItem strong,
+.timelineItem small {
+  display: block;
+}
+
+.timelineItem small {
+  margin-top: 3px;
+  font: 10px/1.4 Consolas, monospace;
+}
+
+.status_current {
+  color: #f2f0e9;
+  background: rgba(32, 91, 143, 0.16);
+  box-shadow: inset 3px 0 0 #4c8abf;
+}
+
+.status_completed {
+  color: rgba(242, 240, 233, 0.78);
+  box-shadow: inset 3px 0 0 #5c8a66;
+}
+
+.status_skipped {
+  color: rgba(242, 240, 233, 0.5);
+  text-decoration: line-through;
+}
+
+@media (max-width: 1080px) {
+  .page {
+    width: 100%;
+    margin: 0;
+    transform: none;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progressPanel {
+    grid-template-columns: 1fr;
+  }
+}

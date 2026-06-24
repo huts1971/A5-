@@ -2,6 +2,7 @@ const spotImageBase = '/scenic/spots';
 const spotPhotoBase = `${spotImageBase}/photos`;
 
 export const spotImageMap: Record<string, string> = {
+  spot_ls_entrance: `${spotImageBase}/service.svg`,
   spot_ls_001: `${spotPhotoBase}/LS-001_灵山大照壁/1.jpg`,
   spot_ls_002: `${spotPhotoBase}/LS-002_五明桥/2.jpg`,
   spot_ls_003: `${spotPhotoBase}/LS-003_佛足坛/1.jpg`,
@@ -18,6 +19,7 @@ export const spotImageMap: Record<string, string> = {
   spot_five_mudra_mandala: `${spotPhotoBase}/LS-014_五印坛城/2.jpg`,
   spot_ls_015: `${spotPhotoBase}/LS-015_曼飞龙塔/1.jpg`,
   spot_ls_016: `${spotPhotoBase}/LS-016_无尽意斋/2.jpg`,
+  spot_nh_entrance: `${spotImageBase}/service.svg`,
   spot_nh_001: `${spotPhotoBase}/NH-001_拈花广场/2.jpg`,
   spot_nh_002: `${spotPhotoBase}/NH-002_梵天花海/2.jpg`,
   spot_nh_003: `${spotPhotoBase}/NH-003_香月花街/2.jpg`,

@@ -1,0 +1,167 @@
+{
+  "data_version": "spot-recommendation-profiles-v1",
+  "themes": [
+    "佛教文化",
+    "建筑艺术",
+    "演艺亲子",
+    "摄影打卡",
+    "自然休闲",
+    "室内体验"
+  ],
+  "profiles": [
+    {
+      "spot_id": "spot_ls_001",
+      "theme_scores": {"佛教文化": 1, "建筑艺术": 2, "演艺亲子": 1, "摄影打卡": 3, "自然休闲": 1, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_ls_002",
+      "theme_scores": {"佛教文化": 1, "建筑艺术": 2, "演艺亲子": 1, "摄影打卡": 2, "自然休闲": 2, "室内体验": 0},
+      "base_priority": 1,
+      "min_stay_minutes": 5,
+      "ideal_stay_minutes": 15
+    },
+    {
+      "spot_id": "spot_ls_003",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 1, "演艺亲子": 0, "摄影打卡": 1, "自然休闲": 1, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_ls_004",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 3, "演艺亲子": 0, "摄影打卡": 2, "自然休闲": 1, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_ls_005",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 1, "演艺亲子": 1, "摄影打卡": 2, "自然休闲": 3, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_nine_dragons",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 1, "演艺亲子": 3, "摄影打卡": 3, "自然休闲": 1, "室内体验": 0},
+      "base_priority": 3,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    },
+    {
+      "spot_id": "spot_ls_007",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 2, "演艺亲子": 3, "摄影打卡": 2, "自然休闲": 0, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_ls_008",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 2, "演艺亲子": 1, "摄影打卡": 2, "自然休闲": 0, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_ls_009",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 1, "演艺亲子": 3, "摄影打卡": 3, "自然休闲": 1, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_xiangfu_temple",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 3, "演艺亲子": 0, "摄影打卡": 2, "自然休闲": 3, "室内体验": 2},
+      "base_priority": 3,
+      "min_stay_minutes": 20,
+      "ideal_stay_minutes": 35
+    },
+    {
+      "spot_id": "spot_ling_shan_buddha",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 2, "演艺亲子": 1, "摄影打卡": 3, "自然休闲": 2, "室内体验": 0},
+      "base_priority": 3,
+      "min_stay_minutes": 25,
+      "ideal_stay_minutes": 45
+    },
+    {
+      "spot_id": "spot_ls_012",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 2, "演艺亲子": 1, "摄影打卡": 1, "自然休闲": 0, "室内体验": 3},
+      "base_priority": 2,
+      "min_stay_minutes": 20,
+      "ideal_stay_minutes": 35
+    },
+    {
+      "spot_id": "spot_brahma_palace",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 3, "演艺亲子": 2, "摄影打卡": 3, "自然休闲": 1, "室内体验": 3},
+      "base_priority": 3,
+      "min_stay_minutes": 25,
+      "ideal_stay_minutes": 45
+    },
+    {
+      "spot_id": "spot_five_mudra_mandala",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 3, "演艺亲子": 1, "摄影打卡": 3, "自然休闲": 1, "室内体验": 3},
+      "base_priority": 3,
+      "min_stay_minutes": 20,
+      "ideal_stay_minutes": 35
+    },
+    {
+      "spot_id": "spot_ls_015",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 3, "演艺亲子": 1, "摄影打卡": 3, "自然休闲": 2, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 25
+    },
+    {
+      "spot_id": "spot_ls_016",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 2, "演艺亲子": 0, "摄影打卡": 2, "自然休闲": 3, "室内体验": 3},
+      "base_priority": 2,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 25
+    },
+    {
+      "spot_id": "spot_nh_001",
+      "theme_scores": {"佛教文化": 1, "建筑艺术": 2, "演艺亲子": 3, "摄影打卡": 3, "自然休闲": 2, "室内体验": 0},
+      "base_priority": 3,
+      "min_stay_minutes": 10,
+      "ideal_stay_minutes": 20
+    },
+    {
+      "spot_id": "spot_nh_002",
+      "theme_scores": {"佛教文化": 0, "建筑艺术": 0, "演艺亲子": 2, "摄影打卡": 3, "自然休闲": 3, "室内体验": 0},
+      "base_priority": 3,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    },
+    {
+      "spot_id": "spot_nh_003",
+      "theme_scores": {"佛教文化": 2, "建筑艺术": 3, "演艺亲子": 2, "摄影打卡": 3, "自然休闲": 2, "室内体验": 1},
+      "base_priority": 3,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    },
+    {
+      "spot_id": "spot_nh_004",
+      "theme_scores": {"佛教文化": 3, "建筑艺术": 3, "演艺亲子": 0, "摄影打卡": 2, "自然休闲": 3, "室内体验": 3},
+      "base_priority": 2,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    },
+    {
+      "spot_id": "spot_nh_005",
+      "theme_scores": {"佛教文化": 1, "建筑艺术": 1, "演艺亲子": 3, "摄影打卡": 3, "自然休闲": 3, "室内体验": 0},
+      "base_priority": 3,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    },
+    {
+      "spot_id": "spot_nh_006",
+      "theme_scores": {"佛教文化": 1, "建筑艺术": 0, "演艺亲子": 1, "摄影打卡": 2, "自然休闲": 3, "室内体验": 0},
+      "base_priority": 2,
+      "min_stay_minutes": 15,
+      "ideal_stay_minutes": 30
+    }
+  ]
+}

@@ -13,7 +13,7 @@ const baseUrl = process.env.ADMIN_VERIFY_URL || 'http://127.0.0.1:5174';
 const routes = [
   { path: '/admin/dashboard', title: '数据看板', waitText: '累计问答', shot: '01-admin-dashboard.png' },
   { path: '/admin/spots', title: '景点管理', waitText: '远香堂', shot: '02-admin-spots.png' },
-  { path: '/admin/routes', title: '路线管理', waitText: '亲子轻松讲解线', shot: '03-admin-routes.png' },
+  { path: '/admin/routes', title: '路线管理', waitText: '灵山胜境个性化推荐路线', shot: '03-admin-routes.png' },
   { path: '/admin/knowledge', title: '知识库管理', waitText: 'LS-011-灵山大佛', shot: '04-admin-knowledge.png' },
   { path: '/admin/logs', title: '问答日志', waitText: '远香堂有什么历史故事？', shot: '05-admin-logs.png' },
 ];

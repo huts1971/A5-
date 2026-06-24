@@ -110,7 +110,8 @@ def test_admin_route_crud_happy_path(tmp_path):
     assert updated.status_code == 200
     assert updated.json()["description"] == "更新后的亲子路线。"
     assert recommended.status_code == 200
-    assert recommended.json()["items"][0]["id"] == "route_family_demo"
+    assert recommended.json()["items"][0]["generation_mode"] == "dynamic"
+    assert recommended.json()["items"][0]["map_id"] == "ling-shan"
     assert deleted.status_code == 200
     assert deleted.json() == {"status": "deleted"}
 

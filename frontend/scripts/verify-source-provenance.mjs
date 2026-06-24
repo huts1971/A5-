@@ -176,7 +176,7 @@ function failIf(condition, message) {
   }
 }
 
-async function ask(page, question) {
+async function ask(page, question, expectSources = true) {
   const assistantCount = await page.locator('.chat-bubble.assistant').count();
   await page.locator('.chat-input-row textarea, .chat-input-row input').first().fill(question);
   await page.getByTestId('guide-send').click();
@@ -186,9 +186,17 @@ async function ask(page, question) {
     assistantCount,
     { timeout: 8000 },
   );
-  const sourceToggle = page.locator('.guide-aichat__message-block').last().getByTestId('guide-source-toggle');
-  if (await sourceToggle.count()) {
-    await sourceToggle.click();
+  if (expectSources) {
+    await page.waitForFunction(
+      () => document.querySelectorAll('[data-testid="guide-source-toggle"]').length > 0,
+      null,
+      { timeout: 8000 },
+    );
+    await page.evaluate(() => {
+      const toggles = document.querySelectorAll('[data-testid="guide-source-toggle"]');
+      toggles[toggles.length - 1]?.click();
+    });
+    await page.locator('.source-card').last().waitFor({ timeout: 5000 });
   }
 }
 
@@ -238,7 +246,7 @@ async function main() {
     await page.getByText('不同来源可能存在差异').last().waitFor({ timeout: 5000 });
 
     const beforeCasualSourceCount = await page.locator('.source-card').count();
-    await ask(page, '闲聊来源验证');
+    await ask(page, '闲聊来源验证', false);
     const afterCasualSourceCount = await page.locator('.source-card').count();
     failIf(afterCasualSourceCount !== beforeCasualSourceCount, 'Casual answer rendered fake source cards');
 

@@ -129,7 +129,6 @@ export default function AiGuidePage() {
     const responsePromise = streamChatWithGuide({
       question,
       sessionId,
-      visitorType: preference.visitorType,
       preference: preferenceText,
       spotId,
       currentSpotName: spotName ?? '灵山大佛',

@@ -1,0 +1,41 @@
+.timelineItemInteractive {
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.timelineItemInteractive:hover,
+.timelineItemInteractive:focus-visible,
+.timelineItemActive {
+  background: rgba(185, 137, 49, 0.1);
+  border-bottom-color: rgba(185, 137, 49, 0.62);
+  outline: none;
+  transform: translateX(3px);
+}
+
+.transition {
+  display: block;
+  margin-top: 5px;
+  color: rgba(242, 240, 233, 0.56);
+  font: 11px/1.5 Consolas, monospace;
+}
+
+.transitionMissing {
+  color: #d5bd82;
+}
+
+.missingPoint {
+  display: block;
+  margin-top: 4px;
+  color: rgba(242, 240, 233, 0.58);
+  font: 10px/1.2 Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timelineItemInteractive {
+    transition: none;
+  }
+}

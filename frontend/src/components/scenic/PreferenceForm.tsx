@@ -1,5 +1,6 @@
 import { Alert, Button, Card, Checkbox, Form, Radio, Select, Space, Typography } from 'antd';
-import type { RoutePreferenceInput, VisitorPreference } from '../../types/scenic';
+import { useEffect } from 'react';
+import type { RoutePreferenceInput } from '../../types/scenic';
 
 export interface PreferenceFormProps {
   initialValues: RoutePreferenceInput;
@@ -9,13 +10,6 @@ export interface PreferenceFormProps {
   onSubmit: (values: RoutePreferenceInput) => void;
 }
 
-const visitorTypeOptions: Array<{ value: VisitorPreference; label: string }> = [
-  { value: 'family', label: '亲子游' },
-  { value: 'culture', label: '历史文化游' },
-  { value: 'relax', label: '轻松游' },
-  { value: 'photo', label: '摄影游' },
-];
-
 const durationOptions = [
   { value: 60, label: '1 小时' },
   { value: 90, label: '1.5 小时' },
@@ -23,7 +17,14 @@ const durationOptions = [
   { value: 180, label: '3 小时' },
 ];
 
-const interestOptions = ['历史', '建筑', '自然', '拍照', '亲子', '休息'];
+const interestOptions = [
+  '佛教文化',
+  '建筑艺术',
+  '演艺亲子',
+  '摄影打卡',
+  '自然休闲',
+  '室内体验',
+];
 
 export default function PreferenceForm({
   initialValues,
@@ -33,6 +34,10 @@ export default function PreferenceForm({
   onSubmit,
 }: PreferenceFormProps) {
   const [form] = Form.useForm<RoutePreferenceInput>();
+
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [form, initialValues]);
 
   return (
     <Card className="preference-card">
@@ -52,16 +57,13 @@ export default function PreferenceForm({
           onFinish={onSubmit}
         >
           <Form.Item<RoutePreferenceInput>
-            name="visitorType"
-            label="游客类型"
-            rules={[{ required: true, message: '请选择游客类型' }]}
+            name="mapId"
+            label="游览景区"
+            rules={[{ required: true, message: '请选择游览景区' }]}
           >
             <Radio.Group>
-              {visitorTypeOptions.map((option) => (
-                <Radio.Button value={option.value} key={option.value}>
-                  {option.label}
-                </Radio.Button>
-              ))}
+              <Radio.Button value="ling-shan">灵山胜境</Radio.Button>
+              <Radio.Button value="nianhua-bay">拈花湾</Radio.Button>
             </Radio.Group>
           </Form.Item>
           <Form.Item<RoutePreferenceInput> name="durationMinutes" label="可游览时间">
@@ -74,7 +76,19 @@ export default function PreferenceForm({
               <Radio.Button value="high">高</Radio.Button>
             </Radio.Group>
           </Form.Item>
-          <Form.Item<RoutePreferenceInput> name="interestTags" label="兴趣标签">
+          <Form.Item<RoutePreferenceInput>
+            name="interestTags"
+            label="兴趣主题（选择 1–2 项）"
+            rules={[
+              { required: true, message: '请至少选择一个兴趣主题' },
+              {
+                validator: (_, value: string[] | undefined) =>
+                  !value || value.length <= 2
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('最多选择两个兴趣主题')),
+              },
+            ]}
+          >
             <Checkbox.Group options={interestOptions} />
           </Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} data-cue="[ GENERATE ]">

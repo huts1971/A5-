@@ -67,6 +67,7 @@ function parseRouteSpots(text: string): RouteSpot[] {
 function formToRoute(values: RouteFormValues, previous?: RoutePlan): RoutePlan {
   return {
     id: previous?.id ?? `route-${Date.now()}`,
+    mapId: previous?.mapId ?? 'ling-shan',
     name: values.name,
     theme: values.theme,
     durationMinutes: values.durationMinutes,

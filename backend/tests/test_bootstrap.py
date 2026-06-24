@@ -30,6 +30,7 @@ def test_startup_creates_p0_tables(tmp_path):
 
     assert {
         "scenic_spot",
+        "spot_recommendation_profile",
         "route",
         "route_spot",
         "knowledge_doc",
@@ -43,6 +44,11 @@ def test_startup_creates_p0_tables(tmp_path):
         "web_fact_candidate",
         "chat_session",
         "chat_message",
+        "road_network_version",
+        "road_node",
+        "road_edge",
+        "spot_road_access",
+        "route_time_anchor",
     }.issubset(table_names)
 
 
@@ -52,6 +58,7 @@ def test_empty_database_bootstraps_curated_spot_data(tmp_path):
         Settings(
             database_url=f"sqlite:///{db_path}",
             source_package_path=str(SOURCE_PACKAGE_PATH),
+            derived_knowledge_path=str(DERIVED_KNOWLEDGE_PATH),
         )
     )
 
@@ -69,7 +76,7 @@ def test_empty_database_bootstraps_curated_spot_data(tmp_path):
             row[0] for row in connection.execute("select name from scenic_spot")
         }
 
-    assert spot_count == 22
+    assert spot_count == 24
     assert route_count >= 2
     assert route_spot_count >= 5
     assert doc_count >= 2
