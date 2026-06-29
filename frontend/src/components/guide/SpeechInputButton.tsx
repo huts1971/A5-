@@ -50,6 +50,8 @@ export interface SpeechInputButtonProps {
   iconOnly?: boolean;
   onTranscript: (text: string) => void;
   onError?: (message: string) => void;
+  onStartRecording?: () => Promise<void>;
+  onStopRecording?: () => Promise<void>;
 }
 
 const statusText: Record<SpeechInputStatus, string> = {
@@ -67,6 +69,8 @@ export default function SpeechInputButton({
   iconOnly = false,
   onTranscript,
   onError,
+  onStartRecording,
+  onStopRecording,
 }: SpeechInputButtonProps) {
   const [status, setStatus] = useState<SpeechInputStatus>('idle');
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
@@ -79,14 +83,36 @@ export default function SpeechInputButton({
     [],
   );
 
-  const supported = Boolean(Recognition);
+  const usesAvatarMicrophone = Boolean(onStartRecording && onStopRecording);
+  const supported = usesAvatarMicrophone || Boolean(Recognition);
   const listening = status === 'listening' || status === 'requesting';
 
-  const stopListening = () => {
+  const stopListening = async () => {
+    if (usesAvatarMicrophone) {
+      try {
+        setStatus('recognized');
+        await onStopRecording?.();
+      } catch {
+        setStatus('error');
+        onError?.('语音输入结束失败，请改用键盘输入。');
+      }
+      return;
+    }
     recognitionRef.current?.stop();
   };
 
-  const startListening = () => {
+  const startListening = async () => {
+    if (usesAvatarMicrophone) {
+      try {
+        setStatus('requesting');
+        await onStartRecording?.();
+        setStatus('listening');
+      } catch {
+        setStatus('error');
+        onError?.('麦克风启动失败，请检查浏览器权限。');
+      }
+      return;
+    }
     if (!Recognition) {
       setStatus('unsupported');
       onError?.('当前浏览器不支持语音输入，请使用 Chrome 或 Edge 演示。');
@@ -140,7 +166,7 @@ export default function SpeechInputButton({
       icon={<AudioOutlined />}
       disabled={disabled || !supported}
       loading={status === 'requesting'}
-      onClick={listening ? stopListening : startListening}
+      onClick={() => void (listening ? stopListening() : startListening())}
     >
       {iconOnly ? null : listening ? '停止' : '语音输入'}
     </Button>

@@ -7,6 +7,7 @@
     "dev": "node scripts/dev-dual.mjs",
     "dev:visitor": "node scripts/dev-entry.mjs visitor",
     "dev:admin": "node scripts/dev-entry.mjs admin",
+    "test": "vitest run",
     "build": "tsc --noEmit && vite build --configLoader runner",
     "preview": "vite preview --configLoader runner --host 127.0.0.1 --port 5173 --strictPort",
     "verify:visitor": "node scripts/verify-visitor-flow.mjs",
@@ -19,8 +20,7 @@
     "verify:login-responsive": "node scripts/verify-login-responsive-polish.mjs",
     "verify:haru": "node scripts/verify-haru-live2d.mjs",
     "verify:haru-motions": "node scripts/verify-haru-motions.mjs",
-    "verify:source-provenance": "node scripts/verify-source-provenance.mjs",
-    "verify:welcome-audio": "node scripts/verify-welcome-audio.mjs"
+    "verify:source-provenance": "node scripts/verify-source-provenance.mjs"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
@@ -34,10 +34,13 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.1.0",
     "typescript": "^5.7.3",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vitest": "^3.2.4"
   }
 }

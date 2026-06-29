@@ -86,9 +86,6 @@ function toChatResponse(response: BackendChatResponse): ChatResponse {
       sourceUrl: source.source_url,
       sourceLevel: source.source_level,
     })),
-    audioUrl: response.audio_url ? `${API_BASE_URL}${response.audio_url}` : undefined,
-    ttsJobId: response.tts_job_id ?? undefined,
-    ttsStatus: response.tts_status as ChatResponse['ttsStatus'],
     sessionId: response.session_id,
     isFallback: response.degraded || response.mode === 'fallback',
     metrics: response.metrics

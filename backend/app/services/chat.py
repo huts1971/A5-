@@ -11,7 +11,6 @@ from app.schemas import ChatMetrics, ChatRequest, ChatResponse
 from app.services.mimo import MimoClient
 from app.services.question_classifier import classify_question
 from app.services.rag import retrieve_context
-from app.services.tts import synthesize_answer_audio
 from app.services.tts_jobs import TtsJobStore
 from app.services.web_search import (
     WebSearchTimeout,
@@ -76,9 +75,8 @@ def answer_chat(
         web_supplement_status,
     )
     llm_ms = _elapsed_ms(llm_started)
-    tts_started = perf_counter()
-    audio_url, tts_status, tts_job_id = _start_tts(settings, answer, tts_jobs)
-    tts_ms = _elapsed_ms(tts_started)
+    audio_url, tts_status, tts_job_id = None, "disabled", None
+    tts_ms = 0.0
     _store_web_fact_candidates(db, request.question, answer, classification, contexts)
     metrics = ChatMetrics(
         retrieval_ms=retrieval_ms,
@@ -176,9 +174,8 @@ def stream_chat_events(
 
     mode = stream_state["mode"]
     degraded = stream_state["degraded"]
-    tts_started = perf_counter()
-    audio_url, tts_status, tts_job_id = _start_tts(settings, answer, tts_jobs)
-    tts_ms = _elapsed_ms(tts_started)
+    audio_url, tts_status, tts_job_id = None, "disabled", None
+    tts_ms = 0.0
     _store_web_fact_candidates(db, request.question, answer, classification, contexts)
     metrics = ChatMetrics(
         retrieval_ms=retrieval_ms,
@@ -228,22 +225,6 @@ def _update_session_profile(chat_session: ChatSession, profile: dict) -> None:
         chat_session.visitor_type = visitor_type
     if preference:
         chat_session.preference = preference
-
-
-def _start_tts(
-    settings: Settings,
-    answer: str,
-    tts_jobs: TtsJobStore | None,
-) -> tuple[str | None, str, str | None]:
-    if settings.tts_mode == "disabled" or not settings.tts_api_key:
-        audio_url, status = synthesize_answer_audio(settings, answer)
-        return audio_url, status, None
-    if tts_jobs is None:
-        audio_url, status = synthesize_answer_audio(settings, answer)
-        return audio_url, status, None
-
-    job = tts_jobs.enqueue(settings, answer)
-    return None, job.status, job.id
 
 
 def _answer_text(

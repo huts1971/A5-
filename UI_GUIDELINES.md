@@ -18,7 +18,7 @@ admin demo or marketing landing page.
 - Ant Design 5
 - Ant Design Icons
 - Existing CSS in `frontend/src/styles/global.css`
-- Existing Live2D Haru and scenic photo assets
+- Existing LiteAvatar stage and scenic photo assets
 
 Do not introduce Vue, a second UI framework, Tailwind, or a separate design
 system without explicit approval.
@@ -55,10 +55,11 @@ Admin screens are operational tools, not promotional pages.
 
 ## Digital Human And Audio
 
-- Preserve the current Live2D Haru direction.
-- Keep `idle`, `thinking`, and `speaking` states meaningful.
-- Avoid multiple audio clips playing at the same time.
-- If backend TTS is unavailable, degrade gracefully.
+- Preserve the current LiteAvatar direction.
+- Keep ready, listening, thinking, speaking, preparing, and disconnected states
+  meaningful without duplicating status text in the chat panel.
+- A new question must interrupt the previous Avatar speech.
+- If Avatar/TTS is unavailable, keep text chat available and degrade gracefully.
 - Do not implement 3D modeling, motion capture, or real-time lip sync unless the
   team explicitly accepts that scope.
 
@@ -67,7 +68,8 @@ Admin screens are operational tools, not promotional pages.
 - Use Ant Design controls before custom controls.
 - Use icons in buttons where available.
 - Keep cards, forms, buttons, and source cards visually consistent across pages.
-- Do not add decorative visual systems that compete with scenic photos or Live2D.
+- Do not add decorative visual systems that compete with scenic photos or
+  LiteAvatar.
 - Avoid large unrelated gradients, oversized marketing hero sections, and
   one-off page-specific UI patterns.
 

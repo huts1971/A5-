@@ -11,6 +11,8 @@ echo.
 
 cd /d "%FRONTEND%"
 set "VITE_API_BASE_URL=http://127.0.0.1:8001"
+set "VITE_AVATAR_SERVICE_URL=http://127.0.0.1:8283"
+set "VITE_OPENAVATAR_URL=http://127.0.0.1:8282"
 set "VITE_USE_MOCK_API=false"
 
 npm.cmd run build

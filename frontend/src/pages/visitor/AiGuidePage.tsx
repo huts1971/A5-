@@ -1,16 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { interruptAvatar } from '../../api/avatar';
+import {
+  createAvatarSpeechStream,
+  type AvatarSpeechStream,
+} from '../../api/avatarSpeechStream';
+import {
+  startAvatarMicrophone,
+  stopAvatarMicrophone,
+} from '../../api/avatarConnection';
 import { streamChatWithGuide } from '../../api/chat';
-import { getTtsJobStatus } from '../../api/tts';
-import AvatarGuide from '../../components/guide/AvatarGuide';
-import type { AvatarAudioState } from '../../components/guide/AvatarGuide';
 import ChatBox from '../../components/guide/ChatBox';
 import GuideQuickPrompts from '../../components/guide/GuideQuickPrompts';
 import type { GuideQuickPrompt } from '../../components/guide/GuideQuickPrompts';
-import { WELCOME_MESSAGE_AUDIO_URL, WELCOME_MESSAGE_TEXT } from '../../components/guide/welcomeMessage';
-import type { GuideEmotionCue } from '../../config/live2dGuide';
+import LiteAvatarStage from '../../components/guide/LiteAvatarStage';
+import type {
+  ActiveAvatarSession,
+  AvatarDisplayStatus,
+} from '../../components/guide/LiteAvatarStage';
+import { WELCOME_MESSAGE_TEXT } from '../../components/guide/welcomeMessage';
 import { productCopy } from '../../config/product';
-import type { ChatMessage, GuideStatus } from '../../types/scenic';
+import type { ChatMessage } from '../../types/scenic';
 import {
   buildPreferenceGuideQuestion,
   formatVisitorPreference,
@@ -24,35 +34,24 @@ function createMessageId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function sourceDelay() {
-  return 1_000 + Math.random() * 2_000;
-}
-
-function wait(ms: number) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
-function audioStateFromTtsStatus(status?: ChatMessage['ttsStatus']): AvatarAudioState {
-  if (status === 'pending') return 'pending';
-  if (status === 'failed') return 'failed';
-  if (status === 'ready' || status === 'disabled') return 'ready';
-  return 'idle';
-}
-
 export default function AiGuidePage() {
   const [searchParams] = useSearchParams();
   const profileKey = searchParams.toString();
   const preference = useMemo(() => preferenceFromSearchParams(searchParams), [profileKey]);
   const preferenceText = useMemo(() => formatVisitorPreference(preference), [preference]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [status, setStatus] = useState<GuideStatus>('idle');
-  const [audioState, setAudioState] = useState<AvatarAudioState>('idle');
-  const [emotionCue, setEmotionCue] = useState<GuideEmotionCue>('idle');
   const [loading, setLoading] = useState(true);
   const [chatError, setChatError] = useState('');
   const [sessionId, setSessionId] = useState(() => `guide-session-${Date.now()}`);
   const [introReady, setIntroReady] = useState(false);
+  const [avatarStatus, setAvatarStatus] = useState<AvatarDisplayStatus>('ready');
   const autoAskedRef = useRef(false);
+  const avatarSessionRef = useRef<ActiveAvatarSession | null>(null);
+  const activeSpeechStreamRef = useRef<AvatarSpeechStream | null>(null);
+  const requestGenerationRef = useRef(0);
+  const playbackActiveRef = useRef(false);
+  const microphoneRef = useRef<MediaStream | null>(null);
+  const recognitionTimeoutRef = useRef<number | null>(null);
 
   const spotId = searchParams.get('spotId') ?? undefined;
   const spotName = searchParams.get('spotName') ?? undefined;
@@ -84,84 +83,122 @@ export default function AiGuidePage() {
   );
 
   useEffect(() => {
-    let cancelled = false;
     const timer = window.setTimeout(() => {
-      const typingId = createMessageId('assistant-typing');
-      setMessages([{ id: typingId, role: 'assistant', content: '', createdAt: Date.now() }]);
-      void wait(sourceDelay()).then(() => {
-        if (cancelled) return;
-        setMessages([
-          {
-            id: 'assistant-welcome',
-            role: 'assistant',
-            content: WELCOME_MESSAGE_TEXT,
-            audioUrl: WELCOME_MESSAGE_AUDIO_URL,
-            ttsStatus: 'ready',
-            createdAt: Date.now(),
-          },
-        ]);
-        setAudioState('ready');
-        setLoading(false);
-        setIntroReady(true);
-      });
+      setMessages([
+        {
+          id: 'assistant-welcome',
+          role: 'assistant',
+          content: WELCOME_MESSAGE_TEXT,
+          createdAt: Date.now(),
+        },
+      ]);
+      setLoading(false);
+      setIntroReady(true);
     }, INITIAL_MESSAGE_DELAY_MS);
 
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
+    return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(
+    () => () => {
+      requestGenerationRef.current += 1;
+      void activeSpeechStreamRef.current?.cancel();
+      activeSpeechStreamRef.current = null;
+      if (recognitionTimeoutRef.current !== null) {
+        window.clearTimeout(recognitionTimeoutRef.current);
+      }
+      microphoneRef.current?.getTracks().forEach((track) => track.stop());
+    },
+    [],
+  );
+
   const sendQuestion = async (question: string) => {
+    const normalizedQuestion = question.trim();
+    if (!normalizedQuestion) {
+      setAvatarStatus('ready');
+      setChatError('没有识别到语音，请再试一次。');
+      return;
+    }
+    const requestGeneration = ++requestGenerationRef.current;
+    const previousSpeechStream = activeSpeechStreamRef.current;
+    activeSpeechStreamRef.current = null;
+    const cancelPrevious = previousSpeechStream?.cancel();
+    const activeAvatar = avatarSessionRef.current;
+    const interruptPrevious = activeAvatar
+      ? interruptAvatar(activeAvatar.sessionId).catch(() => false)
+      : undefined;
+    await Promise.all([cancelPrevious, interruptPrevious]);
+    if (requestGeneration !== requestGenerationRef.current) return;
     setChatError('');
-    setStatus('thinking');
-    setAudioState('idle');
-    setEmotionCue('thinking');
+    setAvatarStatus('thinking');
     setLoading(true);
 
     const userMessage: ChatMessage = {
       id: createMessageId('user'),
       role: 'user',
-      content: question,
+      content: normalizedQuestion,
       createdAt: Date.now(),
     };
     const typingMessageId = createMessageId('assistant-typing');
-    const responsePromise = streamChatWithGuide({
-      question,
-      sessionId,
-      preference: preferenceText,
-      spotId,
-      currentSpotName: spotName ?? '灵山大佛',
-    });
-
-    setMessages((current) => [...current, userMessage]);
-    await wait(sourceDelay());
     setMessages((current) => [
       ...current,
+      userMessage,
       { id: typingMessageId, role: 'assistant', content: '', createdAt: Date.now() },
     ]);
-
-    const [response] = await Promise.all([responsePromise, wait(sourceDelay())]);
+    const speechStream = avatarSessionRef.current
+      ? createAvatarSpeechStream({
+          sessionId: avatarSessionRef.current.sessionId,
+          streamId: typingMessageId,
+        })
+      : undefined;
+    activeSpeechStreamRef.current = speechStream ?? null;
+    let streamedAnswer = '';
+    const response = await streamChatWithGuide(
+      {
+        question: normalizedQuestion,
+        sessionId,
+        preference: preferenceText,
+        spotId,
+        currentSpotName: spotName ?? '灵山大佛',
+      },
+      {
+        onDelta: (delta) => {
+          if (requestGeneration !== requestGenerationRef.current) return;
+          streamedAnswer += delta;
+          speechStream?.write(delta);
+          setMessages((current) =>
+            current.map((message) =>
+              message.id === typingMessageId
+                ? { ...message, content: streamedAnswer }
+                : message,
+            ),
+          );
+        },
+      },
+    );
+    if (requestGeneration !== requestGenerationRef.current) {
+      await speechStream?.cancel();
+      return;
+    }
+    if (!streamedAnswer && response.answer) {
+      speechStream?.write(response.answer);
+    }
+    await speechStream?.close();
+    if (requestGeneration !== requestGenerationRef.current) return;
+    if (activeSpeechStreamRef.current === speechStream) {
+      activeSpeechStreamRef.current = null;
+    }
     if (response.sessionId) setSessionId(response.sessionId);
 
     if (response.isFallback) {
       setChatError('AI 服务暂时不可用，已为你保留基础游览建议。');
-      setEmotionCue('fallback');
-    } else if (response.sources.length > 0) {
-      setEmotionCue('success');
-    } else {
-      setEmotionCue('idle');
     }
-    setAudioState(audioStateFromTtsStatus(response.ttsStatus));
 
     const assistantMessage: ChatMessage = {
       id: createMessageId('assistant'),
       role: 'assistant',
       content: response.answer,
       sources: response.sources,
-      audioUrl: response.audioUrl,
-      ttsJobId: response.ttsJobId,
-      ttsStatus: response.ttsStatus,
       isFallback: response.isFallback,
       metrics: response.metrics,
       createdAt: Date.now(),
@@ -170,16 +207,8 @@ export default function AiGuidePage() {
     setMessages((current) =>
       current.map((message) => (message.id === typingMessageId ? assistantMessage : message)),
     );
-    setStatus('idle');
+    if (!playbackActiveRef.current) setAvatarStatus('ready');
     setLoading(false);
-    window.setTimeout(() => {
-      setEmotionCue((current) => (current === 'success' || current === 'fallback' ? 'idle' : current));
-    }, 1300);
-
-    if (response.ttsJobId && response.ttsStatus === 'pending') {
-      setAudioState('pending');
-      void pollTtsJob(response.ttsJobId, assistantMessage.id);
-    }
   };
 
   useEffect(() => {
@@ -188,42 +217,64 @@ export default function AiGuidePage() {
     void sendQuestion(initialQuestion);
   }, [initialQuestion, introReady]);
 
-  const pollTtsJob = async (jobId: string, messageId: string) => {
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      await wait(1200);
-      const ttsStatus = await getTtsJobStatus(jobId);
-      if (ttsStatus.status === 'pending') {
-        setAudioState('pending');
-        continue;
-      }
-      setAudioState(audioStateFromTtsStatus(ttsStatus.status));
-      if (ttsStatus.status === 'failed') setEmotionCue('fallback');
-      if (ttsStatus.status === 'ready') setEmotionCue('success');
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === messageId ? { ...message, audioUrl: ttsStatus.audioUrl, ttsStatus: ttsStatus.status } : message,
-        ),
-      );
-      return;
-    }
-  };
-
   const sendPresetQuestion = (question: string) => {
     if (!loading && introReady) void sendQuestion(question);
+  };
+
+  const startVoiceInput = async () => {
+    const activeSession = avatarSessionRef.current;
+    if (!activeSession) {
+      throw new Error('avatar_not_connected');
+    }
+    setChatError('');
+    microphoneRef.current = await startAvatarMicrophone(activeSession.connection);
+    setAvatarStatus('listening');
+  };
+
+  const stopVoiceInput = async () => {
+    const activeSession = avatarSessionRef.current;
+    const microphone = microphoneRef.current;
+    if (!activeSession || !microphone) {
+      throw new Error('avatar_microphone_not_started');
+    }
+    microphoneRef.current = null;
+    await stopAvatarMicrophone(activeSession.connection, microphone);
+    setAvatarStatus('recognizing');
+    recognitionTimeoutRef.current = window.setTimeout(() => {
+      recognitionTimeoutRef.current = null;
+      setAvatarStatus('ready');
+      setChatError('没有识别到语音，请再试一次。');
+    }, 8_000);
   };
 
   return (
     <div className="ai-guide-page ai-guide-page--chat">
       <div className="ai-guide-workbench" data-testid="ai-guide-workbench">
         <aside className="ai-guide-workbench__avatar luxury-avatar-stage" aria-label="AI 数字人导游">
-          <AvatarGuide
-            status={status}
-            variant="stage"
-            presentation="bare"
-            showStatus={false}
-            audioState={audioState}
-            emotionCue={emotionCue}
-            stageMode="guide"
+          <LiteAvatarStage
+            status={avatarStatus}
+            onSessionChange={(session) => {
+              avatarSessionRef.current = session;
+              if (!session) playbackActiveRef.current = false;
+              setAvatarStatus('ready');
+            }}
+            onTranscript={(text) => {
+              if (recognitionTimeoutRef.current !== null) {
+                window.clearTimeout(recognitionTimeoutRef.current);
+                recognitionTimeoutRef.current = null;
+              }
+              const question = text.trim();
+              if (!question) {
+                setAvatarStatus('ready');
+                setChatError('没有识别到语音，请再试一次。');
+                return;
+              }
+              void sendQuestion(question);
+            }}
+            onPlaybackStateChange={(playbackState) => {
+              playbackActiveRef.current = playbackState === 'speaking';
+              setAvatarStatus(playbackState);
+            }}
           />
         </aside>
 
@@ -232,6 +283,10 @@ export default function AiGuidePage() {
           loading={loading}
           error={chatError}
           enableSpeechInput
+          speechInput={{
+            onStart: startVoiceInput,
+            onStop: stopVoiceInput,
+          }}
           assistant={{
             name: productCopy.guideName,
             subtitle: '在线智能导览',
@@ -239,22 +294,6 @@ export default function AiGuidePage() {
             avatarAlt: '灵山胜境 AI 导游头像',
           }}
           onSend={(question) => void sendQuestion(question)}
-          onSpeakStart={() => {
-            setStatus('speaking');
-            setAudioState('playing');
-            setEmotionCue('speaking');
-          }}
-          onSpeakEnd={() => {
-            setStatus('idle');
-            setAudioState('ready');
-            setEmotionCue('idle');
-          }}
-          onSpeakError={(message) => {
-            setStatus('idle');
-            setAudioState('failed');
-            setEmotionCue('fallback');
-            console.warn('[AiGuidePage] audio playback failed:', message);
-          }}
         />
 
         <GuideQuickPrompts prompts={quickPrompts} disabled={loading || !introReady} onSelect={sendPresetQuestion} />

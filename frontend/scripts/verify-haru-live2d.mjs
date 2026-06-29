@@ -11,7 +11,6 @@ const workspaceBrowserPath = path.join(workspaceRoot, '.cache', 'ms-playwright')
 const browserPath = existsSync(workspaceBrowserPath) ? workspaceBrowserPath : undefined;
 const outputDir = path.join(projectRoot, 'test-results', 'haru-live2d');
 const baseUrl = process.env.HARU_VERIFY_URL || 'http://127.0.0.1:5173';
-const backendUrl = process.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8001';
 const fastMode = process.env.HARU_VERIFY_FAST === 'true';
 
 if (browserPath) {
@@ -57,9 +56,8 @@ async function waitForReady(url) {
 }
 
 await mkdir(outputDir, { recursive: true });
-console.log(`[verify-haru-live2d] using ${baseUrl}, backend ${backendUrl}`);
+console.log(`[verify-haru-live2d] using ${baseUrl}`);
 await waitForReady(baseUrl);
-await waitForReady(`${backendUrl}/health`);
 
 browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -148,19 +146,16 @@ async function avatarState() {
 }
 
 try {
-  console.log('[verify-haru-live2d] open guide');
-  await page.goto(`${baseUrl}/guide`, { waitUntil: 'domcontentloaded' });
+  console.log('[verify-haru-live2d] open home');
+  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' });
   await waitForCheck(9000, 1800);
   const initial = await avatarState();
   await snapshot('initial');
-  failIf(!initial.hasBarePresentation, 'Guide avatar is not using the bare presentation');
-  failIf(initial.bareDecorationCount !== 0, 'Bare guide avatar renders non-avatar decoration');
+  failIf(initial.hasBarePresentation, 'Home avatar should retain its decorated presentation');
   failIf(initial.shellClass !== 'avatar-stage-shell has-live2d', 'Live2D shell is not active');
-  failIf(initial.shellVisuals?.backgroundColor !== 'rgba(0, 0, 0, 0)', 'Bare Live2D shell still has a background');
-  failIf(initial.shellVisuals?.borderTopWidth !== '0px', 'Bare Live2D shell still has a border');
   failIf(initial.stageClass !== 'live2d-stage live2d-stage-ready', 'Live2D stage is not ready');
   failIf(!initial.hasDebugApi, 'Haru debug motion API is not available');
-  failIf(initial.hasHorizontalOverflow, 'Guide page has horizontal overflow');
+  failIf(initial.hasHorizontalOverflow, 'Home page has horizontal overflow');
   failIf(!initial.canvasCss || !initial.stageCss || !initial.canvasBuffer, 'Live2D canvas was not rendered');
   failIf(
     initial.canvasBuffer.width < initial.stageCss.width * 1.8,
@@ -186,29 +181,14 @@ try {
   await waitForCheck(33000, 400);
   await snapshot('sleep');
 
-  console.log('[verify-haru-live2d] ask backend question');
-  const realApiQuestion = 'Haru real backend check';
-  await page.locator('.chat-input-row textarea, .chat-input-row input').first().fill(realApiQuestion);
-  await page.getByTestId('guide-send').click();
-  await waitForCheck(1200, 800);
-  await snapshot('wake-thinking');
-  await waitForCheck(3600, 1200);
-  await snapshot('speaking-motion');
-  await waitForCheck(16000, 5000);
-  const afterQuestion = await avatarState();
-  await snapshot('wake-and-answer');
-  failIf(afterQuestion.bodyText.includes('问答服务异常'), 'Guide still shows service error');
-  failIf(afterQuestion.bodyText.includes('兜底回答'), 'Guide returned fallback answer');
-  failIf(!afterQuestion.bodyText.includes(realApiQuestion), 'User question was not rendered');
-
   console.log('[verify-haru-live2d] mobile check');
   await page.setViewportSize({ width: 390, height: 820 });
-  await page.goto(`${baseUrl}/guide`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => window.scrollTo(0, 0));
   await waitForCheck(9000, 1800);
   const mobile = await avatarState();
   await snapshot('mobile-initial');
-  failIf(mobile.hasHorizontalOverflow, 'Guide page has horizontal overflow on mobile');
+  failIf(mobile.hasHorizontalOverflow, 'Home page has horizontal overflow on mobile');
   failIf(mobile.shellClass !== 'avatar-stage-shell has-live2d', 'Mobile Live2D shell is not active');
 
   failIf(consoleErrors.length > 0, `Console errors:\n${consoleErrors.join('\n')}`);
@@ -224,12 +204,6 @@ try {
       stageClass: initial.stageClass,
       canvasCss: initial.canvasCss,
       canvasBuffer: initial.canvasBuffer,
-    },
-    afterQuestion: {
-      shellClass: afterQuestion.shellClass,
-      stageClass: afterQuestion.stageClass,
-      canvasCss: afterQuestion.canvasCss,
-      canvasBuffer: afterQuestion.canvasBuffer,
     },
     mobile: {
       shellClass: mobile.shellClass,

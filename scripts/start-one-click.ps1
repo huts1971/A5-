@@ -8,15 +8,19 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $Backend = Join-Path $Root "backend"
 $Frontend = Join-Path $Root "frontend"
+$AvatarService = Join-Path $Root "avatar-service"
 $BackendLog = Join-Path $Backend "backend-local-server-8001.log"
 $BackendErr = Join-Path $Backend "backend-local-server-8001.err.log"
 $VisitorLog = Join-Path $Frontend "frontend-local-server-5173.log"
 $VisitorErr = Join-Path $Frontend "frontend-local-server-5173.err.log"
 $AdminLog = Join-Path $Frontend "frontend-local-server-5174.log"
 $AdminErr = Join-Path $Frontend "frontend-local-server-5174.err.log"
+$AvatarLog = Join-Path $AvatarService "avatar-local-server-8283.log"
+$AvatarErr = Join-Path $AvatarService "avatar-local-server-8283.err.log"
 $VenvDir = Join-Path $Backend ".venv"
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
 $FrontendDist = Join-Path $Frontend "dist\index.html"
+$AvatarPython = Join-Path $AvatarService ".venv\Scripts\python.exe"
 
 function Write-Step([string]$Text) {
   Write-Host ""
@@ -77,7 +81,7 @@ function Test-BackendDeps {
 }
 
 function Ensure-Backend {
-  Write-Step "[1/7] Checking backend Python environment"
+  Write-Step "[1/8] Checking backend Python environment"
 
   if (-not (Test-BackendDeps)) {
     $python = Find-PythonCommand
@@ -116,7 +120,7 @@ function Ensure-Backend {
 }
 
 function Ensure-Frontend {
-  Write-Step "[2/7] Checking frontend Node environment"
+  Write-Step "[2/8] Checking frontend Node environment"
 
   if (-not (Test-CommandExists "node")) {
     Fail-WithHelp "node was not found."
@@ -147,12 +151,24 @@ function Ensure-Frontend {
 
   Set-Content -LiteralPath (Join-Path $Frontend ".env.local") -Encoding ASCII -Value @(
     "VITE_API_BASE_URL=http://127.0.0.1:8001",
+    "VITE_AVATAR_SERVICE_URL=http://127.0.0.1:8283",
+    "VITE_OPENAVATAR_URL=http://127.0.0.1:8282",
     "VITE_USE_MOCK_API=false"
   )
 }
 
+function Test-AvatarDeps {
+  if (-not (Test-Path $AvatarPython)) { return $false }
+  try {
+    & $AvatarPython -c "import fastapi, uvicorn, dotenv" 2>$null
+    return $LASTEXITCODE -eq 0
+  } catch {
+    return $false
+  }
+}
+
 function Ensure-FrontendDist {
-  Write-Step "[3/7] Checking static frontend build"
+  Write-Step "[3/8] Checking static frontend build"
   if (-not (Test-Path $FrontendDist)) {
     Write-Host "frontend\dist was not found." -ForegroundColor Yellow
     Write-Host "Run BUILD-FRONTEND.bat once, then run START-HERE.bat again."
@@ -178,7 +194,7 @@ function Stop-Port([int]$Port) {
 }
 
 function Start-Backend {
-  Write-Step "[5/7] Starting backend http://127.0.0.1:8001"
+  Write-Step "[6/8] Starting backend http://127.0.0.1:8001"
   if (Test-Path $BackendLog) { Clear-Content -LiteralPath $BackendLog }
   if (Test-Path $BackendErr) { Clear-Content -LiteralPath $BackendErr }
   Start-BackgroundCommand `
@@ -188,8 +204,24 @@ function Start-Backend {
     -StderrPath $BackendErr
 }
 
+function Start-Avatar {
+  Write-Step "[5/8] Starting avatar supervisor http://127.0.0.1:8283"
+  if (-not (Test-AvatarDeps)) {
+    Write-Host "Avatar environment is not installed; text chat will remain available." -ForegroundColor Yellow
+    Write-Host "Run avatar-service\setup-avatar.ps1 once to enable LiteAvatar."
+    return
+  }
+  if (Test-Path $AvatarLog) { Clear-Content -LiteralPath $AvatarLog }
+  if (Test-Path $AvatarErr) { Clear-Content -LiteralPath $AvatarErr }
+  Start-BackgroundCommand `
+    -WorkingDirectory $AvatarService `
+    -Command "`"$AvatarPython`" -m uvicorn avatar_service.main:app --host 127.0.0.1 --port 8283" `
+    -StdoutPath $AvatarLog `
+    -StderrPath $AvatarErr
+}
+
 function Start-Frontend {
-  Write-Step "[6/7] Starting static frontends"
+  Write-Step "[7/8] Starting static frontends"
   if (Test-Path $VisitorLog) { Clear-Content -LiteralPath $VisitorLog }
   if (Test-Path $VisitorErr) { Clear-Content -LiteralPath $VisitorErr }
   if (Test-Path $AdminLog) { Clear-Content -LiteralPath $AdminLog }
@@ -265,15 +297,20 @@ try {
 
   Ensure-FrontendDist
 
-  Write-Step "[4/7] Cleaning old local ports"
-  foreach ($port in @(5173, 5174, 5175, 5176, 8001, 5200)) {
+  Write-Step "[4/8] Cleaning old local ports"
+  foreach ($port in @(5173, 5174, 5175, 5176, 8001, 5200, 8282, 8283)) {
     Stop-Port $port
   }
 
+  Start-Avatar
   Start-Backend
   Start-Frontend
 
-  Write-Step "[7/7] Waiting for services"
+  Write-Step "[8/8] Waiting for services"
+  $avatarReady = $false
+  if (Test-AvatarDeps) {
+    $avatarReady = Wait-Url "http://127.0.0.1:8283/health" 30
+  }
   $backendReady = Wait-Url "http://127.0.0.1:8001/health" 30
   $frontendReady = Wait-Url "http://127.0.0.1:5173/" 30
   $adminReady = Wait-Url "http://127.0.0.1:5174/" 30
@@ -288,10 +325,15 @@ try {
   Write-Host "AI Guide: http://127.0.0.1:5173/guide"
   Write-Host "Admin: http://127.0.0.1:5174/"
   Write-Host "Backend docs: http://127.0.0.1:8001/docs"
+  Write-Host "Avatar health: http://127.0.0.1:8283/health"
   Write-Host ""
   Write-Host "Backend log: backend\backend-local-server-8001.log"
   Write-Host "Visitor log: frontend\frontend-local-server-5173.log"
   Write-Host "Admin log: frontend\frontend-local-server-5174.log"
+  Write-Host "Avatar log: avatar-service\avatar-local-server-8283.log"
+  if (-not $avatarReady) {
+    Write-Host "LiteAvatar is not ready; /guide will continue in text-only mode." -ForegroundColor Yellow
+  }
   Write-Host "Mode: static preview, no Vite hot reload."
   Write-Host "After code changes: run BUILD-FRONTEND.bat, then START-HERE.bat."
 

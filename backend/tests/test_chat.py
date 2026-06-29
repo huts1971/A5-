@@ -95,6 +95,26 @@ def test_chat_without_session_uses_fallback_and_returns_sources(tmp_path):
     assert body["metrics"]["degraded"] is True
 
 
+def test_chat_does_not_enqueue_legacy_tts_when_avatar_service_owns_speech(tmp_path):
+    app = create_app(
+        Settings(
+            database_url=f"sqlite:///{tmp_path / 'app.db'}",
+            source_package_path=str(SOURCE_PACKAGE_PATH),
+            llm_api_key="",
+            tts_mode="provider",
+            tts_api_key="legacy-key-must-not-be-used",
+        )
+    )
+    with TestClient(app) as client:
+        app.state.tts_jobs.enqueue = lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy TTS must not be enqueued")
+        )
+        response = client.post("/api/chat", json={"question": "灵山大佛有多高？"})
+
+    assert response.status_code == 200
+    assert response.json()["tts_status"] == "disabled"
+
+
 def test_chat_reports_structured_classification_for_scenic_fact_question(tmp_path):
     with create_test_client(tmp_path) as client:
         response = client.post(

@@ -1,0 +1,43 @@
+default:
+  logger:
+    log_level: "INFO"
+  service:
+    host: "127.0.0.1"
+    port: 8282
+  chat_engine:
+    model_root: "models"
+    concurrent_limit: 1
+    handler_search_path:
+      - "src/handlers"
+    handler_configs:
+      RtcClient:
+        module: client/rtc_client/client_handler_rtc
+        connection_ttl: 3600
+        output_video_fps: 25
+      InterruptHandler:
+        module: logic/interrupt/interrupt_handler
+      A5Bridge:
+        module: a5_bridge/a5_bridge_handler
+      SileroVad:
+        module: vad/silerovad/vad_handler_silero
+        speaking_threshold: 0.5
+        start_delay: 2048
+        end_delay: 5000
+        buffer_look_back: 5000
+        speech_padding: 512
+      SenseVoice:
+        module: asr/sensevoice/asr_handler_sensevoice
+        model_name: "iic/SenseVoiceSmall"
+      QwenTTS:
+        module: tts/qwen_tts_realtime/tts_handler_qwen_tts_realtime
+        voice: "Cherry"
+        model_name: "qwen3-tts-instruct-flash-realtime-2026-01-22"
+        language_type: "Chinese"
+        optimize_instructions: true
+      LiteAvatar:
+        module: avatar/liteavatar/avatar_handler_liteavatar
+        avatar_name: "20250408/sample_data"
+        fps: 25
+        debug: false
+        enable_fast_mode: false
+        use_gpu: true

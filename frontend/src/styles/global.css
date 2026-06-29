@@ -2374,6 +2374,10 @@ body::selection {
   padding-bottom: 76px;
 }
 
+.visitor-layout.visitor-layout-guide .visitor-content {
+  width: min(1480px, calc(100% - 44px));
+}
+
 .page-stack {
   gap: 28px;
 }
@@ -3987,10 +3991,10 @@ body::selection {
 .ai-guide-workbench {
   display: grid;
   grid-template-areas: "avatar chat prompts";
-  grid-template-columns: minmax(360px, 440px) minmax(440px, 1fr) minmax(210px, 252px);
+  grid-template-columns: minmax(380px, 440px) minmax(560px, 1fr) minmax(220px, 280px);
   align-items: center;
-  gap: clamp(20px, 3vw, 44px);
-  width: min(100%, 1380px);
+  gap: clamp(24px, 2.5vw, 40px);
+  width: min(100%, 1480px);
   min-height: min(700px, calc(100dvh - 150px));
   margin-inline: auto;
 }
@@ -4015,6 +4019,48 @@ body::selection {
 .ai-guide-workbench__avatar .avatar-guide {
   width: 100%;
   min-width: 0;
+}
+
+.liteavatar-stage {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 340px);
+  margin-inline: auto;
+}
+
+.liteavatar-stage__media {
+  position: relative;
+  aspect-ratio: 890 / 1920;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid rgba(149, 226, 210, 0.28);
+  border-radius: 28px;
+  box-shadow:
+    0 28px 70px rgba(0, 10, 12, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.liteavatar-stage__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.liteavatar-stage__status {
+  justify-self: center;
+  min-width: 72px;
+  padding: 5px 14px;
+  color: rgba(239, 250, 247, 0.82);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  letter-spacing: 0.08em;
+  background: rgba(8, 31, 31, 0.54);
+  border: 1px solid rgba(137, 220, 204, 0.2);
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
 }
 
 .avatar-guide--bare {
@@ -4492,7 +4538,11 @@ body::selection {
   }
 
   .ai-guide-workbench__avatar {
-    min-height: 360px;
+    min-height: 0;
+  }
+
+  .liteavatar-stage {
+    width: min(100%, 260px);
   }
 
   .avatar-guide--bare .avatar-stage-shell {
@@ -4799,11 +4849,10 @@ body::selection {
 
 .guide-aichat {
   position: relative;
-  left: -100px; 
   z-index: 0;
   display: grid;
   grid-area: chat;
-  width: 400px;
+  width: 480px;
   height: 80vh;
   max-height: 500px;
   justify-self: center;
@@ -4829,7 +4878,7 @@ body::selection {
 .guide-aichat .chat.ai-chat {
   position: relative;
   display: flex;
-  width: 400px;
+  width: 480px;
   height: 80vh;
   min-height: 0;
   max-height: 500px;
@@ -5042,29 +5091,6 @@ body::selection {
   bottom: -15px;
   color: rgba(255, 255, 255, 0.3);
   font-size: 9px;
-}
-
-.guide-aichat .message-play {
-  display: grid;
-  width: 24px;
-  height: 24px;
-  margin-top: 7px;
-  padding: 0;
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  place-items: center;
-}
-
-.guide-aichat .message-play svg {
-  width: 22px;
-  height: 22px;
-}
-
-.guide-aichat .message-play:disabled {
-  cursor: default;
-  opacity: 0.35;
 }
 
 .guide-aichat__sources {

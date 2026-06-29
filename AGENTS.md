@@ -18,8 +18,8 @@ repository.
 
 The project is no longer just a mock prototype. It contains a real React
 frontend, a FastAPI backend, SQLite bootstrap data, Ling Shan and Nianhua Bay
-knowledge assets, chat logs, admin views, backend TTS, Live2D Haru assets, and
-source-aware AI guide answers.
+knowledge assets, chat logs, admin views, OpenAvatarChat with Qwen3-TTS and
+LiteAvatar, and source-aware AI guide answers.
 
 ## Current Architecture
 
@@ -35,20 +35,19 @@ source-aware AI guide answers.
 
 Read these project-specific docs next:
 
-1. `README-local-run.md`
-2. `backend-frontend-handoff-summary-zh-v2.md`
+1. `FIRST-TIME-SETUP.md`
+2. `README-local-run.md`
 3. `frontend/AGENTS.md`
 4. `frontend/CONTEXT.md`
 5. `ARCHITECTURE.md`
 6. `FOLDER_STRUCTURE.md`
 7. `UI_GUIDELINES.md`
-8. `git-instruction.md`
 
 ## Technical Rules
 
 - Frontend framework is React. Do not mix in Vue or replace the UI stack.
 - Frontend build tool is Vite. Keep TypeScript mandatory for source code.
-- UI system is Ant Design plus existing custom CSS and Live2D components.
+- UI system is Ant Design plus existing custom CSS and LiteAvatar components.
 - Backend framework is FastAPI. Do not replace it with another backend stack.
 - Persistence is currently SQLite for demo stability. Do not introduce a new
   database without explicit approval.
@@ -93,7 +92,7 @@ Stop services:
 stop-local.bat
 ```
 
-After frontend or Live2D code changes:
+After frontend or LiteAvatar UI code changes:
 
 ```bat
 BUILD-FRONTEND.bat
@@ -132,8 +131,8 @@ npm run verify:source-provenance
   `frontend/AGENTS.md` and scattered handoff docs.
 - The project came from a GitHub ZIP archive, so this local copy has no `.git`
   history until one is initialized or cloned again.
-- Documentation is split across root handoff docs, `docs/`, and `frontend/docs/`.
-  Prefer linking existing docs before creating new places.
+- Current development handoffs live under `summary/`; product requirements and
+  task breakdowns live under `PRD/` and `Issues/`.
 - `frontend/dist` is included for stable demo packaging. Do not treat it as the
   normal development source of truth.
 - Startup scripts are Windows-first. macOS/Linux manual startup may need direct
@@ -144,8 +143,8 @@ npm run verify:source-provenance
 ## Next Work Priorities
 
 1. Keep the visitor demo flow stable: home, spots, routes, guide, sources, audio.
-2. Improve visitor-facing visual polish with existing spot photos and Live2D
-   assets.
+2. Improve visitor-facing visual polish with existing spot photos and
+   LiteAvatar.
 3. Keep admin pages practical: spots, routes, knowledge, logs, dashboard.
 4. Expand structured knowledge only through curated data and reviewed sources.
 5. Add tests before changing chat retrieval, web supplement, TTS, or admin CRUD.

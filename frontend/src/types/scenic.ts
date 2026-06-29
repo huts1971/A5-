@@ -227,9 +227,6 @@ export interface ChatMessage {
   content: string;
   createdAt?: number;
   sources?: ChatSource[];
-  audioUrl?: string;
-  ttsJobId?: string;
-  ttsStatus?: 'pending' | 'ready' | 'failed' | 'disabled';
   isFallback?: boolean;
   metrics?: ChatMetrics;
 }
@@ -237,9 +234,6 @@ export interface ChatMessage {
 export interface ChatResponse {
   answer: string;
   sources: ChatSource[];
-  audioUrl?: string;
-  ttsJobId?: string;
-  ttsStatus?: 'pending' | 'ready' | 'failed' | 'disabled';
   sessionId?: string;
   isFallback?: boolean;
   metrics?: ChatMetrics;

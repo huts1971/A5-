@@ -33,6 +33,7 @@ export default function VisitorLayout() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const isHome = location.pathname === '/';
+  const isGuide = location.pathname === '/guide';
   const isSpots = location.pathname === '/spots';
   const isSpotDetail = /^\/spots\/[^/]+$/.test(location.pathname);
   const isSignedIn = Boolean(user);
@@ -98,6 +99,7 @@ export default function VisitorLayout() {
       <Layout
         className={`visitor-layout ${isHome ? 'visitor-layout-home' : ''} ${isSpots ? 'visitor-layout-spots' : ''} ${
           isSpotDetail ? 'visitor-layout-immersive' : ''
+        } ${isGuide ? 'visitor-layout-guide' : ''
         }`}
       >
         {!isSpotDetail ? (

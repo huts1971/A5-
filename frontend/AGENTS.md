@@ -37,7 +37,7 @@ src/
   api/                    # Unified API clients and mock/real mode switch
   assets/                 # Static images, digital human avatar assets, icons
   components/             # Reusable business and UI components
-    guide/                # AvatarGuide, ChatBox, SourceCard, AudioButton
+    guide/                # LiteAvatarStage, AvatarGuide, ChatBox, SourceCard
     scenic/               # SpotCard, RouteCard, PreferenceForm
     common/               # Loading, EmptyState, ErrorState, PageHeader, etc.
   layouts/                # VisitorLayout and AdminLayout
@@ -80,7 +80,7 @@ Core P0 components:
 - `AvatarGuide`: lightweight 2D digital human with `idle`, `thinking`, and
   `speaking` states.
 - `SourceCard`: retrieved knowledge source display.
-- `AudioButton`: text-to-speech playback button, using backend audio if provided
+- `/guide` speech is automatic through the local OpenAvatarChat TTS + LiteAvatar service.
   and browser `SpeechSynthesis` as fallback.
 - `SpotCard`: scenic spot summary.
 - `RouteCard`: recommended route summary and spot sequence.

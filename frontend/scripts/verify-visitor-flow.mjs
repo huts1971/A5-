@@ -88,6 +88,12 @@ async function main() {
   page.on('console', (message) => {
     if (message.type() === 'error') {
       const location = message.location();
+      if (
+        location.url?.startsWith('http://127.0.0.1:8283/api/avatar/')
+        && message.text().includes('503')
+      ) {
+        return;
+      }
       consoleErrors.push(
         `${message.text()}${location.url ? ` @ ${location.url}:${location.lineNumber ?? 0}` : ''}`,
       );
@@ -95,7 +101,10 @@ async function main() {
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('response', (response) => {
-    if (response.status() >= 400) {
+    if (
+      response.status() >= 400
+      && !response.url().startsWith('http://127.0.0.1:8283/api/avatar/')
+    ) {
       responseErrors.push(`${response.status()} ${response.url()}`);
     }
   });
@@ -115,6 +124,13 @@ async function main() {
         status: 401,
         contentType: 'application/json',
         body: JSON.stringify({ message: '登录状态无效', code: 'AUTH_TOKEN_INVALID', status: 401 }),
+      });
+    });
+    await page.route('http://127.0.0.1:8283/api/avatar/**', async (route) => {
+      await route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ detail: 'Avatar unavailable during degradation check' }),
       });
     });
 
@@ -232,17 +248,27 @@ async function main() {
     ]);
     if (!avatarBox || !chatBox || !promptsBox) throw new Error('Guide workspace columns are not measurable');
     failIf(!(avatarBox.x < chatBox.x && chatBox.x < promptsBox.x), 'Guide workspace desktop columns are not ordered left-to-right');
-    const bareAvatar = await page.locator('.avatar-guide--bare .avatar-stage-shell').evaluate((element) => {
-      const style = getComputedStyle(element);
-      return { backgroundColor: style.backgroundColor, borderTopWidth: style.borderTopWidth, boxShadow: style.boxShadow };
-    });
-    failIf(bareAvatar.backgroundColor !== 'rgba(0, 0, 0, 0)', 'Guide avatar still has a stage background');
-    failIf(bareAvatar.borderTopWidth !== '0px', 'Guide avatar still has a stage border');
+    const liteAvatarVideo = page.getByTestId('liteavatar-video');
+    const avatarStatus = page.locator('.liteavatar-stage__status');
+    await liteAvatarVideo.waitFor({ timeout: 5000 });
+    const [avatarMediaBox, avatarStatusBox] = await Promise.all([
+      page.locator('.liteavatar-stage__media').boundingBox(),
+      avatarStatus.boundingBox(),
+    ]);
+    if (!avatarMediaBox || !avatarStatusBox) throw new Error('LiteAvatar media and status are not measurable');
+    failIf(avatarStatusBox.y < avatarMediaBox.y + avatarMediaBox.height, 'LiteAvatar status must sit below the media');
     failIf(
-      (await page.locator('.avatar-guide--bare .avatar-aura, .avatar-guide--bare .avatar-scan-ring, .avatar-guide--bare .avatar-light-dots, .avatar-guide--bare .avatar-speech-wave, .avatar-guide--bare .live2d-stage-hint').count()) !== 0,
-      'Guide bare avatar must contain only the digital human',
+      !['准备中', '未连接'].includes((await avatarStatus.innerText()).trim()),
+      'LiteAvatar must show a short preparing or disconnected state',
     );
-    await page.getByTestId('guide-typing-message').waitFor({ timeout: 5000 });
+    failIf(
+      (await page.locator('.ai-guide-workbench__avatar .avatar-guide, .ai-guide-workbench__avatar .live2d-canvas').count()) !== 0,
+      'Guide page must not initialize the legacy Live2D avatar',
+    );
+    failIf(
+      await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
+      'Guide page must not have horizontal overflow',
+    );
     await page.locator('.chat-bubble.assistant').first().waitFor({ timeout: 5000 });
     failIf(
       (await page.locator('.message-input').getAttribute('placeholder')) !== '……',

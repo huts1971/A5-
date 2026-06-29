@@ -5,11 +5,13 @@
 The project is a single scenic-area AI guide product with four practical layers:
 
 - Visitor frontend: browsing, route recommendation, AI guide chat, source cards,
-  audio playback, and Live2D digital human presentation.
+  microphone interaction, and LiteAvatar digital human presentation.
 - Admin frontend: dashboard, scenic spot management, route management, knowledge
   status, web-fact review, and chat logs.
 - Backend API: FastAPI routers for spots, routes, chat, admin, knowledge, logs,
-  TTS, and health checks.
+  and health checks.
+- Avatar service: OpenAvatarChat runs SenseVoice, Qwen3-TTS Realtime, and
+  LiteAvatar independently from the A5 backend.
 - Data and knowledge: SQLite demo database, raw scenic source files, curated JSON
   facts, Markdown knowledge docs, aliases, tags, and local/static assets.
 
@@ -22,8 +24,10 @@ Visitor flow:
 3. API clients call the FastAPI backend, defaulting to `http://127.0.0.1:8001`.
 4. Backend reads SQLite and derived knowledge data.
 5. Chat answers combine structured facts, knowledge chunks, optional MiMo LLM,
-   optional MiMo web search, and backend TTS.
-6. Frontend renders answer text, sources, mode/degraded state, and audio controls.
+   and optional MiMo web search.
+6. Answer text is streamed to OpenAvatarChat; Qwen3-TTS Realtime produces
+   24 kHz PCM that drives LiteAvatar.
+7. Frontend renders answer text, sources, mode/degraded state, and Avatar status.
 
 Admin flow:
 
@@ -53,8 +57,8 @@ Do not put large business logic directly in API route handlers.
   and mock/real API switching.
 - `frontend/src/types`: API and domain DTOs.
 - `frontend/src/styles`: global CSS and Ant Design theme tokens.
-- `frontend/src/live2d` and `frontend/src/vendor/live2d`: Live2D rendering code
-  and vendored framework code.
+- `frontend/src/components/guide/LiteAvatarStage.tsx`: browser-side WebRTC
+  presentation and Avatar interaction state.
 
 Pages and components must not call `fetch` directly. Add or adjust clients under
 `frontend/src/api` instead.
@@ -67,8 +71,8 @@ there is a repeated, proven need for shared state.
 - Page-level server data belongs in page state or small hooks local to that page.
 - Shared request behavior belongs in API clients.
 - Visitor profile helpers belong under `frontend/src/utils`.
-- Audio playback state should stay coordinated through the existing guide/audio
-  components so multiple answers do not play at once.
+- Avatar speech state should remain coordinated through the guide session so a
+  new question interrupts the previous answer.
 
 Do not introduce Redux, Zustand, MobX, or another state library without explicit
 approval.
@@ -78,7 +82,7 @@ approval.
 Demo stability is part of the architecture:
 
 - Missing LLM key falls back to local retrieval answers.
-- TTS failure should not block chat answers.
+- Avatar/TTS failure should not block chat answers.
 - Retrieval is structured/keyword-first and does not require a separate vector
   service for the current demo.
 - Web search is supplemental and source-aware, not the primary truth source.

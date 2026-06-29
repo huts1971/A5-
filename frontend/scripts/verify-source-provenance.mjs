@@ -176,7 +176,6 @@ async function ask(page, question, expectSources = true) {
   const assistantCount = await page.locator('.chat-bubble.assistant').count();
   await page.locator('.chat-input-row textarea, .chat-input-row input').first().fill(question);
   await page.getByTestId('guide-send').click();
-  await page.getByTestId('guide-typing-message').waitFor({ timeout: 5000 });
   await page.waitForFunction(
     (count) => document.querySelectorAll('.chat-bubble.assistant').length > count,
     assistantCount,
@@ -237,14 +236,6 @@ async function main() {
         body: sseFinal(responseForQuestion(payload.question)),
       });
     });
-    await page.route('**/api/tts/jobs/**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: 'tts', status: 'disabled', audio_url: null }),
-      });
-    });
-
     await page.goto(`${baseUrl}/guide`, { waitUntil: 'networkidle' });
     await page.locator('.chat-bubble.assistant').first().waitFor({ timeout: 5000 });
 

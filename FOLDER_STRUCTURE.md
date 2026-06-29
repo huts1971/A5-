@@ -8,15 +8,18 @@ directories over creating new top-level folders.
 ```text
 A5--main/
   AGENTS.md
+  FIRST-TIME-SETUP.md
   ARCHITECTURE.md
   FOLDER_STRUCTURE.md
   UI_GUIDELINES.md
-  git-instruction.md
   README-local-run.md
-  PLAN.md
+  avatar-service/
   backend/
   frontend/
+  Issues/
   knowledge/
+  PRD/
+  summary/
   docs/
   scripts/
   Scenic Area Public Information Package/
@@ -64,14 +67,12 @@ frontend/
       scenic/
     config/
     layouts/
-    live2d/
     pages/
       admin/
       visitor/
     styles/
     types/
     utils/
-    vendor/
   public/
   dist/
   docs/
@@ -85,9 +86,8 @@ Rules:
 - Admin pages go in `src/pages/admin`.
 - Reusable UI goes in `src/components`.
 - Shared domain types go in `src/types`.
-- Live2D runtime code stays in `src/live2d`.
-- Vendored Live2D framework code stays in `src/vendor/live2d`; do not mix app
-  business logic into vendor files.
+- LiteAvatar WebRTC UI belongs under `src/components/guide`; Avatar inference
+  code does not belong in the frontend.
 - Static browser assets go in `public`.
 - `dist` is a stable demo build output included for packaging. Do not edit it by
   hand; rebuild it with `npm run build` or `BUILD-FRONTEND.bat`.
@@ -121,6 +121,8 @@ Rules:
 - `backend/scripts` contains backend data/evaluation scripts.
 - `frontend/scripts` contains frontend verification scripts.
 - `docs/` is for cross-system documentation.
+- `summary/` contains current development handoffs.
+- `PRD/` and `Issues/` contain approved requirements and task breakdowns.
 - `frontend/docs/adr` contains frontend/backend decision records already used by
   the project.
 

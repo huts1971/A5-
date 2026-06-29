@@ -2,7 +2,6 @@ import { SendOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../../types/scenic';
-import AudioButton from './AudioButton';
 import SourceCard from './SourceCard';
 import SpeechInputButton from './SpeechInputButton';
 
@@ -18,11 +17,12 @@ export interface ChatBoxProps {
   loading?: boolean;
   error?: string;
   enableSpeechInput?: boolean;
+  speechInput?: {
+    onStart: () => Promise<void>;
+    onStop: () => Promise<void>;
+  };
   assistant?: GuideAssistantIdentity;
   onSend: (question: string) => void;
-  onSpeakStart?: () => void;
-  onSpeakEnd?: () => void;
-  onSpeakError?: (message: string) => void;
 }
 
 const defaultAssistant: GuideAssistantIdentity = {
@@ -37,11 +37,9 @@ export default function ChatBox({
   loading = false,
   error,
   enableSpeechInput = false,
+  speechInput,
   assistant = defaultAssistant,
   onSend,
-  onSpeakStart,
-  onSpeakEnd,
-  onSpeakError,
 }: ChatBoxProps) {
   const [draft, setDraft] = useState('');
   const [speechError, setSpeechError] = useState('');
@@ -113,18 +111,6 @@ export default function ChatBox({
                       </figure>
                     ) : null}
                     <p>{item.content}</p>
-                    {isAssistant ? (
-                      <AudioButton
-                        variant="minimal"
-                        text={item.content}
-                        audioUrl={item.audioUrl}
-                        loading={item.ttsStatus === 'pending'}
-                        disabled={item.ttsStatus === 'pending'}
-                        onStart={onSpeakStart}
-                        onEnd={onSpeakEnd}
-                        onError={() => onSpeakError?.('语音播放暂时不可用，已保留文字回答。')}
-                      />
-                    ) : null}
                     {shouldShowTimestamp(messages, index) ? <span className="timestamp">{formatTime(item.createdAt)}</span> : null}
                   </article>
 
@@ -183,6 +169,8 @@ export default function ChatBox({
                   setDraft(text);
                 }}
                 onError={setSpeechError}
+                onStartRecording={speechInput?.onStart}
+                onStopRecording={speechInput?.onStop}
               />
             ) : null}
             <Button

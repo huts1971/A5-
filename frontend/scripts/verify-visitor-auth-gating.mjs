@@ -72,7 +72,11 @@ async function main() {
   page.on('console', (message) => {
     if (message.type() === 'error') {
       const text = message.text();
-      if (!text.includes('401 (Unauthorized)')) {
+      const location = message.location();
+      const expectedAvatarDegradation =
+        location.url?.startsWith('http://127.0.0.1:8283/api/avatar/')
+        && text.includes('503');
+      if (!text.includes('401 (Unauthorized)') && !expectedAvatarDegradation) {
         consoleErrors.push(text);
       }
     }
@@ -93,6 +97,13 @@ async function main() {
       status: 401,
       contentType: 'application/json',
       body: JSON.stringify({ message: '登录状态无效', code: 'AUTH_TOKEN_INVALID', status: 401 }),
+    });
+  });
+  await page.route('http://127.0.0.1:8283/api/avatar/**', async (route) => {
+    await route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ detail: 'Avatar unavailable during auth gating check' }),
     });
   });
 

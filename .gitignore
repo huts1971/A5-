@@ -4,6 +4,8 @@
 .release/
 .visual-check/
 cpython-*-install_only.tar.gz
+**/__pycache__/
+*.py[cod]
 
 backend/.env
 backend/.env.*
@@ -20,6 +22,14 @@ backend/__pycache__/
 backend/.pytest_cache/
 backend/.inspect-*/
 backend/.pytest-integration*/
+
+avatar-service/.env
+avatar-service/.venv/
+avatar-service/vendor/
+avatar-service/*.log
+avatar-service/*.err.log
+avatar-service/.pytest_cache/
+avatar-service/__pycache__/
 
 frontend/.env.local
 frontend/.vite-cache/
