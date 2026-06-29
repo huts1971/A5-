@@ -45,10 +45,18 @@ export default function ChatBox({
   const [speechError, setSpeechError] = useState('');
   const [expandedSources, setExpandedSources] = useState<Set<string>>(new Set());
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const draftInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ block: 'end' });
   }, [expandedSources, messages]);
+
+  useEffect(() => {
+    const input = draftInputRef.current;
+    if (!input) return;
+    input.style.height = '22px';
+    input.style.height = `${Math.min(Math.max(input.scrollHeight, 22), 88)}px`;
+  }, [draft]);
 
   const submit = () => {
     const question = draft.trim();
@@ -68,6 +76,15 @@ export default function ChatBox({
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== 'Enter') return;
+    if (event.shiftKey) {
+      event.preventDefault();
+      const input = event.currentTarget;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      setDraft((current) => `${current.slice(0, start)}\n${current.slice(end)}`);
+      window.setTimeout(() => input.setSelectionRange(start + 1, start + 1));
+      return;
+    }
     event.preventDefault();
     submit();
   };
@@ -149,11 +166,13 @@ export default function ChatBox({
           }}
         >
           <textarea
+            ref={draftInputRef}
             className="message-input"
             value={draft}
             placeholder="……"
             disabled={loading}
             rows={1}
+            wrap="soft"
             aria-label="输入问题"
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={handleInputKeyDown}
