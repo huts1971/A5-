@@ -1,0 +1,28 @@
+# Explicitly opt in before any API, crawler or Milvus-server connection.
+allow_network = false
+corpus_path = "../artifacts/corpus.jsonl"
+max_agent_rounds = 6
+max_tool_calls = 8
+
+[models]
+embedding_path = "../models/Qwen3-Embedding-0.6B"
+reranker_path = "../models/bge-reranker-v2-m3"
+embedding_revision = "SET_LOCAL_MODEL_REVISION"
+reranker_revision = "SET_LOCAL_MODEL_REVISION"
+device = "cpu"
+chat_base_url = "http://127.0.0.1:8002/v1"
+chat_model = "Qwen3-8B"
+api_key_env = "SCENIC_LLM_API_KEY"
+
+[retrieval]
+milvus_uri = "http://127.0.0.1:19530"
+top_k = 5
+rrf_k = 60
+bm25_weight = 1.0
+vector_weight = 1.0
+max_context_chars = 12000
+
+[memory]
+url = "sqlite:///../artifacts/memory.sqlite3"
+dynamic_ttl_days = 7
+max_items = 8

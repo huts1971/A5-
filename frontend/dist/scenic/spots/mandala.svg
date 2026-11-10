@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="五印坛城封面">
-  <rect width="960" height="540" fill="#e7f0ec"/>
-  <circle cx="480" cy="270" r="170" fill="#f7ead0"/>
-  <circle cx="480" cy="270" r="112" fill="#d4a04b" opacity=".8"/>
-  <circle cx="480" cy="270" r="58" fill="#1e625b" opacity=".86"/>
-  <g fill="#ffffff" opacity=".86"><circle cx="480" cy="116" r="38"/><circle cx="480" cy="424" r="38"/><circle cx="326" cy="270" r="38"/><circle cx="634" cy="270" r="38"/></g>
-  <path d="M0 424c160-44 320-44 480 0s320 44 480 0v116H0z" fill="#d4e4d5"/>
-</svg>

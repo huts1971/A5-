@@ -1,14 +1,20 @@
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stopProcessTree } from './process-tree.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const workspaceRoot = path.resolve(projectRoot, '..');
-const browserPath = path.join(workspaceRoot, '.cache', 'ms-playwright');
+const workspaceBrowserPath = path.join(workspaceRoot, '.cache', 'ms-playwright');
+const browserPath = existsSync(workspaceBrowserPath) ? workspaceBrowserPath : undefined;
 const outputDir = path.join(projectRoot, 'test-results', 'source-provenance');
 const baseUrl = process.env.VISITOR_VERIFY_URL || 'http://127.0.0.1:5175';
+const localNodeBin = path.join(workspaceRoot, '.tools', 'node', 'bin');
+const npmCommand = process.platform === 'win32' ? 'npm.cmd' : path.join(localNodeBin, 'npm');
 
 async function isServerReady() {
   try {
@@ -34,11 +40,11 @@ async function ensureServer() {
     return undefined;
   }
 
-  const child = spawn('npm.cmd run dev -- --port 5175', {
+  const child = spawn('npm.cmd run dev:visitor -- --port 5175', {
     cwd: projectRoot,
     env: {
       ...process.env,
-      PLAYWRIGHT_BROWSERS_PATH: browserPath,
+      ...(browserPath ? { PLAYWRIGHT_BROWSERS_PATH: browserPath } : {}),
     },
     shell: true,
     stdio: 'ignore',
@@ -138,7 +144,7 @@ function responseForQuestion(question) {
   if (question.includes('闲聊')) {
     return {
       ...base,
-      answer: '你好呀，我是游知灵，很高兴陪你逛灵山胜境。',
+      answer: '你好呀，我是灵诗音，很高兴陪你逛灵山胜境。',
       sources: [],
     };
   }
@@ -166,22 +172,63 @@ function failIf(condition, message) {
   }
 }
 
-async function ask(page, question) {
+async function ask(page, question, expectSources = true) {
+  const assistantCount = await page.locator('.chat-bubble.assistant').count();
   await page.locator('.chat-input-row textarea, .chat-input-row input').first().fill(question);
-    await page.locator('.chat-input-row button.ant-btn-primary').click();
-  await page.locator('.chat-bubble.assistant').last().waitFor({ timeout: 5000 });
+  await page.getByTestId('guide-send').click();
+  await page.getByTestId('guide-typing-message').waitFor({ timeout: 5000 });
+  await page.waitForFunction(
+    (count) => document.querySelectorAll('.chat-bubble.assistant').length > count,
+    assistantCount,
+    { timeout: 8000 },
+  );
+  if (expectSources) {
+    await page.waitForFunction(
+      () => document.querySelectorAll('[data-testid="guide-source-toggle"]').length > 0,
+      null,
+      { timeout: 8000 },
+    );
+    await page.evaluate(() => {
+      const toggles = document.querySelectorAll('[data-testid="guide-source-toggle"]');
+      toggles[toggles.length - 1]?.click();
+    });
+    await page.locator('.source-card').last().waitFor({ timeout: 5000 });
+  }
 }
 
 async function main() {
-  process.env.PLAYWRIGHT_BROWSERS_PATH = browserPath;
+  if (browserPath) {
+    process.env.PLAYWRIGHT_BROWSERS_PATH = browserPath;
+  }
   const { chromium } = await import('@playwright/test');
   await mkdir(outputDir, { recursive: true });
 
   const server = await ensureServer();
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
+  await page.addInitScript(() => {
+    Math.random = () => 0;
+    localStorage.setItem('a5_visitor_token', 'valid-visitor-token');
+  });
 
   try {
+    await page.route('**/api/auth/me', async (route) => {
+      const authorization = route.request().headers().authorization || '';
+      if (authorization === 'Bearer valid-visitor-token') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ id: 'user-1', username: 'visitor_001', role: 'visitor' }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: '登录状态无效', code: 'AUTH_TOKEN_INVALID', status: 401 }),
+      });
+    });
+
     await page.route('**/api/chat/stream', async (route) => {
       const payload = route.request().postDataJSON();
       await route.fulfill({
@@ -199,6 +246,7 @@ async function main() {
     });
 
     await page.goto(`${baseUrl}/guide`, { waitUntil: 'networkidle' });
+    await page.locator('.chat-bubble.assistant').first().waitFor({ timeout: 5000 });
 
     await ask(page, '数据库来源验证');
     await page.getByText('景区资料库').last().waitFor({ timeout: 5000 });
@@ -211,10 +259,10 @@ async function main() {
     await page.getByRole('link', { name: 'https://www.lingshan.com/tickets' }).last().waitFor({ timeout: 5000 });
 
     await ask(page, '冲突来源验证');
-    await page.getByText('来源存在差异').last().waitFor({ timeout: 5000 });
+    await page.getByText('不同来源可能存在差异').last().waitFor({ timeout: 5000 });
 
     const beforeCasualSourceCount = await page.locator('.source-card').count();
-    await ask(page, '闲聊来源验证');
+    await ask(page, '闲聊来源验证', false);
     const afterCasualSourceCount = await page.locator('.source-card').count();
     failIf(afterCasualSourceCount !== beforeCasualSourceCount, 'Casual answer rendered fake source cards');
 
@@ -226,7 +274,7 @@ async function main() {
   } finally {
     await browser.close();
     if (server) {
-      server.kill();
+      stopProcessTree(server);
     }
   }
 }

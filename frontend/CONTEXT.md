@@ -6,7 +6,7 @@ This context is initialized from `D:\ws01\A5_景区导览服务AI数字人_P0第
 
 ## Project Snapshot
 
-- Product name: 游知灵, a scenic area AI digital human guide system.
+- Digital human guide name: 灵诗音, for a scenic area AI digital human guide system.
 - P0 goal: complete a stable, runnable, demo-ready first version in 10-14 days.
 - Team shape: three lanes, AI/product, frontend/experience, backend/engineering.
 - Current codebase: frontend-first React + Vite + Ant Design project.
@@ -47,7 +47,7 @@ Do not do in P0 unless explicitly approved:
 
 ## Domain Glossary
 
-- 游知灵: the product persona/name for the scenic-area AI digital human guide.
+- 灵诗音: the named digital human guide persona for the scenic-area AI guide experience.
 - 游客端: visitor-facing web experience for browsing spots, route recommendations, and AI guide chat.
 - 管理后台: admin-facing pages for maintaining scenic spots, routes, knowledge docs, and chat logs.
 - 景点: a scenic spot or service point with name, summary, story, tags, recommended visit time, crowd types, image URL, and ordering.

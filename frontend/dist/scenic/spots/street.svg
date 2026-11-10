@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="香月花街封面">
-  <rect width="960" height="540" fill="#f1eee4"/>
-  <path d="M0 392c150-42 300-42 450 0s320 28 510-42v190H0z" fill="#dbe8dd"/>
-  <path d="M116 252h214l-54-58H170zM630 252h214l-54-58H684z" fill="#9d4f3f"/>
-  <rect x="146" y="252" width="154" height="178" fill="#fff8ea"/>
-  <rect x="660" y="252" width="154" height="178" fill="#fff8ea"/>
-  <path d="M420 540c-18-116 2-208 60-276 58 68 78 160 60 276z" fill="#f7edd4"/>
-</svg>

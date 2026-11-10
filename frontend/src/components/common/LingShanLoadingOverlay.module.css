@@ -1,0 +1,235 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+  opacity: 0;
+  animation: overlayEnter 280ms ease-out forwards;
+}
+
+.preserveHeader {
+  top: var(--visitor-fixed-header-offset, 122px);
+}
+
+:global(body.guide-workbench-active) .preserveHeader {
+  top: var(--guide-workbench-header-height, 64px);
+}
+
+:global(body.route-workbench-active) .preserveHeader {
+  top: var(--route-workbench-header-height, 64px);
+}
+
+:global(body.route-subview-workbench-active) .preserveHeader {
+  top: var(--route-subview-header-height, 64px);
+}
+
+.leaving {
+  pointer-events: none;
+  animation: overlayExit 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.preserveHeader .container {
+  --loader-scale: 0.82;
+  --loader-leave-scale: 0.79;
+}
+
+.container {
+  --loader-scale: 0.85;
+  --loader-leave-scale: 0.82;
+  position: relative;
+  opacity: 0;
+  transform: translateY(10px) scale(var(--loader-scale));
+  transform-origin: center center;
+  animation: contentEnter 360ms cubic-bezier(0.22, 1, 0.36, 1) 70ms forwards;
+}
+
+.leaving .container {
+  animation: contentExit 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.loadingText {
+  position: relative;
+  margin: 0;
+  white-space: nowrap;
+  font-family:
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    sans-serif;
+  font-size: 3.75rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.loadingText::before {
+  position: absolute;
+  z-index: 1;
+  top: 40px;
+  left: 122px;
+  width: 6px;
+  height: 6px;
+  content: "";
+  background: #000;
+  border-radius: 50%;
+  animation: dotMove 1800ms cubic-bezier(0.25, 0.25, 0.75, 0.75) infinite;
+}
+
+.letter {
+  position: relative;
+  display: inline-block;
+  color: #000;
+  letter-spacing: 8px;
+}
+
+.letter:nth-child(1) {
+  transform: scale(1, 1.275);
+  transform-origin: 100% 70%;
+}
+
+.letter:nth-child(3) {
+  transform-origin: 100% 70%;
+  animation: letterStretch 1800ms cubic-bezier(0.25, 0.23, 0.73, 0.75) infinite;
+}
+
+@keyframes dotMove {
+  0%,
+  100% {
+    transform: rotate(180deg) translate(-110px, -10px) rotate(-180deg);
+  }
+
+  50% {
+    transform: rotate(0deg) translate(-111px, 10px) rotate(0deg);
+  }
+}
+
+@keyframes letterStretch {
+  0%,
+  100% {
+    transform: scale(1, 0.96);
+    transform-origin: 100% 75%;
+  }
+
+  8%,
+  28% {
+    transform: scale(1, 1.14);
+    transform-origin: 100% 67%;
+  }
+
+  37% {
+    transform: scale(1, 0.98);
+    transform-origin: 100% 75%;
+  }
+
+  46% {
+    transform: scale(1, 1.03);
+    transform-origin: 100% 75%;
+  }
+
+  50%,
+  97% {
+    transform: scale(1);
+    transform-origin: 100% 75%;
+  }
+}
+
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayExit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@keyframes contentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(var(--loader-scale));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(var(--loader-scale));
+  }
+}
+
+@keyframes contentExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(var(--loader-scale));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(var(--loader-leave-scale));
+  }
+}
+
+@media (max-width: 520px) {
+  :global(body.guide-workbench-active) .preserveHeader {
+    top: var(--guide-workbench-header-height, 96px);
+  }
+
+  :global(body.route-workbench-active) .preserveHeader {
+    top: var(--route-workbench-header-height, 96px);
+  }
+
+  :global(body.route-subview-workbench-active) .preserveHeader {
+    top: var(--route-subview-header-height, 96px);
+  }
+
+  .container {
+    --loader-scale: 0.66;
+    --loader-leave-scale: 0.63;
+  }
+
+  .preserveHeader .container {
+    --loader-scale: 0.62;
+    --loader-leave-scale: 0.59;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .container,
+  .leaving,
+  .leaving .container,
+  .loadingText::before,
+  .letter:nth-child(3) {
+    animation: none;
+  }
+
+  .overlay {
+    opacity: 1;
+  }
+
+  .container {
+    opacity: 1;
+    transform: translateY(0) scale(var(--loader-scale));
+  }
+
+  .leaving {
+    opacity: 0;
+    filter: none;
+  }
+}

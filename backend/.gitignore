@@ -3,6 +3,7 @@
 !.env.example
 data/app.db
 data/*.db
+data/travel_journals/
 data/tts/*
 !data/tts/.gitkeep
 __pycache__/

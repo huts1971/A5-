@@ -7,12 +7,24 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 from app.api.admin import router as admin_router
+from app.api.avatar_assets import router as avatar_assets_router
+from app.api.avatar_runtime import router as avatar_runtime_router
+from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
+from app.api.community import router as community_router
+from app.api.digital_human_avatars import router as digital_human_avatars_router
+from app.api.digital_human_persona import router as digital_human_persona_router
+from app.api.feedback import router as feedback_router
 from app.api.health import router as health_router
 from app.api.knowledge import router as knowledge_router
 from app.api.logs import router as logs_router
+from app.api.maps import router as maps_router
+from app.api.photo_workshop import router as photo_workshop_router
+from app.api.route_drafts import router as route_drafts_router
 from app.api.routes import router as routes_router
 from app.api.spots import router as spots_router
+from app.api.tours import router as tours_router
+from app.api.travel_journals import router as travel_journals_router
 from app.api.tts import router as tts_router
 from app.core.config import Settings, settings
 from app.core.errors import ApiError, api_error_handler
@@ -22,7 +34,13 @@ from app.db.session import (
     initialize_database,
 )
 from app.services.bootstrap import bootstrap_ling_shan_data
+from app.services.auth import ensure_default_admin
+from app.services.community import ensure_community_seed_data
+from app.services.digital_human_avatars import ensure_builtin_avatar
+from app.services.guide_warmup import GuideWarmupService
 from app.services.tts_jobs import TtsJobStore
+from app.services.agentic_runtime import GuideCoreRuntime
+from app.api.memory import router as memory_router
 
 
 def create_app(app_settings: Settings | None = None) -> FastAPI:
@@ -35,6 +53,8 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        if len(active_settings.auth_token_secret) < 32:
+            raise RuntimeError("Run python scripts/configure-local.py before starting; AUTH_TOKEN_SECRET is missing")
         engine = create_database_engine(active_settings.database_url)
         initialize_database(engine)
         session_factory = create_session_factory(engine)
@@ -43,14 +63,24 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
                 session,
                 active_settings.source_package_path,
                 active_settings.derived_knowledge_path,
+                active_settings,
             )
+            ensure_default_admin(session, active_settings)
+            ensure_community_seed_data(session)
+            ensure_builtin_avatar(session)
         app.state.settings = active_settings
         app.state.engine = engine
         app.state.SessionLocal = session_factory
         app.state.tts_jobs = TtsJobStore()
+        app.state.guide_core = GuideCoreRuntime(active_settings, session_factory) if active_settings.guide_engine == "agentic" else None
+        app.state.guide_warmup = GuideWarmupService(active_settings, session_factory)
+        app.state.guide_warmup.start()
         try:
             yield
         finally:
+            if app.state.guide_core:
+                app.state.guide_core.close()
+            app.state.guide_warmup.stop()
             app.state.tts_jobs.shutdown()
             engine.dispose()
 
@@ -64,12 +94,25 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
     )
     app.add_exception_handler(ApiError, api_error_handler)
     app.include_router(health_router)
+    app.include_router(auth_router)
     app.include_router(spots_router)
     app.include_router(routes_router)
     app.include_router(chat_router)
+    app.include_router(memory_router)
+    app.include_router(feedback_router)
+    app.include_router(community_router)
+    app.include_router(digital_human_avatars_router)
+    app.include_router(digital_human_persona_router)
     app.include_router(admin_router)
+    app.include_router(avatar_assets_router)
+    app.include_router(avatar_runtime_router)
     app.include_router(knowledge_router)
     app.include_router(logs_router)
+    app.include_router(maps_router)
+    app.include_router(photo_workshop_router)
+    app.include_router(route_drafts_router)
+    app.include_router(tours_router)
+    app.include_router(travel_journals_router)
     app.include_router(tts_router)
     Path(active_settings.tts_output_dir).mkdir(parents=True, exist_ok=True)
     app.mount(

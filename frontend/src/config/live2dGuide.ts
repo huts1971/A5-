@@ -13,7 +13,7 @@ export type GuideStageMode = 'home' | 'guide';
 export const haruGuide = {
   modelUrl: '/live2d/models/Haru/Haru.model3.json',
   fallbackImageUrl: '/live2d/models/Haru/preview.png',
-  idleTimeoutMs: 30_000,
+  idleTimeoutMs: 20_000,
   stages: {
     home: {
       live2dDelayMs: 900,

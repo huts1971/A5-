@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="桥与水景封面">
-  <rect width="960" height="540" fill="#dcebe9"/>
-  <path d="M0 338c154-52 300-50 438 4 134 52 308 38 522-42v240H0z" fill="#c6dfdc"/>
-  <path d="M126 354c132-112 276-112 432 0 76 54 168 54 276 0" fill="none" stroke="#f8f3e4" stroke-width="42" stroke-linecap="round"/>
-  <path d="M126 354c132-112 276-112 432 0 76 54 168 54 276 0" fill="none" stroke="#1e625b" stroke-width="8" stroke-linecap="round" opacity=".5"/>
-  <path d="M198 408c150 28 316 28 496 0" stroke="#fff9ed" stroke-width="10" stroke-linecap="round" opacity=".72"/>
-  <circle cx="732" cy="124" r="54" fill="#d59d45" opacity=".7"/>
-</svg>

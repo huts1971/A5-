@@ -1,0 +1,320 @@
+import type { ChatResponse, RoutePlan, ScenicSpot } from '../../types/scenic';
+
+export const scenicSpots: ScenicSpot[] = [
+  {
+    id: 'yuanxiang-hall',
+    name: '远香堂',
+    subtitle: '荷风入堂，园林中轴的讲解核心',
+    summary: '远香堂位于园林水面开阔处，是适合讲述空间布局、荷文化和古典园林审美的核心景点。',
+    story:
+      '远香堂的名字取自荷花清香远溢的意象。游客站在堂前，可以同时看到水面、亭榭和植物层次，适合用来理解江南园林“移步换景”的体验。',
+    tags: ['历史', '建筑', '荷花', '讲解重点'],
+    crowdTypes: ['亲子游', '历史文化游', '摄影游'],
+    durationMinutes: 20,
+    openInfo: '随景区开放时间参观，建议上午或傍晚停留。',
+    serviceHint: '附近适合短暂停留拍照，团队讲解时注意避让主通道。',
+    coverTone: 'water',
+    imageUrl: '/scenic/spots/lake.svg',
+    highlights: ['水面视野开阔', '适合拍摄亭榭倒影', '可讲述荷文化寓意'],
+  },
+  {
+    id: 'xiaofeihong-bridge',
+    name: '小飞虹',
+    subtitle: '水上廊桥，连接游线的轻盈节点',
+    summary: '小飞虹是园林中极具辨识度的廊桥景观，适合介绍空间连接、桥廊构造和游线节奏。',
+    story:
+      '小飞虹横跨水面，桥身轻巧，像一道低低的彩虹落在园中。它不只是通行设施，也是游客从水岸切换到另一段景观的过渡。',
+    tags: ['建筑', '拍照', '水景'],
+    crowdTypes: ['摄影游', '轻松游', '亲子游'],
+    durationMinutes: 15,
+    openInfo: '全天可经过，雨天注意桥面湿滑。',
+    serviceHint: '桥面空间较窄，建议错峰拍照。',
+    coverTone: 'culture',
+    imageUrl: '/scenic/spots/bridge-water.svg',
+    highlights: ['桥廊造型轻盈', '适合拍摄人物和水景', '连接多条游览动线'],
+  },
+  {
+    id: 'lotus-wind-pavilion',
+    name: '荷风四面亭',
+    subtitle: '四面临风，适合休憩与故事化讲解',
+    summary: '荷风四面亭靠近水面和植物景观，适合亲子游客休息，也适合讲述季节变化和园林借景。',
+    story:
+      '亭子四面通透，夏季可感受荷叶与水风带来的清凉。给孩子讲解时，可以从“为什么亭子要建在这里”切入。',
+    tags: ['亲子', '休息', '自然', '荷花'],
+    crowdTypes: ['亲子游', '轻松游'],
+    durationMinutes: 15,
+    openInfo: '建议游览中段停留，避开正午拥挤时段。',
+    serviceHint: '附近适合短暂补水休息。',
+    coverTone: 'garden',
+    imageUrl: '/scenic/spots/garden-path.svg',
+    highlights: ['四面观景', '亲子讲解友好', '适合中途休息'],
+  },
+  {
+    id: 'bonsai-garden',
+    name: '盆景园',
+    subtitle: '微缩山水，展示园艺与审美细节',
+    summary: '盆景园集中展示园林中的微观景观，适合文化游客了解匠心，也适合摄影游客寻找细节画面。',
+    story:
+      '盆景把山石、树木和空间缩入一方器物之中。它和大园林形成呼应：一个是可行可望的空间，一个是可近观的山水。',
+    tags: ['园艺', '摄影', '文化'],
+    crowdTypes: ['历史文化游', '摄影游'],
+    durationMinutes: 25,
+    openInfo: '室外区域按景区开放，部分展陈可能随季节调整。',
+    serviceHint: '拍照时请勿触碰展品。',
+    coverTone: 'garden',
+    imageUrl: '/scenic/spots/flower-field.svg',
+    highlights: ['细节丰富', '适合近景拍摄', '可讲述微缩山水'],
+  },
+  {
+    id: 'visitor-service',
+    name: '游客服务中心',
+    subtitle: '咨询、休息、应急帮助的服务节点',
+    summary: '游客服务中心提供咨询、路线建议和基础应急帮助，是路线推荐中重要的服务点。',
+    story:
+      '服务中心不是传统意义上的景点，但对真实导览体验很重要。AI 导游需要在游客迷路、疲劳或需要帮助时主动提示这里。',
+    tags: ['服务', '休息', '咨询'],
+    crowdTypes: ['亲子游', '轻松游'],
+    durationMinutes: 10,
+    openInfo: '通常与景区开放时间一致，具体以现场公告为准。',
+    serviceHint: '可咨询洗手间、出口、失物招领和应急帮助。',
+    coverTone: 'service',
+    imageUrl: '/scenic/spots/service.svg',
+    highlights: ['路线咨询', '短暂休息', '应急帮助'],
+  },
+];
+
+export const routePlans: RoutePlan[] = [
+  {
+    id: 'mock-ling-shan-classic',
+    mapId: 'ling-shan',
+    name: '灵山经典礼佛路线',
+    theme: '佛教文化',
+    durationMinutes: 150,
+    suitableCrowd: ['礼佛', '研学', '拍照'],
+    description: '覆盖灵山核心礼佛节点，适合首次到访和想了解佛教文化的游客。',
+    reason: '从入口逐步进入核心轴线，先看仪式与建筑，再到灵山大佛收束，节奏完整。',
+    spots: [
+      { spotId: 'spot_ls_entrance', name: '景区入口', stayMinutes: 5, reason: '确认入园与游览方向' },
+      { spotId: 'spot_ls_001', name: '灵山大照壁', stayMinutes: 15, reason: '进入佛教文化主轴' },
+      { spotId: 'spot_nine_dragons', name: '九龙灌浴', stayMinutes: 25, reason: '观看核心动态演艺' },
+      { spotId: 'spot_xiangfu_temple', name: '祥符禅寺', stayMinutes: 35, reason: '礼佛与静态讲解' },
+      { spotId: 'spot_ling_shan_buddha', name: '灵山大佛', stayMinutes: 45, reason: '到达核心地标' },
+    ],
+  },
+  {
+    id: 'mock-ling-shan-architecture',
+    mapId: 'ling-shan',
+    name: '灵山建筑艺术路线',
+    theme: '建筑艺术、摄影打卡',
+    durationMinutes: 145,
+    suitableCrowd: ['建筑', '研学', '拍照'],
+    description: '围绕门楼、坛城、梵宫等建筑节点，适合关注空间与细节的游客。',
+    reason: '路线优先串联建筑形制清晰、适合讲解和拍摄的景点。',
+    spots: [
+      { spotId: 'spot_ls_entrance', name: '景区入口', stayMinutes: 5, reason: '起点与方向确认' },
+      { spotId: 'spot_ls_004', name: '五智门', stayMinutes: 20, reason: '建筑轴线与入口仪式感' },
+      { spotId: 'spot_five_mudra_mandala', name: '五印坛城', stayMinutes: 30, reason: '坛城建筑与宗教空间' },
+      { spotId: 'spot_ls_015', name: '曼飞龙塔', stayMinutes: 25, reason: '异域建筑风格观察' },
+      { spotId: 'spot_brahma_palace', name: '灵山梵宫', stayMinutes: 45, reason: '室内建筑与艺术装饰' },
+    ],
+  },
+  {
+    id: 'mock-ling-shan-family-show',
+    mapId: 'ling-shan',
+    name: '灵山亲子演艺路线',
+    theme: '演艺亲子',
+    durationMinutes: 115,
+    suitableCrowd: ['亲子', '拍照', '研学'],
+    description: '减少纯讲解压力，穿插演艺、互动和拍照点，适合家庭游客。',
+    reason: '孩子更容易被动态演艺和故事化节点吸引，路线步行压力中等。',
+    spots: [
+      { spotId: 'spot_ls_entrance', name: '景区入口', stayMinutes: 5, reason: '集合与入园' },
+      { spotId: 'spot_nine_dragons', name: '九龙灌浴', stayMinutes: 25, reason: '观看动态演艺' },
+      { spotId: 'spot_ls_007', name: '降魔浮雕', stayMinutes: 20, reason: '故事化讲解' },
+      { spotId: 'spot_ls_009', name: '百子戏弥勒', stayMinutes: 20, reason: '亲子互动拍照' },
+      { spotId: 'spot_ling_shan_buddha', name: '灵山大佛', stayMinutes: 30, reason: '核心地标收束' },
+    ],
+  },
+  {
+    id: 'mock-ling-shan-easy',
+    mapId: 'ling-shan',
+    name: '灵山长者轻松路线',
+    theme: '佛教文化、自然休闲',
+    durationMinutes: 95,
+    suitableCrowd: ['长者', '礼佛', '休闲'],
+    description: '控制停留点数量和步行强度，适合长者和想慢慢看的游客。',
+    reason: '路线保留礼佛重点，并穿插相对舒缓的休息节点。',
+    spots: [
+      { spotId: 'spot_ls_entrance', name: '景区入口', stayMinutes: 5, reason: '入园与服务信息确认' },
+      { spotId: 'spot_ls_003', name: '佛足坛', stayMinutes: 20, reason: '礼佛文化讲解' },
+      { spotId: 'spot_ls_005', name: '菩提大道', stayMinutes: 20, reason: '慢行与休息' },
+      { spotId: 'spot_xiangfu_temple', name: '祥符禅寺', stayMinutes: 30, reason: '安静礼佛' },
+    ],
+  },
+  {
+    id: 'mock-ling-shan-indoor',
+    mapId: 'ling-shan',
+    name: '灵山室内艺术路线',
+    theme: '室内体验、建筑艺术',
+    durationMinutes: 110,
+    suitableCrowd: ['室内', '建筑', '研学'],
+    description: '偏重室内与建筑艺术节点，适合雨天、暑热天或深度讲解需求。',
+    reason: '室内节点停留更稳定，可提升舒适度，也便于做文化和艺术讲解。',
+    spots: [
+      { spotId: 'spot_ls_entrance', name: '景区入口', stayMinutes: 5, reason: '确认天气与动线' },
+      { spotId: 'spot_brahma_palace', name: '灵山梵宫', stayMinutes: 45, reason: '建筑与艺术重点' },
+      { spotId: 'spot_five_mudra_mandala', name: '五印坛城', stayMinutes: 30, reason: '坛城文化讲解' },
+      { spotId: 'spot_ls_012', name: '佛教文化博览馆', stayMinutes: 25, reason: '补充文化知识' },
+    ],
+  },
+  {
+    id: 'mock-nianhua-classic',
+    mapId: 'nianhua-bay',
+    name: '拈花湾经典慢游路线',
+    theme: '自然休闲',
+    durationMinutes: 100,
+    suitableCrowd: ['休闲', '拍照', '研学'],
+    description: '覆盖小镇核心街区和湖面节点，适合首次游览拈花湾。',
+    reason: '从入口到花街、广场和湖面，动线清晰，适合慢游和拍照。',
+    spots: [
+      { spotId: 'spot_nh_entrance', name: '景区入口', stayMinutes: 5, reason: '入园起点' },
+      { spotId: 'spot_nh_003', name: '香月花街', stayMinutes: 25, reason: '小镇街区体验' },
+      { spotId: 'spot_nh_001', name: '拈花广场', stayMinutes: 20, reason: '核心公共空间' },
+      { spotId: 'spot_nh_005', name: '五灯湖', stayMinutes: 25, reason: '湖面景观与休闲' },
+    ],
+  },
+  {
+    id: 'mock-nianhua-photo',
+    mapId: 'nianhua-bay',
+    name: '拈花湾花海摄影路线',
+    theme: '摄影打卡、自然休闲',
+    durationMinutes: 90,
+    suitableCrowd: ['拍照', '休闲', '亲子'],
+    description: '以花海、街区和湖面为主，适合摄影打卡和轻松散步。',
+    reason: '路线保留色彩丰富的花海和街区节点，适合产出照片。',
+    spots: [
+      { spotId: 'spot_nh_entrance', name: '景区入口', stayMinutes: 5, reason: '入园起点' },
+      { spotId: 'spot_nh_002', name: '梵天花海', stayMinutes: 30, reason: '花海拍摄重点' },
+      { spotId: 'spot_nh_003', name: '香月花街', stayMinutes: 20, reason: '街区人像与氛围' },
+      { spotId: 'spot_nh_005', name: '五灯湖', stayMinutes: 20, reason: '湖景收束' },
+    ],
+  },
+  {
+    id: 'mock-nianhua-family-night',
+    mapId: 'nianhua-bay',
+    name: '拈花湾亲子夜游路线',
+    theme: '演艺亲子、摄影打卡',
+    durationMinutes: 95,
+    suitableCrowd: ['亲子', '夜游', '拍照'],
+    description: '适合傍晚后游览，突出广场、街区和湖面夜景氛围。',
+    reason: '夜间光影更适合亲子互动和拍照，也能降低白天行走疲劳。',
+    spots: [
+      { spotId: 'spot_nh_entrance', name: '景区入口', stayMinutes: 5, reason: '确认夜游动线' },
+      { spotId: 'spot_nh_001', name: '拈花广场', stayMinutes: 20, reason: '亲子互动空间' },
+      { spotId: 'spot_nh_003', name: '香月花街', stayMinutes: 25, reason: '夜景街区体验' },
+      { spotId: 'spot_nh_005', name: '五灯湖', stayMinutes: 30, reason: '湖面夜景与拍照' },
+    ],
+  },
+  {
+    id: 'mock-nianhua-zen',
+    mapId: 'nianhua-bay',
+    name: '拈花湾禅意静心路线',
+    theme: '佛教文化、室内体验',
+    durationMinutes: 85,
+    suitableCrowd: ['研学', '休闲', '室内'],
+    description: '适合想避开喧闹、关注禅意氛围和文化体验的游客。',
+    reason: '路线选择安静节点，减少高强度步行，适合沉浸式体验。',
+    spots: [
+      { spotId: 'spot_nh_entrance', name: '景区入口', stayMinutes: 5, reason: '入园起点' },
+      { spotId: 'spot_nh_004', name: '拈花堂', stayMinutes: 30, reason: '禅意文化体验' },
+      { spotId: 'spot_nh_005', name: '五灯湖', stayMinutes: 20, reason: '湖边静心停留' },
+      { spotId: 'spot_nh_006', name: '鹿鸣谷', stayMinutes: 20, reason: '自然环境缓冲' },
+    ],
+  },
+  {
+    id: 'mock-nianhua-nature',
+    mapId: 'nianhua-bay',
+    name: '拈花湾自然轻徒步路线',
+    theme: '自然休闲、摄影打卡',
+    durationMinutes: 120,
+    suitableCrowd: ['休闲', '亲子', '拍照'],
+    description: '以自然景观和轻徒步为主，适合慢节奏游览。',
+    reason: '路线把花海、山谷和湖面串联起来，适合需要开阔感的游客。',
+    spots: [
+      { spotId: 'spot_nh_entrance', name: '景区入口', stayMinutes: 5, reason: '入园起点' },
+      { spotId: 'spot_nh_002', name: '梵天花海', stayMinutes: 30, reason: '自然景观与拍照' },
+      { spotId: 'spot_nh_006', name: '鹿鸣谷', stayMinutes: 30, reason: '轻徒步与自然休闲' },
+      { spotId: 'spot_nh_005', name: '五灯湖', stayMinutes: 25, reason: '湖边收束' },
+    ],
+  },
+];
+
+export const commonQuestions = [
+  '灵山大佛有什么看点？',
+  '梵宫有什么特色？',
+  '带小朋友来适合先看哪里？',
+  '哪里比较适合拍照？',
+];
+
+export const mockChatAnswers: Record<string, ChatResponse> = {
+  route: {
+    answer:
+      '如果只有两个小时，建议走“历史文化精华线”：先到远香堂听园林布局和荷文化，再经过小飞虹感受桥廊与水面的关系，最后去盆景园看微缩山水。整条线停留约 90 到 110 分钟，节奏比较稳。',
+    sources: [
+      {
+        id: 'src-route-culture',
+        title: '历史文化精华线',
+        spotName: '路线推荐资料',
+        snippet: '路线优先选择可讲故事、可解释园林审美的节点，适合希望听深一点的游客。',
+      },
+    ],
+  },
+  yuanxiang: {
+    answer:
+      '远香堂适合从“荷文化”和“园林空间”两个角度理解。它位于水面开阔处，名字带有荷花清香远溢的意象。站在堂前可以看到水面、亭榭和植物层次，是讲解移步换景的好位置。',
+    sources: [
+      {
+        id: 'src-yuanxiang',
+        title: '远香堂景点资料',
+        spotName: '远香堂',
+        snippet: '远香堂位于园林水面开阔处，是适合讲述空间布局、荷文化和古典园林审美的核心景点。',
+      },
+    ],
+  },
+  family: {
+    answer:
+      '带小朋友建议先去荷风四面亭，用水面、荷叶和亭子的故事引起兴趣；再到远香堂讲“为什么园林一步一景”；中途可以到游客服务中心休息补水。这样讲解轻松，步行压力也低。',
+    sources: [
+      {
+        id: 'src-family',
+        title: '亲子轻松讲解线',
+        spotName: '路线推荐资料',
+        snippet: '减少折返和长距离步行，穿插休息点，用故事化方式讲园林。',
+      },
+    ],
+  },
+  photo: {
+    answer:
+      '拍照可以优先选择小飞虹、远香堂和盆景园。小飞虹适合拍人物与桥廊线条，远香堂适合拍水面和倒影，盆景园适合近景细节。建议避开人流高峰，照片会更干净。',
+    sources: [
+      {
+        id: 'src-photo',
+        title: '摄影取景线',
+        spotName: '路线推荐资料',
+        snippet: '覆盖远景、人物、倒影和近景细节，适合短时间产出高质量照片。',
+      },
+    ],
+  },
+  fallback: {
+    answer:
+      '当前资料里还没有找到这个问题的完整依据。我可以先根据已整理的景点资料，建议你从路线推荐页选择亲子、文化或摄影偏好，再进入对应景点查看讲解。',
+    sources: [
+      {
+        id: 'src-fallback',
+        title: '本地景点资料',
+        spotName: '通用建议',
+        snippet: '当前回答来自本地景点资料，适合用于基础路线和景点浏览建议。',
+      },
+    ],
+  },
+};

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="拈花湾街区封面">
-  <rect width="960" height="540" fill="#f1eee3"/>
-  <path d="M0 382c142-44 282-44 420 0 138 44 318 24 540-60v218H0z" fill="#dde8dc"/>
-  <path d="M120 288h220l-58-58H178zM396 260h250l-64-66H460zM694 306h170l-44-44H738z" fill="#1e625b"/>
-  <rect x="148" y="288" width="164" height="154" fill="#fff8ea"/>
-  <rect x="432" y="260" width="178" height="182" fill="#fff8ea"/>
-  <rect x="718" y="306" width="122" height="136" fill="#fff8ea"/>
-</svg>

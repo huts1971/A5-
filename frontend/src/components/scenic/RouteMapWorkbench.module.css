@@ -1,0 +1,1032 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(276px, 292px);
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mapPanel {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 32% 0%, rgba(70, 22, 22, 0.28), transparent 64%),
+    #191a1e;
+  border: 2px solid rgba(156, 50, 48, 0.9);
+  clip-path: var(--route-cyber-notch-path);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 144, 139, 0.12),
+    0 0 18px rgba(156, 50, 48, 0.22);
+}
+
+.mapPanel::before,
+.panel::before {
+  position: absolute;
+  right: -6px;
+  bottom: 5px;
+  z-index: 2;
+  width: var(--route-cyber-notch-hypotenuse);
+  height: 3px;
+  background: currentColor;
+  color: #9c3230;
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.mapHeader {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 12px 14px 11px;
+  color: #e8615a;
+  border-bottom: 1px solid rgba(232, 97, 90, 0.72);
+  box-shadow: 0 5px 22px rgba(232, 97, 90, 0.18);
+}
+
+.mapHeader::after {
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  background: #e8615a;
+  box-shadow: 0 0 6px #e8615a;
+  content: "";
+}
+
+.mapKicker {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(244, 144, 139, 0.72);
+  font-family: var(--route-cyber-font-secondary);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mapTitle {
+  display: block;
+  color: #2be4ea;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: -9px -6px 40px currentColor;
+}
+
+.mapSwitcher {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(232, 97, 90, 0.85);
+  box-shadow: -6px -4px 24px rgba(156, 50, 48, 0.32);
+}
+
+.mapSwitch {
+  min-height: 34px;
+  padding: 7px 10px;
+  color: #e8615a;
+  font: 600 15px/1.1 var(--route-cyber-font-primary);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(232, 97, 90, 0.68);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.mapSwitch:last-child {
+  border-right: 0;
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  color: #f4908b;
+  background: rgba(156, 50, 48, 0.24);
+  outline: none;
+}
+
+.mapSwitchActive {
+  color: #2be4ea;
+  background: rgba(43, 228, 234, 0.1);
+  box-shadow: inset 0 -2px 0 #2be4ea;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 420px;
+  color: rgba(244, 144, 139, 0.72);
+  background:
+    linear-gradient(110deg, rgba(30, 24, 30, 0.9) 25%, rgba(69, 23, 23, 0.7) 42%, rgba(30, 24, 30, 0.9) 58%);
+  background-size: 240% 100%;
+  animation: mapLoading 1.8s linear infinite;
+}
+
+.rightRail {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  color: #e8615a;
+  background:
+    linear-gradient(180deg, rgba(30, 24, 30, 0.96), rgba(25, 26, 30, 0.94)),
+    #1e181e;
+  border: 2px solid rgba(156, 50, 48, 0.96);
+  clip-path: var(--route-cyber-notch-path);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 144, 139, 0.1),
+    0 0 14px rgba(156, 50, 48, 0.22);
+}
+
+.panelHeader {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 11px 13px 10px;
+  color: inherit;
+  background: transparent;
+  border-bottom: 1px solid rgba(232, 97, 90, 0.62);
+}
+
+.panelHeader::after {
+  position: absolute;
+  right: 15px;
+  bottom: -2px;
+  left: 15px;
+  height: 1px;
+  background: #e8615a;
+  box-shadow: 0 0 5px #e8615a;
+  content: "";
+}
+
+.panelTitleGroup {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+}
+
+.panelTitle {
+  color: #f4908b;
+  font-family: var(--route-cyber-font-secondary);
+  min-width: 0;
+  overflow: hidden;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: -9px -6px 40px currentColor;
+}
+
+.panelSpotCount {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 10px;
+  color: #f4908b;
+  font: 700 13px/1 "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+  white-space: nowrap;
+  background: rgba(232, 97, 90, 0.12);
+  border: 1px solid rgba(232, 97, 90, 0.52);
+  border-radius: 999px;
+}
+
+.panelSpotCount :global(.anticon) {
+  color: #e8615a;
+  font-size: 14px;
+}
+
+.panelMeta {
+  flex: none;
+  color: #fed33f;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panelToggle {
+  flex: none;
+  min-width: 52px;
+  min-height: 28px;
+  padding: 6px 9px;
+  color: #2be4ea;
+  font: 700 12px/1 var(--route-cyber-font-primary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(43, 228, 234, 0.09);
+  border: 1px solid #2be4ea;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.panelToggle:hover,
+.panelToggle:focus-visible {
+  color: #191a1e;
+  background: #2be4ea;
+  outline: none;
+}
+
+.pointsPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.routePanelBody {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.routeSelector {
+  flex: none;
+  display: grid;
+  gap: 8px;
+}
+
+.routeChoice,
+.actionButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  min-height: 32px;
+  padding: 7px 8px;
+  color: #e8615a;
+  overflow: hidden;
+  font: 700 13px/1.1 var(--route-cyber-font-primary);
+  letter-spacing: 0.035em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid rgba(232, 97, 90, 0.82);
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.routeActions {
+  gap: 1rem;
+}
+
+.routeChoice {
+  justify-content: flex-start;
+}
+
+.routeChoice:hover,
+.routeChoice:focus-visible,
+.actionButton:hover,
+.actionButton:focus-visible {
+  color: #f4908b;
+  background: rgba(156, 50, 48, 0.28);
+  outline: none;
+}
+
+.routeChoiceActive,
+.startButton,
+.guideButton {
+  color: #2be4ea;
+  border-color: #2be4ea;
+  background: rgba(43, 228, 234, 0.09);
+}
+
+.routeActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: none;
+  gap: 7px;
+}
+
+.actionButton:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.routeCard {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.routeCard :global(.route-card) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  color: #f4908b;
+  background: rgba(25, 26, 30, 0.54);
+  border: 1px solid rgba(232, 97, 90, 0.58);
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+.routeCard :global(.route-card:hover) {
+  transform: none;
+}
+
+.routeCard :global(.route-card .ant-card-head) {
+  display: none;
+  flex: none;
+  min-height: 42px;
+  background: transparent;
+  border-bottom-color: rgba(232, 97, 90, 0.5);
+}
+
+.routeCard :global(.route-card .ant-card-head-title) {
+  color: #2be4ea;
+  font-family: var(--route-cyber-font-primary) !important;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+
+.routeCard :global(.route-card .ant-card-body) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 9px;
+}
+
+.routeCard :global(.route-card-content) {
+  display: flex !important;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.routeCard :global(.route-card .ant-tag) {
+  color: #fed33f;
+  background: rgba(254, 211, 63, 0.1);
+  border-color: rgba(254, 211, 63, 0.52);
+}
+
+.routeCard :global(.route-card-content > .ant-alert) {
+  display: none;
+}
+
+.routeCard :global(.route-timeline) {
+  flex: 1 1 auto;
+  gap: 5px;
+  grid-auto-rows: 75px;
+  align-content: start;
+  min-height: 0;
+  margin-top: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 3px;
+  border-top: 0;
+  scrollbar-color: rgba(232, 97, 90, 0.65) transparent;
+  scrollbar-width: thin;
+}
+
+.routeCard :global(.route-timeline-item) {
+  grid-template-columns: 34px minmax(0, 1fr);
+  height: 75px;
+  min-height: 75px;
+  padding: 8px 7px;
+  align-items: center;
+  overflow: hidden;
+  color: #f4908b;
+  background: rgba(69, 23, 23, 0.32);
+  border: 1px solid rgba(156, 50, 48, 0.64);
+  border-radius: 3px;
+}
+
+.routeCard :global(.route-timeline-item > div:last-child) {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.routeCard :global(.route-timeline-item .ant-typography),
+.routeCard :global(.route-timeline-item span:not(.route-step-index)) {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.routeCard :global(.route-step-index) {
+  width: 26px;
+  height: 26px;
+  color: #191a1e;
+  font-family: var(--route-cyber-font-primary);
+  background: #fed33f;
+  border: 1px solid rgba(254, 211, 63, 0.72);
+  box-shadow: none;
+}
+
+.routeCard :global(.route-timeline-item[aria-pressed="true"]) {
+  color: #2be4ea;
+  background: rgba(43, 228, 234, 0.08);
+  border-color: rgba(43, 228, 234, 0.74);
+}
+
+.emptyPoints,
+.collapsedSummary {
+  padding: 15px;
+  color: #fed33f;
+  font-size: 16px;
+}
+
+@keyframes mapLoading {
+  to {
+    background-position-x: -240%;
+  }
+}
+
+@media (max-width: 1180px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 0.56fr) minmax(0, 0.44fr);
+  }
+
+  .rightRail {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .shell {
+    grid-template-rows: minmax(0, 0.45fr) minmax(0, 0.55fr);
+    gap: 10px;
+  }
+
+  .rightRail {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .mapHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mapSwitcher {
+    width: 100%;
+  }
+
+  .mapSwitch {
+    flex: 1;
+  }
+
+  .routeActions {
+    gap: 5px;
+  }
+
+  .routeCard :global(.route-card .ant-card-head) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: none;
+  }
+}
+
+.shell {
+  gap: 16px;
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.mapPanel,
+.panel {
+  position: relative;
+  overflow: hidden;
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  background:
+    linear-gradient(145deg, rgba(28, 23, 14, 0.62), rgba(5, 23, 20, 0.4)),
+    var(--route-chroma-glass, rgba(18, 15, 34, 0.58));
+  border: 0;
+  border-radius: 24px;
+  clip-path: none;
+  box-shadow:
+    0 30px 60px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 18%, black),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.mapPanel::before,
+.panel::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: auto;
+  height: auto;
+  padding: 1px;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(
+      135deg,
+      var(--route-chroma-border-strong, rgba(214, 196, 255, 0.58)),
+      color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 42%, transparent),
+      color-mix(in oklab, var(--route-chroma-color-3, #00b898) 34%, transparent),
+      rgba(255, 255, 255, 0.06)
+    );
+  border-radius: inherit;
+  transform: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.mapPanel > *,
+.panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.mapHeader {
+  gap: 12px;
+  padding: 14px 16px 13px;
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  background: rgba(255, 255, 255, 0.035);
+  border-bottom: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+  box-shadow: none;
+}
+
+.mapHeader::after,
+.panelHeader::after {
+  right: 18px;
+  left: 18px;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 55%, transparent),
+      color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 48%, transparent),
+      transparent
+    );
+  box-shadow: 0 0 18px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 24%, transparent);
+}
+
+.mapKicker,
+.panelTitle {
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-shadow: none;
+}
+
+.mapTitle {
+  color: transparent;
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--route-chroma-color-1, #8b5cf6), var(--route-chroma-color-2, #ef6cae));
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.mapSwitcher {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 24px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 16%, transparent);
+}
+
+.mapSwitch {
+  min-height: 36px;
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  border-right: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mapSwitchActive {
+  color: #fff;
+  background:
+    linear-gradient(135deg, var(--route-chroma-color-1, #8b5cf6), var(--route-chroma-color-2, #ef6cae));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 22px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 28%, transparent);
+}
+
+.loading {
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+  background:
+    linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 14%, transparent) 42%,
+      rgba(255, 255, 255, 0.04) 58%
+    );
+}
+
+.panelHeader {
+  padding: 13px 16px 12px;
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  background: rgba(255, 255, 255, 0.035);
+  border-bottom: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+}
+
+.panelToggle,
+.routeChoice,
+.actionButton {
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035)),
+    color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 10%, transparent);
+  border: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.panelToggle {
+  min-width: 58px;
+}
+
+.panelToggle:hover,
+.panelToggle:focus-visible,
+.routeChoice:hover,
+.routeChoice:focus-visible,
+.actionButton:hover,
+.actionButton:focus-visible {
+  color: #fff;
+  background:
+    linear-gradient(135deg, var(--route-chroma-color-1, #8b5cf6), var(--route-chroma-color-2, #ef6cae));
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 26%, transparent);
+}
+
+.routeChoiceActive,
+.startButton,
+.guideButton {
+  color: #fff;
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 76%, transparent), color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 64%, transparent));
+  border-color: var(--route-chroma-border-strong, rgba(214, 196, 255, 0.58));
+  box-shadow: 0 0 24px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 24%, transparent);
+}
+
+.actionButton:disabled {
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+  background: rgba(255, 255, 255, 0.055);
+  border-color: var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+}
+
+.routePanelBody {
+  padding: 12px;
+}
+
+.routeCard :global(.route-card) {
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+  border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 36px rgba(0, 0, 0, 0.18);
+}
+
+.routeCard :global(.route-card .ant-card-head) {
+  background: transparent;
+  border-bottom-color: var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+}
+
+.routeCard :global(.route-card .ant-card-head-title) {
+  color: var(--route-chroma-text, rgba(255, 255, 255, 0.9));
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif !important;
+  letter-spacing: 0;
+}
+
+.routeCard :global(.route-card .ant-tag) {
+  color: color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 65%, white);
+  background: color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 12%, transparent);
+  border-color: color-mix(in oklab, var(--route-chroma-color-2, #ef6cae) 32%, transparent);
+  border-radius: 999px;
+}
+
+.routeCard :global(.route-timeline) {
+  scrollbar-color: color-mix(in oklab, var(--route-chroma-color-3, #17a792) 44%, transparent) transparent;
+}
+
+.routeCard :global(.route-timeline-item) {
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+  background: rgba(255, 255, 255, 0.052);
+  border: 1px solid var(--route-chroma-faint, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+}
+
+.routeCard :global(.route-timeline-item[aria-pressed="true"]) {
+  color: #fff;
+  background: color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 16%, transparent);
+  border-color: color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 38%, transparent);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--route-chroma-color-1, #8b5cf6) 18%, transparent);
+}
+
+.routeCard :global(.route-step-index) {
+  color: #fff;
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  background: linear-gradient(135deg, var(--route-chroma-color-1, #e4bf70), var(--route-chroma-color-2, #d7655a));
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--route-chroma-color-2, #d7655a) 24%, transparent);
+}
+
+.emptyPoints,
+.collapsedSummary {
+  color: var(--route-chroma-muted, rgba(255, 255, 255, 0.62));
+}
+
+@media (max-width: 720px) {
+  .mapPanel,
+  .panel {
+    border-radius: 20px;
+  }
+}
+
+.shell {
+  --cp-primary: oklch(0.8671 0.1599 89.31);
+  --cp-cyan: oklch(0.87 0.148144 202.8755);
+  --cp-cyan-muted: oklch(0.2845 0.0271 203.48);
+  --cp-cyan-muted-fill: oklch(0.2151 0.0203 212.7);
+  --cp-red: oklch(0.6926 0.1926 27.58);
+  --cp-red-fill: oklch(0.4552 0.1345 23.12);
+  --cp-red-muted: oklch(0.2362 0.052 21.83);
+  --cp-red-muted-fill: oklch(0.1742 0.0181 359.51);
+  --cp-black: oklch(0.1397 0.0167 263.51);
+  --cp-input-bg: oklch(0.1869 0.0263 290.68);
+}
+
+.mapSwitcher {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+  min-width: min(100%, 224px);
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mapSwitchSegment {
+  --notch-size: 0.5rem;
+  --notch-size-left: 0;
+  --checked-bg: linear-gradient(135deg, #a9dfdc, #78c9be);
+  --checked-color: var(--cp-black);
+  --checked-border: #88d2ca;
+  --unchecked-color: #38524e;
+  --unchecked-border: rgba(120, 191, 181, 0.42);
+  --unchecked-bg: rgba(254, 253, 251, 0.86);
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.mapSwitchOff {
+  --notch-size: 0;
+  --notch-size-left: 0.5rem;
+  --checked-bg: linear-gradient(135deg, #e7c77d, #c9785c);
+  --checked-color: #2d2118;
+  --checked-border: #d99a62;
+  --unchecked-color: #5a3b2f;
+  --unchecked-border: rgba(204, 120, 92, 0.42);
+  --unchecked-bg: rgba(254, 253, 251, 0.86);
+}
+
+.mapSwitchOn {
+  --notch-size: 0.5rem;
+}
+
+.mapSwitch {
+  --accent-color: var(--unchecked-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  padding: 6px 11px;
+  overflow: hidden;
+  color: var(--unchecked-color);
+  text-shadow: 0 0 0.7rem color-mix(in oklch, var(--accent-color) 32%, transparent);
+  font: 700 14px/1 "RouteCyberRajdhani", "Rajdhani", "Microsoft YaHei", sans-serif;
+  letter-spacing: 0;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  background: var(--unchecked-bg);
+  border: 1px solid var(--unchecked-border);
+  border-right: 1px solid var(--unchecked-border);
+  border-bottom-right-radius: var(--notch-size, 0.5rem);
+  border-bottom-left-radius: var(--notch-size-left, 0);
+  corner-shape: superellipse(0);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.mapSwitchActive {
+  --accent-color: var(--checked-border);
+  color: var(--checked-color);
+  background: var(--checked-bg);
+  border-color: var(--checked-border);
+  box-shadow: none;
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  --shadow: color-mix(in oklch, var(--accent-color) 55%, transparent);
+  color: var(--checked-color);
+  border-color: var(--accent-color);
+  outline: 0;
+  box-shadow: 0 0 1rem var(--shadow);
+}
+
+.mapSwitchActive:hover,
+.mapSwitchActive:focus-visible {
+  color: var(--checked-color);
+  background: var(--checked-bg);
+}
+
+.actionButton {
+  --accent-color: var(--cp-cyan);
+  --notch-size: 0.8rem;
+  --notch-size-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.5rem 0.65rem;
+  overflow: hidden;
+  color: var(--accent-color);
+  font-family: "RouteCyberRajdhani", "Rajdhani", "Microsoft YaHei", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 0;
+  font-synthesis: none;
+  text-align: center;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  border-radius: 0;
+  border-bottom-right-radius: var(--notch-size, 1rem);
+  border-bottom-left-radius: var(--notch-size-left, 0);
+  corner-shape: superellipse(0);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.startButton,
+.editButton {
+  --accent-color: #e3bf70;
+}
+
+.startButton {
+  color: #473a24;
+  background: #f4d690;
+  border-color: #e9c878;
+}
+
+.editButton {
+  color: var(--accent-color);
+  background: rgba(244, 214, 144, 0.1);
+  border-color: #e6ca86;
+}
+
+.guideButton {
+  --accent-color: #8fd3cf;
+  color: #183a3b;
+  background: #a9dfdc;
+  border-color: #8fd3cf;
+}
+
+.actionButton:hover,
+.actionButton:focus-visible {
+  --shadow: color-mix(in oklch, var(--accent-color) 58%, transparent);
+  outline: 0;
+  box-shadow: 0 0 1rem var(--shadow);
+}
+
+.actionButton:disabled {
+  color: color-mix(in oklch, var(--accent-color) 46%, var(--cp-black));
+  background: color-mix(in oklch, var(--accent-color) 14%, transparent);
+  border-color: color-mix(in oklch, var(--accent-color) 34%, transparent);
+  box-shadow: none;
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.startButton:disabled,
+.guideButton:disabled {
+  color: var(--cp-black);
+}
+
+@media (max-width: 720px) {
+  .mapSwitcher {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mapSwitch {
+    flex: none;
+    padding-inline: 8px;
+    font-size: 13px;
+  }
+
+  .actionButton {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}

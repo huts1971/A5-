@@ -6,6 +6,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 interface RequestOptions<TBody> {
   method?: HttpMethod;
   body?: TBody;
+  headers?: Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -71,7 +72,7 @@ export async function requestJson<TResponse, TBody = unknown>(
   path: string,
   options: RequestOptions<TBody> = {},
 ): Promise<TResponse> {
-  const { method = 'GET', body, signal } = options;
+  const { method = 'GET', body, headers = {}, signal } = options;
 
   try {
     const response = await fetch(joinUrl(path), {
@@ -79,6 +80,7 @@ export async function requestJson<TResponse, TBody = unknown>(
       signal,
       headers: {
         'Content-Type': 'application/json',
+        ...headers,
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     });

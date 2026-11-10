@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+﻿import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useState } from 'react';
-import { routePlans } from '../../api/mock/visitorData';
+import { routePlans } from '../../api/mock/adminRouteData';
 import type { RoutePlan, RouteSpot } from '../../types/scenic';
 
 interface RouteFormValues {
@@ -67,6 +67,7 @@ function parseRouteSpots(text: string): RouteSpot[] {
 function formToRoute(values: RouteFormValues, previous?: RoutePlan): RoutePlan {
   return {
     id: previous?.id ?? `route-${Date.now()}`,
+    mapId: previous?.mapId ?? 'ling-shan',
     name: values.name,
     theme: values.theme,
     durationMinutes: values.durationMinutes,
@@ -89,12 +90,12 @@ export default function AdminRoutePage() {
     setEditingRoute(undefined);
     form.setFieldsValue({
       name: '',
-      theme: '亲子游',
+      theme: '演艺亲子、自然休闲',
       durationMinutes: 90,
-      suitableCrowd: '亲子游，轻松游',
-      description: '',
-      reason: '',
-      spotsText: '远香堂，20，讲解园林空间\n游客服务中心，10，中途休息',
+      suitableCrowd: '亲子，休闲，拍照',
+      description: '适合家庭游客的轻松路线，兼顾互动、休息和拍照。',
+      reason: '路线减少高强度步行，优先选择更容易互动和停留的节点。',
+      spotsText: '景区入口，5，确认入园与动线\n九龙灌浴，25，观看动态演艺\n百子戏弥勒，20，亲子互动拍照\n灵山大佛，30，核心地标收束',
     });
     setModalOpen(true);
   };
@@ -145,7 +146,7 @@ export default function AdminRoutePage() {
       title: '主题',
       dataIndex: 'theme',
       width: 110,
-      render: (theme: string) => <Tag color="gold">{theme}</Tag>,
+      render: (theme: string) => splitText(theme).map((item) => <Tag color="gold" key={item}>{item}</Tag>),
     },
     {
       title: '时长',
@@ -185,12 +186,6 @@ export default function AdminRoutePage() {
     <div className="admin-page">
       {contextHolder}
       <div className="admin-toolbar">
-        <Space direction="vertical" size={2}>
-          <Typography.Title level={2} style={{ margin: 0 }}>
-            路线管理
-          </Typography.Title>
-          <Typography.Text type="secondary">维护路线模板、推荐理由和景点顺序，支撑游客端路线推荐。</Typography.Text>
-        </Space>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
           新增路线
         </Button>
@@ -201,6 +196,7 @@ export default function AdminRoutePage() {
       </Card>
 
       <Modal
+        className="admin-route-modal"
         title={editingRoute ? '编辑路线' : '新增路线'}
         open={modalOpen}
         width={760}
@@ -222,7 +218,7 @@ export default function AdminRoutePage() {
             </Form.Item>
           </Space>
           <Form.Item name="suitableCrowd" label="适合人群" rules={[{ required: true, message: '请输入适合人群' }]}>
-            <Input placeholder="亲子游，轻松游" />
+            <Input placeholder="亲子，休闲，拍照" />
           </Form.Item>
           <Form.Item name="description" label="路线描述" rules={[{ required: true, message: '请输入路线描述' }]}>
             <Input.TextArea rows={3} />
@@ -236,7 +232,7 @@ export default function AdminRoutePage() {
             tooltip="每行格式：景点名称，停留分钟，推荐原因"
             rules={[{ required: true, message: '请输入景点顺序' }]}
           >
-            <Input.TextArea rows={5} placeholder="远香堂，20，讲解园林空间" />
+            <Input.TextArea rows={5} placeholder="景区入口，5，确认入园与动线" />
           </Form.Item>
         </Form>
       </Modal>

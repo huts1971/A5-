@@ -1,0 +1,54 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python environments and caches
+**/.venv/
+**/.venv.*/
+**/__pycache__/
+**/.pytest_cache/
+**/.pytest-temp*/
+**/.pytest-tmp*/
+*.py[cod]
+
+# Frontend dependencies and local tooling
+**/node_modules/
+**/.vite-cache/
+**/test-results/
+
+# Runtime artifacts
+*.log
+.tmp/
+
+# Editor and operating-system files
+~$*
+.DS_Store
+Thumbs.db
+
+# Generated application and model state
+**/dist/
+backend/data/*
+!backend/data/.gitkeep
+/artifacts/
+/models/
+**/*.egg-info/
+**/*.db
+**/*.db-*
+**/*.sqlite*
+**/*.partial
+**/playwright-report/
+configs/*.local.toml
+**/*.safetensors
+**/checkpoint-*/
+**/*.xlsx
+**/*.xls
+**/*.zip
+**/*.backup-*
+**/.scratch/
+/data/
+/.release/
+

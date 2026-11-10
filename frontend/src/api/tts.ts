@@ -13,8 +13,14 @@ interface BackendTtsJobStatus {
   audio_url?: string | null;
 }
 
-export async function getTtsJobStatus(jobId: string): Promise<TtsJobStatus> {
-  const response = await requestJson<BackendTtsJobStatus>(`/api/tts/jobs/${jobId}`);
+export async function getTtsJobStatus(
+  jobId: string,
+  signal?: AbortSignal,
+): Promise<TtsJobStatus> {
+  const response = await requestJson<BackendTtsJobStatus>(
+    `/api/tts/jobs/${jobId}`,
+    { signal },
+  );
   return {
     id: response.id,
     status: response.status,

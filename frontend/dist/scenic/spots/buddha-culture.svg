@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="佛教文化景点封面">
-  <rect width="960" height="540" fill="#f0eadc"/>
-  <path d="M0 386c126-42 250-46 372-12 138 38 278 24 420-42 54-25 108-39 168-42v250H0z" fill="#dfe8d8"/>
-  <circle cx="480" cy="196" r="88" fill="#d4a04b" opacity=".86"/>
-  <path d="M374 400c18-116 72-176 106-176s88 60 106 176z" fill="#1e625b" opacity=".86"/>
-  <path d="M306 418h348v54H306z" fill="#fff8e8"/>
-  <g stroke="#d4a04b" stroke-width="10" stroke-linecap="round" opacity=".65"><path d="M212 294h146"/><path d="M602 294h146"/></g>
-</svg>

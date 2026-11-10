@@ -1,12 +1,13 @@
 import { Alert, Badge, Skeleton, Space, Spin, Tag, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { haruGuide } from '../../config/live2dGuide';
-import type { GuideEmotionCue, GuideStageMode } from '../../config/live2dGuide';
+import { avatar151Guide } from '../../config/avatar151Guide';
+import type { GuideEmotionCue, GuideStageMode } from '../../config/avatar151Guide';
 import type { GuideStatus } from '../../types/scenic';
-import Live2DGuideStage from './Live2DGuideStage';
+import { useUnityWebGLGuideTarget } from './UnityWebGLGuideRuntime';
 
 export type AvatarAudioState = 'idle' | 'pending' | 'ready' | 'playing' | 'failed';
-export type AvatarGuideVariant = 'compact' | 'stage';
+export type AvatarGuideVariant = 'compact' | 'stage' | 'pet';
+export type AvatarGuidePresentation = 'panel' | 'bare';
 
 export interface AvatarGuideProps {
   status: GuideStatus;
@@ -21,8 +22,16 @@ export interface AvatarGuideProps {
   variant?: AvatarGuideVariant;
   modelUrl?: string;
   fallbackImageUrl?: string;
-  enableLive2D?: boolean;
+  enableAvatar?: boolean;
+  suppressInitialFallbackImage?: boolean;
+  presentation?: AvatarGuidePresentation;
+  showStatus?: boolean;
+  showStateBadge?: boolean;
+  speechText?: string;
+  speechNonce?: number;
 }
+
+type AvatarVisualState = 'idle' | 'thinking' | 'speaking';
 
 const statusText: Record<GuideStatus, { label: string; detail: string; badge: 'default' | 'processing' | 'success' }> = {
   idle: {
@@ -31,13 +40,13 @@ const statusText: Record<GuideStatus, { label: string; detail: string; badge: 'd
     badge: 'default',
   },
   thinking: {
-    label: '检索资料中',
-    detail: '正在从景区资料知识库里查找依据。',
+    label: '正在思考',
+    detail: '正在结合景区资料为你组织回答。',
     badge: 'processing',
   },
   speaking: {
     label: '正在讲解',
-    detail: '回答已生成，可点语音播放听取讲解。',
+    detail: '我正在为你讲解，语音也可以同步播放。',
     badge: 'success',
   },
 };
@@ -50,8 +59,14 @@ const audioStateText: Record<AvatarAudioState, { label: string; color: 'default'
   failed: { label: '语音兜底', color: 'warning' },
 };
 
-const defaultModelUrl = haruGuide.modelUrl;
-const defaultFallbackImageUrl = haruGuide.fallbackImageUrl;
+const stateBadgeText: Record<AvatarVisualState, string> = {
+  idle: '空闲中',
+  thinking: '思考中',
+  speaking: '讲解中',
+};
+
+const defaultModelUrl = avatar151Guide.modelUrl;
+const defaultFallbackImageUrl = avatar151Guide.fallbackImageUrl;
 
 export default function AvatarGuide({
   status,
@@ -66,22 +81,36 @@ export default function AvatarGuide({
   variant = 'compact',
   modelUrl = defaultModelUrl,
   fallbackImageUrl = defaultFallbackImageUrl,
-  enableLive2D = true,
+  enableAvatar = true,
+  suppressInitialFallbackImage = false,
+  presentation = 'panel',
+  showStatus = true,
+  showStateBadge = false,
+  speechText = '',
+  speechNonce = 0,
 }: AvatarGuideProps) {
+  const isBarePresentation = presentation === 'bare';
   const current = statusText[status];
   const audio = audioStateText[audioState];
   const statusDetail = detail ?? current.detail;
   const [imageFailed, setImageFailed] = useState(false);
-  const [live2dError, setLive2dError] = useState('');
-  const [live2dCanLoad, setLive2dCanLoad] = useState(stageMode === 'guide');
+  const [avatarError, setAvatarError] = useState('');
+  const [avatarCanLoad, setAvatarCanLoad] = useState(stageMode === 'guide');
   const [sleeping, setSleeping] = useState(false);
   const [ambientCue, setAmbientCue] = useState<GuideEmotionCue>('idle');
   const lastActivityAtRef = useRef(Date.now());
-  const shouldUseLive2D = variant === 'stage' && enableLive2D && !live2dError && live2dCanLoad;
+  const usesUnityAvatar = variant === 'stage' || variant === 'pet';
+  const canAutoSleep = variant === 'stage';
+  const wantsUnityAvatar = usesUnityAvatar && enableAvatar && !avatarError && avatarCanLoad;
+  const shouldSuppressImage =
+    suppressInitialFallbackImage && usesUnityAvatar && enableAvatar && !avatarError && !avatarCanLoad;
+  const visualState: AvatarVisualState =
+    status === 'speaking' || audioState === 'playing' ? 'speaking' : status === 'thinking' ? 'thinking' : 'idle';
   const explicitEmotionCue = emotionCue && emotionCue !== 'idle' ? emotionCue : undefined;
   const resolvedEmotionCue = useMemo<GuideEmotionCue>(() => {
     if (
       sleeping &&
+      canAutoSleep &&
       status === 'idle' &&
       audioState !== 'playing' &&
       audioState !== 'pending' &&
@@ -90,17 +119,17 @@ export default function AvatarGuide({
     if (explicitEmotionCue) return explicitEmotionCue;
     if (ambientCue !== 'idle') return ambientCue;
     if (status === 'thinking') return 'thinking';
-    if (audioState === 'playing') return 'speaking';
+    if (status === 'speaking' || audioState === 'playing') return 'speaking';
     return 'idle';
-  }, [ambientCue, audioState, explicitEmotionCue, sleeping, status]);
+  }, [ambientCue, audioState, canAutoSleep, explicitEmotionCue, sleeping, status]);
 
   useEffect(() => {
-    if (variant !== 'stage' || !enableLive2D) return undefined;
-    setLive2dCanLoad(false);
-    const delay = haruGuide.stages[stageMode].live2dDelayMs;
-    const timer = window.setTimeout(() => setLive2dCanLoad(true), delay);
+    if (!usesUnityAvatar || !enableAvatar) return undefined;
+    setAvatarCanLoad(false);
+    const delay = avatar151Guide.stages[stageMode].avatarDelayMs;
+    const timer = window.setTimeout(() => setAvatarCanLoad(true), delay);
     return () => window.clearTimeout(timer);
-  }, [enableLive2D, stageMode, variant]);
+  }, [enableAvatar, stageMode, usesUnityAvatar]);
 
   const registerActivity = () => {
     lastActivityAtRef.current = Date.now();
@@ -111,6 +140,19 @@ export default function AvatarGuide({
     }
   };
 
+  const unityTarget = useUnityWebGLGuideTarget({
+    enabled: wantsUnityAvatar,
+    status,
+    audioState,
+    emotionCue: resolvedEmotionCue,
+    fallbackImageUrl,
+    speechText,
+    speechNonce,
+    displayVariant: variant === 'pet' ? 'pet' : 'stage',
+    onInteract: registerActivity,
+  });
+  const shouldUseAvatar = wantsUnityAvatar && unityTarget.available;
+
   useEffect(() => {
     registerActivity();
     if (status !== 'idle' || audioState === 'playing' || audioState === 'pending' || explicitEmotionCue) {
@@ -119,13 +161,13 @@ export default function AvatarGuide({
   }, [audioState, explicitEmotionCue, status]);
 
   useEffect(() => {
-    if (variant !== 'stage') return undefined;
+    if (!canAutoSleep) return undefined;
     const onActivity = () => registerActivity();
     window.addEventListener('pointermove', onActivity, { passive: true });
     window.addEventListener('keydown', onActivity);
     const timer = window.setInterval(() => {
       if (status !== 'idle' || audioState === 'playing' || audioState === 'pending') return;
-      if (Date.now() - lastActivityAtRef.current >= haruGuide.idleTimeoutMs) {
+      if (Date.now() - lastActivityAtRef.current >= avatar151Guide.idleTimeoutMs) {
         setSleeping(true);
       }
     }, 2000);
@@ -134,50 +176,63 @@ export default function AvatarGuide({
       window.removeEventListener('keydown', onActivity);
       window.clearInterval(timer);
     };
-  }, [audioState, sleeping, status, variant]);
+  }, [audioState, canAutoSleep, sleeping, status]);
 
   if (loading) {
     return (
-      <div className={`avatar-guide avatar-guide-${variant}`}>
+      <div className={`avatar-guide avatar-guide-${variant} ${isBarePresentation ? 'avatar-guide--bare' : ''}`}>
         <Skeleton.Image active className="avatar-skeleton" />
-        <div className="avatar-status">
-          <Skeleton active paragraph={{ rows: 2 }} />
-        </div>
+        {showStatus ? (
+          <div className="avatar-status">
+            <Skeleton active paragraph={{ rows: 2 }} />
+          </div>
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className={`avatar-guide avatar-guide-${variant} avatar-guide-${stageMode} is-${status} audio-${audioState}`}>
+    <div
+      className={`avatar-guide avatar-guide-${variant} avatar-guide-${stageMode} is-${status} audio-${audioState} ${
+        isBarePresentation ? 'avatar-guide--bare' : ''
+      }`}
+    >
       <div
+        ref={unityTarget.targetRef}
         className={`avatar-stage-shell ${
-          shouldUseLive2D ? 'has-live2d' : imageFailed ? 'has-fallback' : 'has-image'
+          shouldUseAvatar ? 'has-vrm' : shouldSuppressImage ? 'is-awaiting-vrm' : imageFailed ? 'has-fallback' : 'has-image'
         }`}
-        aria-label="AI 数字人导游"
+        aria-label="灵诗音 AI 数字人导游"
       >
-        <div className="avatar-aura" />
-        <div className="avatar-scan-ring" />
-        <div className="avatar-light-dots">
-          <span />
-          <span />
-          <span />
-        </div>
+        {!isBarePresentation ? (
+          <>
+            <div className="avatar-aura" />
+            <div className="avatar-scan-ring" />
+            <div className="avatar-light-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+          </>
+        ) : null}
 
-        {shouldUseLive2D ? (
-          <Live2DGuideStage
-            status={status}
-            audioState={audioState}
-            emotionCue={resolvedEmotionCue}
-            modelUrl={modelUrl}
-            onInteract={registerActivity}
-            onError={(message) => setLive2dError(message)}
-          />
-        ) : (
+        {showStateBadge ? (
+          <div
+            className={`avatar-state-pill avatar-state-pill--${visualState}`}
+            aria-label={`数字人状态：${stateBadgeText[visualState]}`}
+            aria-live="polite"
+          >
+            <span className="avatar-state-pill__light" aria-hidden="true" />
+            <span className="avatar-state-pill__text">{stateBadgeText[visualState]}</span>
+          </div>
+        ) : null}
+
+        {shouldUseAvatar ? null : shouldSuppressImage ? null : (
           <>
             <img
               className="avatar-character"
               src={fallbackImageUrl}
-              alt="灵山胜境 AI 数字人导游"
+              alt="灵诗音 AI 数字人导游"
               draggable={false}
               onError={() => setImageFailed(true)}
             />
@@ -191,45 +246,49 @@ export default function AvatarGuide({
           </>
         )}
 
-        <div className="avatar-speech-wave" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+        {!isBarePresentation ? (
+          <div className="avatar-speech-wave" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+        ) : null}
       </div>
 
-      <div className="avatar-status">
-        {error ? (
-          <Alert type="warning" showIcon message="数字人状态异常" description={error} />
-        ) : (
-          <Space direction="vertical" size={8} style={{ width: '100%' }}>
-            <Space size={8} wrap>
-              <Badge status={current.badge} text={title ?? current.label} />
-              <Tag color={audio.color}>{audio.label}</Tag>
-              {live2dError ? <Tag color="orange">Live2D 兜底</Tag> : null}
+      {showStatus ? (
+        <div className="avatar-status">
+          {error ? (
+            <Alert type="warning" showIcon message="数字人状态异常" description={error} />
+          ) : (
+            <Space direction="vertical" size={8} style={{ width: '100%' }}>
+              <Space size={8} wrap>
+                <Badge status={current.badge} text={title ?? current.label} />
+                <Tag color={audio.color}>{audio.label}</Tag>
+                {avatarError ? <Tag color="orange">VRM 兜底</Tag> : null}
+              </Space>
+              {statusDetail ? (
+                <Typography.Text type="secondary">
+                  {status === 'thinking' ? <Spin size="small" style={{ marginRight: 8 }} /> : null}
+                  {statusDetail}
+                </Typography.Text>
+              ) : null}
+              {avatarError ? (
+                <Typography.Text
+                  type="secondary"
+                  className="avatar-vrm-error"
+                  title={avatarError}
+                  data-vrm-error={avatarError}
+                >
+                  VRM 数字人资源未就绪，已使用静态头像兜底。
+                </Typography.Text>
+              ) : null}
+              {profileText ? (
+                <Typography.Text className="avatar-profile-text">{profileText}</Typography.Text>
+              ) : null}
             </Space>
-            {statusDetail ? (
-              <Typography.Text type="secondary">
-                {status === 'thinking' ? <Spin size="small" style={{ marginRight: 8 }} /> : null}
-                {statusDetail}
-              </Typography.Text>
-            ) : null}
-            {live2dError ? (
-              <Typography.Text
-                type="secondary"
-                className="avatar-live2d-error"
-                title={live2dError}
-                data-live2d-error={live2dError}
-              >
-                Live2D 资源未就绪，已使用静态数字人兜底。
-              </Typography.Text>
-            ) : null}
-            {profileText ? (
-              <Typography.Text className="avatar-profile-text">{profileText}</Typography.Text>
-            ) : null}
-          </Space>
-        )}
-      </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -11,8 +11,10 @@ const noBrowser = process.argv.includes('--no-browser');
 
 const backendLog = path.join(backend, 'backend-local-server-8001.log');
 const backendErr = path.join(backend, 'backend-local-server-8001.err.log');
-const frontendLog = path.join(frontend, 'frontend-local-server-5173.log');
-const frontendErr = path.join(frontend, 'frontend-local-server-5173.err.log');
+const visitorLog = path.join(frontend, 'frontend-local-server-5173.log');
+const visitorErr = path.join(frontend, 'frontend-local-server-5173.err.log');
+const adminLog = path.join(frontend, 'frontend-local-server-5174.log');
+const adminErr = path.join(frontend, 'frontend-local-server-5174.err.log');
 const venvPython = path.join(backend, '.venv', 'Scripts', 'python.exe');
 const distIndex = path.join(frontend, 'dist', 'index.html');
 
@@ -84,7 +86,7 @@ async function cleanPorts() {
   }
 }
 
-function startDetached(file, args, cwd, stdoutPath, stderrPath) {
+function startDetached(file, args, cwd, stdoutPath, stderrPath, extraEnv = {}) {
   closeSync(openSync(stdoutPath, 'w'));
   closeSync(openSync(stderrPath, 'w'));
   const stdout = openSync(stdoutPath, 'a');
@@ -92,6 +94,7 @@ function startDetached(file, args, cwd, stdoutPath, stderrPath) {
   const child = spawn(file, args, {
     cwd,
     detached: true,
+    env: { ...process.env, ...extraEnv },
     stdio: ['ignore', stdout, stderr],
     windowsHide: true,
   });
@@ -111,8 +114,16 @@ function startServices() {
     process.execPath,
     [path.join(root, 'scripts', 'serve-frontend-static.mjs')],
     root,
-    frontendLog,
-    frontendErr,
+    visitorLog,
+    visitorErr,
+  );
+  startDetached(
+    process.execPath,
+    [path.join(root, 'scripts', 'serve-frontend-static.mjs')],
+    root,
+    adminLog,
+    adminErr,
+    { FRONTEND_PORT: '5174' },
   );
 }
 
@@ -132,15 +143,16 @@ async function main() {
   console.log('[5/5] Waiting for services');
   const backendReady = await waitUrl('http://127.0.0.1:8001/health', 30);
   const frontendReady = await waitUrl('http://127.0.0.1:5173/', 30);
+  const adminReady = await waitUrl('http://127.0.0.1:5174/', 30);
 
-  if (!backendReady || !frontendReady) {
+  if (!backendReady || !frontendReady || !adminReady) {
     console.warn('Services may still be starting. Check logs if the browser does not open.');
   }
 
   console.log('');
   console.log('Visitor: http://127.0.0.1:5173/');
   console.log('AI Guide: http://127.0.0.1:5173/guide');
-  console.log('Admin: http://127.0.0.1:5173/admin');
+  console.log('Admin: http://127.0.0.1:5174/');
   console.log('Backend docs: http://127.0.0.1:8001/docs');
   console.log('');
   console.log('Mode: static frontend server, no Vite, no hot reload.');

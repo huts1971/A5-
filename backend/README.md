@@ -1,154 +1,29 @@
-# A5 AI Guide Backend
+# 灵诗音后端
 
-FastAPI backend skeleton for the A5 scenic-area AI digital human P0 demo.
+FastAPI 业务服务与 Agentic RAG 接入层。完整配置见 [根目录 README](../README.md)。
 
-## Local Startup
+## 本地启动
 
-Create and activate a Python virtual environment, then install dependencies:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-Run the API:
+先在根目录创建并激活 Python 3.11/3.12 环境，执行 `scripts/configure-local.py`，配置模型与 Milvus，再从本目录执行：
 
 ```powershell
-python -m uvicorn app.main:app --reload
+python -m pip install -r requirements-agentic.txt
+python -m app.core_cli init-data
+python -m app.core_cli rebuild
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
 
-Open Swagger at:
+接口文档：http://127.0.0.1:8001/docs 。管理员初始密码在本地 `.env` 中随机生成。
 
-```text
-http://127.0.0.1:8000/docs
-```
+## 核心入口
 
-Health check:
+- `app/services/agentic_runtime.py`：索引发布、景区隔离、问答适配、日志与记忆入队。
+- `app/api/chat.py`：原问答/SSE 接口及会话归属校验。
+- `app/api/knowledge.py`：管理员上传、范围绑定、删除、重建。
+- `app/api/memory.py`：登录用户的授权与记忆管理。
+- `python -m app.core_cli memory-worker`：异步提取记忆。
+- `python -m app.core_cli status`：查看发布状态，不调用模型。
 
-```text
-GET http://127.0.0.1:8000/health
-```
+`GUIDE_ENGINE=agentic` 为默认主链；显式设为 `legacy` 才使用旧检索与降级问答。图片识别、路线、语音、手账和社区服务保留。
 
-Expected response:
-
-```json
-{
-  "status": "ok",
-  "service": "a5-ai-guide-backend"
-}
-```
-
-## Data Bootstrap
-
-On startup, the backend creates the SQLite schema and, when the database has no
-scenic spots, bootstraps Ling Shan demo data from the configured source package.
-
-Default source package:
-
-```text
-..\Scenic Area Public Information Package
-```
-
-Override it with:
-
-```powershell
-$env:SOURCE_PACKAGE_PATH="D:\ws01\v1\Scenic Area Public Information Package"
-```
-
-The source Word/Excel files are treated as read-only. Bootstrap writes only to
-the application database.
-
-Derived knowledge lives outside the raw package:
-
-```text
-..\knowledge
-```
-
-Override it with:
-
-```powershell
-$env:DERIVED_KNOWLEDGE_PATH="D:\ws01\v1\knowledge"
-```
-
-The derived package separates reviewed structured JSON files, Markdown narrative
-docs, and tabular-data notes. Bootstrap imports Markdown docs as knowledge chunks
-for AI guide answers. Structured JSON files are the curated input for later
-database-first Q&A work and do not modify the raw Word/Excel files.
-
-Structured curated data currently seeds these database areas:
-
-- `spot_fact`: official structured scenic facts from the curated package.
-- `entity_alias` and `tag_alias`: deterministic matching support for later
-  structured-first question classification.
-- `source_ref`: local source provenance for curated facts.
-- `approved_web_source` and `approved_web_fact`: reviewed web supplemental
-  sources and facts kept separate from official scenic facts.
-- `web_fact_candidate`: pending review candidates for future real-time web
-  supplements. Bootstrap does not trust or populate candidates automatically.
-
-## Chat Fallback
-
-`POST /api/chat` works without a real model key. If `LLM_MODE` is
-`openai_compatible` but `LLM_API_KEY` is empty, the endpoint uses local keyword
-retrieval and returns a fallback answer with `degraded=true`.
-
-MiMo defaults:
-
-```powershell
-$env:LLM_MODE="openai_compatible"
-$env:LLM_PROVIDER="mimo"
-$env:LLM_BASE_URL="https://api.xiaomimimo.com/v1"
-$env:LLM_MODEL="mimo-v2.5"
-$env:TTS_MODE="provider"
-$env:TTS_PROVIDER="mimo"
-$env:TTS_BASE_URL="https://api.xiaomimimo.com/v1"
-$env:TTS_MODEL="mimo-v2.5-tts"
-$env:TTS_VOICE="mimo_default"
-$env:TTS_AUDIO_FORMAT="mp3"
-$env:MIMO_API_KEY="<your-api-key>"
-```
-
-`MIMO_API_KEY` is used as the default for both LLM and TTS. Do not commit real
-API keys. Use `.env.example` as a template and keep local `.env` files private.
-
-The real MiMo network call is intentionally not required for the P0 fallback
-path.
-
-## Admin APIs
-
-P0 admin endpoints write to the SQLite database and never modify the original
-Word/Excel source package.
-
-Available admin/status endpoints:
-
-```text
-POST   /api/admin/spots
-PUT    /api/admin/spots/{spot_id}
-DELETE /api/admin/spots/{spot_id}
-POST   /api/admin/routes
-PUT    /api/admin/routes/{route_id}
-DELETE /api/admin/routes/{route_id}
-GET    /api/knowledge/docs
-POST   /api/knowledge/rebuild
-GET    /api/logs/chats
-```
-
-Admin token protection is optional and disabled by default:
-
-```powershell
-$env:ENABLE_ADMIN_TOKEN="true"
-$env:ADMIN_TOKEN="<admin-token>"
-```
-
-When enabled, send the token as:
-
-```text
-x-admin-token: <admin-token>
-```
-
-## Tests
-
-```powershell
-python -m pytest
-```
+[架构](../docs/architecture.md) · [部署](../docs/deployment.md) · [训练评估](../docs/training-evaluation.md) · [发布说明](../docs/release-review.md)

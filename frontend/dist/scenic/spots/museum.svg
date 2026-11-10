@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="文化展馆封面">
-  <rect width="960" height="540" fill="#edf3ef"/>
-  <path d="M0 388c144-50 284-54 420-10 136 44 316 20 540-72v234H0z" fill="#dbe8d9"/>
-  <path d="M214 210h532v262H214z" fill="#fff8e8"/>
-  <path d="M214 210h532l-72-72H286z" fill="#1e625b"/>
-  <g fill="#d4a04b"><rect x="286" y="260" width="82" height="132"/><rect x="439" y="260" width="82" height="132"/><rect x="592" y="260" width="82" height="132"/></g>
-</svg>

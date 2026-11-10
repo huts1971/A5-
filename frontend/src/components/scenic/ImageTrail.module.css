@@ -1,0 +1,35 @@
+.trail {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(132px, 11vw, 184px);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  opacity: 0;
+  background: #fefdfb;
+  border: 1px solid rgba(20, 20, 19, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(40, 36, 30, 0.2);
+  will-change: transform, opacity;
+}
+
+.imageInner {
+  position: absolute;
+  inset: -10px;
+  background-position: center;
+  background-size: cover;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .trail {
+    display: none;
+  }
+}

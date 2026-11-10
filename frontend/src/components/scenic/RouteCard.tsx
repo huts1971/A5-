@@ -1,6 +1,8 @@
-import { AimOutlined, ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Empty, Skeleton, Space, Tag, Typography } from 'antd';
+import { useEffect, useRef } from 'react';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import { Alert, Button, Card, Empty, Skeleton, Tag, Typography } from 'antd';
 import type { RoutePlan } from '../../types/scenic';
+import styles from './RouteCard.module.css';
 
 export interface RouteCardProps {
   route?: RoutePlan;
@@ -8,6 +10,10 @@ export interface RouteCardProps {
   error?: string;
   emptyText?: string;
   onRetry?: () => void;
+  activeSpotId?: string;
+  mappedSpotIds?: ReadonlySet<string>;
+  onSpotActivate?: (spotId: string) => void;
+  scrollToActive?: boolean;
 }
 
 export default function RouteCard({
@@ -16,7 +22,23 @@ export default function RouteCard({
   error,
   emptyText = '暂无推荐路线',
   onRetry,
+  activeSpotId,
+  mappedSpotIds,
+  onSpotActivate,
+  scrollToActive = false,
 }: RouteCardProps) {
+  const spotRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (!activeSpotId || !scrollToActive) {
+      return;
+    }
+    spotRefs.current[activeSpotId]?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+    });
+  }, [activeSpotId, scrollToActive]);
+
   if (loading) {
     return (
       <Card className="route-card">
@@ -52,7 +74,6 @@ export default function RouteCard({
       </Card>
     );
   }
-
   return (
     <Card
       className="route-card"
@@ -63,37 +84,76 @@ export default function RouteCard({
         </Tag>
       }
     >
-      <Space className="route-card-content" direction="vertical" size={12} style={{ width: '100%' }}>
-        <Space size={[8, 8]} wrap>
-          <Tag color="gold">{route.theme}</Tag>
-          <Tag icon={<ClockCircleOutlined />}>{route.durationMinutes} 分钟</Tag>
-          {route.suitableCrowd.map((crowd) => (
-            <Tag key={crowd} color="green">
-              {crowd}
-            </Tag>
-          ))}
-        </Space>
-        <Typography.Paragraph className="route-description" style={{ marginBottom: 0 }}>
-          {route.description}
-        </Typography.Paragraph>
-        <div className="route-reason">
-          <AimOutlined />
-          <Typography.Text>{route.reason}</Typography.Text>
-        </div>
+      <div className="route-card-content">
+        {route.pathComplete === false ? (
+          <Alert
+            type="info"
+            showIcon
+            message="部分道路折线待补充"
+            description="地图只显示已人工校准的道路段，不会用直线连接景点。"
+          />
+        ) : null}
         <div className="route-timeline">
-          {route.spots.map((spot, index) => (
-            <div className="route-timeline-item" key={`${route.id}-${spot.spotId}`}>
-              <div className="route-step-index">{index + 1}</div>
-              <div>
-                <Typography.Text strong>
-                  {spot.name} · {spot.stayMinutes} 分钟
-                </Typography.Text>
-                <Typography.Paragraph style={{ margin: '4px 0 0' }}>{spot.reason}</Typography.Paragraph>
+          {route.spots.map((spot, index) => {
+            const isActive = activeSpotId === spot.spotId;
+            const hasMapPoint = mappedSpotIds?.has(spot.spotId) ?? true;
+            return (
+              <div
+                ref={(element) => {
+                  spotRefs.current[spot.spotId] = element;
+                }}
+                className={[
+                  'route-timeline-item',
+                  styles.timelineItemInteractive,
+                  isActive ? styles.timelineItemActive : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                key={`${route.id}-${spot.spotId}`}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isActive}
+                onClick={() => onSpotActivate?.(spot.spotId)}
+                onFocus={() => onSpotActivate?.(spot.spotId)}
+                onMouseEnter={() => onSpotActivate?.(spot.spotId)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onSpotActivate?.(spot.spotId);
+                  }
+                }}
+              >
+                <div className="route-step-index">{String(index + 1).padStart(2, '0')}</div>
+                <div>
+                  <Typography.Text strong>
+                    {spot.name} · {spot.stayMinutes} 分钟
+                  </Typography.Text>
+                  <span
+                    className={[
+                      styles.transition,
+                      index > 0 && spot.transitionMinutes == null
+                        ? styles.transitionMissing
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    title={spot.transitionNote}
+                  >
+                    {index === 0
+                      ? '路线起点'
+                      : spot.transitionMinutes == null
+                        ? '上一站至此：时间待补充'
+                        : `上一站至此约 ${spot.transitionMinutes} 分钟`}
+                  </span>
+                  {!hasMapPoint ? (
+                    <span className={styles.missingPoint}>[ 地图点位待补充 ]</span>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </Space>
+      </div>
     </Card>
   );
 }

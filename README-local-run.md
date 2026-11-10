@@ -1,123 +1,14 @@
-# P2 一键运行与迁移说明
+# A5 AI 导游：本地运行
 
-本项目默认使用稳定演示模式启动：
+完整项目的配置与启动步骤已统一到 [README.md](README.md)。本文件保留为比赛版文档入口。
 
-- 前端：http://127.0.0.1:5173
-- AI 导游页：http://127.0.0.1:5173/guide
-- 管理后台：http://127.0.0.1:5173/admin
-- 后端：http://127.0.0.1:8001
-- 后端接口文档：http://127.0.0.1:8001/docs
+- 首次安装：Python 3.11/3.12、Node.js 20+，创建 `backend/.venv`，执行 `scripts/configure-local.py`。
+- 后端依赖：在 `backend` 目录安装 `requirements-agentic.txt`。
+- 核心配置：`configs/core.local.toml`；业务配置：`backend/.env`。
+- Agentic 问答：准备本地模型、启动 Milvus、执行 `app.core_cli init-data` 与 `rebuild`。
+- 开发模式：后端 `uvicorn`，前端 `npm run dev`。
+- 静态模式：`BUILD-FRONTEND.bat` 后运行 `START-HERE.bat`，停止使用 `stop-local.bat`。
 
-## 为什么不用动态热更新
+一键脚本不会自动下载模型、训练 LoRA 或构建 Milvus 索引。没有配置模型时，页面与规则路线可单独启动；Agentic 问答会返回明确的配置错误。旧问答可通过 `GUIDE_ENGINE=legacy` 显式启用。
 
-之前反复卡住的主要原因是开发态 Vite 热更新服务会监听文件变化，改代码后它会尝试实时刷新页面。这个模式适合开发，但在比赛演示、频繁启动停止、后台脚本运行时容易留下进程或卡住终端。
-
-现在 `START-HERE.bat` 不再使用热更新模式，也不在启动时临时构建页面，而是：
-
-1. 安装/检查依赖。
-2. 写入本地运行配置。
-3. 检查 `frontend\dist` 静态前端是否存在。
-4. 启动后端 `8001`。
-5. 用 `vite preview` 在 `5173` 预览构建产物。
-
-这样页面不会因为文件变化实时重载，也不会在启动时被构建流程卡住。改完代码后，先运行 `BUILD-FRONTEND.bat`，再运行 `START-HERE.bat`。
-
-## 本机启动
-
-双击：
-
-```bat
-START-HERE.bat
-```
-
-或在终端运行：
-
-```bat
-start-local.bat
-```
-
-脚本会自动完成：
-
-1. 检查 Python 3.10+、Node.js、npm 是否可用。
-2. 如果 `backend\.venv` 不存在或不可用，自动重建 Python 虚拟环境。
-3. 如果 `frontend\node_modules` 不存在，自动安装前端依赖。
-4. 缺少 `backend\.env` 时，从 `backend\.env.example` 复制一份。
-5. 写入 `frontend\.env.local`，让前端固定连接 `http://127.0.0.1:8001`。
-6. 启动后端和静态前端预览。
-7. 启动成功后自动打开浏览器。
-
-为了避免 Windows 批处理在自动清端口时卡住，`START-HERE.bat` 不会自动停止旧服务。需要重启时请先运行：
-
-```bat
-stop-local.bat
-```
-
-再运行：
-
-```bat
-START-HERE.bat
-```
-
-## 改代码后刷新页面
-
-改完前端或 Live2D 代码后运行：
-
-```bat
-BUILD-FRONTEND.bat
-```
-
-构建成功后再运行：
-
-```bat
-START-HERE.bat
-```
-
-这个流程等价于“重新渲染网页”，但不启用热更新监听，所以更稳定。
-
-## 一键打包给组员
-
-双击：
-
-```bat
-MAKE-PORTABLE-PACKAGE.bat
-```
-
-它会生成：
-
-```text
-.release\P2-Haru-AIGuide-portable.zip
-```
-
-把这个 zip 发给组员即可。压缩包会包含当前已构建好的 `frontend\dist`，组员解压后双击 `START-HERE.bat`，不需要手动改本地路径或端口配置。
-
-## 新电脑需要提前安装
-
-脚本不会安装系统级运行时。新电脑只需要提前安装：
-
-- Python 3.10 或以上版本，安装时勾选 `Add python.exe to PATH`。
-- Node.js 18 或以上版本。
-
-Python 依赖会放在 `backend\.venv`，前端依赖会放在 `frontend\node_modules`，不会依赖你电脑上的固定路径。
-
-## 停止服务
-
-```bat
-stop-local.bat
-```
-
-## 日志位置
-
-- 后端日志：`backend\backend-local-server-8001.log`
-- 后端错误日志：`backend\backend-local-server-8001.err.log`
-- 前端日志：`frontend\frontend-local-server-5173.log`
-- 前端错误日志：`frontend\frontend-local-server-5173.err.log`
-
-## 开发模式
-
-只有需要热更新开发时，才进入 `frontend` 手动运行：
-
-```bat
-npm.cmd run dev
-```
-
-演示、验收、组员部署时不要用开发模式，统一使用 `START-HERE.bat`。
+模型服务、Linux/WSL2、可选语音与地图配置详见 [部署说明](docs/deployment.md)。

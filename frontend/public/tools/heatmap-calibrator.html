@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>游客热力图演示数据标注</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f7f3ea;
+        --paper-deep: #eee6d7;
+        --ink: #29251f;
+        --muted: #766e63;
+        --line: rgba(71, 61, 48, 0.18);
+        --gold: #b08a48;
+        --gold-soft: #ead9b4;
+        --brick: #a65c45;
+        --shadow: 0 20px 60px rgba(69, 53, 32, 0.12);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        color: var(--ink);
+        background: radial-gradient(circle at 12% 0%, #fffdf8 0, var(--paper) 45%, #e7dece 100%);
+        font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      }
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+      .shell { width: min(1500px, calc(100% - 36px)); margin: 22px auto; }
+      .topbar {
+        display: flex; justify-content: space-between; align-items: end; gap: 22px;
+        padding: 24px 28px; background: rgba(255,253,248,.9); border: 1px solid var(--line);
+        border-radius: 24px 24px 0 0; box-shadow: var(--shadow);
+      }
+      .eyebrow { margin-bottom: 6px; color: var(--gold); font: 700 12px/1.2 ui-monospace, monospace; letter-spacing: .14em; }
+      h1 { margin: 0; font-size: clamp(26px, 3vw, 44px); line-height: 1.1; letter-spacing: -.04em; }
+      .topbar p { max-width: 560px; margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; min-height: calc(100vh - 180px); background: rgba(255,253,248,.7); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 24px 24px; overflow: hidden; box-shadow: var(--shadow); }
+      .map-panel { min-width: 0; padding: 16px; background: #25261f; }
+      .map-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 0 2px 14px; color: #f7f3ea; }
+      .map-toolbar strong { font-size: 16px; }
+      .map-toolbar span { color: rgba(247,243,234,.64); font-size: 12px; }
+      .map-viewport { height: calc(100vh - 278px); min-height: 480px; overflow: auto; border: 1px solid rgba(247,243,234,.14); border-radius: 18px; background: #11140f; scrollbar-color: #b08a48 #272a22; }
+      .map-stage { position: relative; width: 100%; max-width: 980px; margin: 0 auto; line-height: 0; user-select: none; }
+      .map-stage img { display: block; width: 100%; height: auto; }
+      .map-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 50px rgba(10, 13, 8, .2); }
+      .guest-dot { position: absolute; z-index: 2; width: 15px; height: 15px; padding: 0; transform: translate(-50%, -50%); background: #f5d370; border: 3px solid #fff9e7; border-radius: 50%; box-shadow: 0 2px 0 rgba(51,38,22,.35), 0 0 0 6px rgba(213,150,58,.2); cursor: grab; }
+      .guest-dot:hover, .guest-dot.selected { background: #bb6247; box-shadow: 0 2px 0 rgba(51,38,22,.35), 0 0 0 7px rgba(187,98,71,.28); }
+      .guest-dot.selected { outline: 2px solid #fff9e7; outline-offset: 2px; }
+      .side { padding: 22px; background: rgba(255,253,248,.88); border-left: 1px solid var(--line); }
+      .side h2 { margin: 0; font-size: 21px; }
+      .side .hint { margin: 7px 0 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+      .map-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 18px; padding: 4px; background: var(--paper-deep); border: 1px solid var(--line); border-radius: 999px; }
+      .map-switch button, .action { min-height: 36px; color: var(--muted); background: transparent; border: 0; border-radius: 999px; }
+      .map-switch button.active { color: #fffaf0; background: #26231f; }
+      .stat { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+      .stat strong { font-size: 25px; }
+      .stat span { color: var(--muted); font-size: 12px; }
+      .selected { margin: 5px 0 16px; padding: 14px; background: #fbf8ef; border: 1px solid var(--line); border-radius: 16px; }
+      .selected strong { display: block; font-size: 14px; }
+      .selected small { display: block; margin-top: 5px; color: var(--muted); font: 11px/1.5 ui-monospace, monospace; }
+      .selected input { width: 100%; margin-top: 11px; padding: 8px 10px; color: var(--ink); background: #fffdf8; border: 1px solid var(--line); border-radius: 9px; }
+      .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .action { padding: 0 10px; color: var(--ink); background: #efe2c6; border: 1px solid rgba(176,138,72,.42); border-radius: 10px; }
+      .action:hover { background: #e6d2a5; }
+      .action.secondary { background: transparent; border-color: var(--line); }
+      .action.danger { color: var(--brick); border-color: rgba(166,92,69,.35); }
+      .full { width: 100%; margin-top: 8px; }
+      .section { margin-top: 22px; padding-top: 17px; border-top: 1px solid var(--line); }
+      .section h3 { margin: 0 0 9px; font-size: 14px; }
+      .section p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.75; }
+      .status { min-height: 20px; margin-top: 16px; color: var(--brick); font-size: 12px; line-height: 1.5; }
+      @media (max-width: 920px) {
+        .layout { grid-template-columns: 1fr; }
+        .side { border-top: 1px solid var(--line); border-left: 0; }
+        .map-viewport { height: 65vh; }
+      }
+      @media (max-width: 600px) {
+        .shell { width: 100%; margin: 0; }
+        .topbar { align-items: start; flex-direction: column; border-radius: 0; }
+        .layout { border-radius: 0; }
+        .map-panel { padding: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">SCENIC HEATMAP DEMO · V1</div>
+          <h1>游客分布热力图标注</h1>
+          <p>点击地图增加 1 个模拟游客；拖动圆点调整位置。这里的数据只用于演示，导出后可替换项目中的热力图演示数据。</p>
+        </div>
+      </header>
+      <div class="layout">
+        <section class="map-panel">
+          <div class="map-toolbar"><strong id="mapTitle">灵山胜境</strong><span>点击空白处添加 · 拖动圆点微调</span></div>
+          <div class="map-viewport" id="mapViewport">
+            <div class="map-stage" id="mapStage"></div>
+          </div>
+        </section>
+        <aside class="side">
+          <h2>演示数据</h2>
+          <p class="hint">每个圆点代表一个模拟游客。也可以选中一个点，批量增加几位游客，快速做出聚集效果。</p>
+          <div class="map-switch" role="tablist">
+            <button type="button" data-map="ling-shan" class="active">灵山胜境</button>
+            <button type="button" data-map="nianhua-bay">拈花湾</button>
+          </div>
+          <div class="stat"><strong id="pointCount">0</strong><span>个模拟点</span></div>
+          <div class="stat"><strong id="guestCount">0</strong><span>位模拟游客</span></div>
+          <div class="selected" id="selectedPanel"><strong>尚未选中点位</strong><small>点击地图上的圆点后可调整</small></div>
+          <div class="button-row">
+            <button class="action" type="button" id="addFive">批量增加 5 人</button>
+            <button class="action danger" type="button" id="deletePoint">删除点位</button>
+          </div>
+          <button class="action secondary full" type="button" id="clearMap">清空当前地图</button>
+          <div class="section">
+            <h3>导入 / 导出</h3>
+            <p>完成标注后，复制或下载 JSON。将导出的内容保存为项目的 <code>frontend/public/data/scenic-heatmap-demo.json</code>，主界面刷新后即可使用。</p>
+            <div class="button-row" style="margin-top:10px">
+              <button class="action" type="button" id="copyJson">复制 JSON</button>
+              <button class="action" type="button" id="downloadJson">下载 JSON</button>
+            </div>
+            <button class="action secondary full" type="button" id="importJson">导入 JSON 文件</button>
+            <input id="fileInput" type="file" accept="application/json" hidden />
+          </div>
+          <div class="section">
+            <h3>快捷说明</h3>
+            <p>拖动圆点可以调整坐标；选中后修改“人数权重”，可以让一个位置的热度更高。刷新页面后，未导出的修改也会保存在本机浏览器中。</p>
+          </div>
+          <div class="status" id="status" aria-live="polite"></div>
+        </aside>
+      </div>
+    </main>
+    <script>
+      const PUBLIC_ROOT = window.location.protocol === 'file:' ? '../' : '/';
+      const MAPS = {
+        'ling-shan': { title: '灵山胜境', image: `${PUBLIC_ROOT}scenic/maps/ling-shan-overview-v1.webp` },
+        'nianhua-bay': { title: '拈花湾', image: `${PUBLIC_ROOT}scenic/maps/nianhua-bay-overview-v1.png` }
+      };
+      const STORAGE_KEY = 'scenic-heatmap-demo-v1';
+      const defaultData = {
+        version: 'scenic-heatmap-demo-v1', source: 'manual_demo', maps: {
+          'ling-shan': { title: '灵山胜境', points: [] },
+          'nianhua-bay': { title: '拈花湾', points: [] }
+        }
+      };
+      let data = structuredClone(defaultData);
+      let activeMapId = 'ling-shan';
+      let selectedId = '';
+      let dragId = '';
+      let dragPointerId = null;
+      const stage = document.getElementById('mapStage');
+      const mapTitle = document.getElementById('mapTitle');
+      const pointCount = document.getElementById('pointCount');
+      const guestCount = document.getElementById('guestCount');
+      const selectedPanel = document.getElementById('selectedPanel');
+      const status = document.getElementById('status');
+      const getPoints = () => data.maps[activeMapId].points;
+      const clamp = (value) => Math.max(0.002, Math.min(0.998, value));
+      const uid = () => `${activeMapId === 'ling-shan' ? 'ls' : 'nh'}_guest_${Date.now()}_${Math.random().toString(16).slice(2, 6)}`;
+      function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+      function setStatus(message) { status.textContent = message; window.clearTimeout(setStatus.timer); setStatus.timer = window.setTimeout(() => status.textContent = '', 3500); }
+      function exportPayload() {
+        return { version: 'scenic-heatmap-demo-v1', source: 'manual_demo', maps: data.maps };
+      }
+      function render() {
+        const points = getPoints();
+        mapTitle.textContent = MAPS[activeMapId].title;
+        pointCount.textContent = points.length;
+        guestCount.textContent = points.reduce((sum, point) => sum + Math.max(1, Number(point.weight) || 1), 0);
+        stage.querySelectorAll('.guest-dot').forEach((node) => node.remove());
+        points.forEach((point) => {
+          const dot = document.createElement('button');
+          dot.type = 'button'; dot.className = `guest-dot${point.id === selectedId ? ' selected' : ''}`;
+          dot.style.left = `${point.x_ratio * 100}%`; dot.style.top = `${point.y_ratio * 100}%`;
+          dot.title = `${point.weight} 位游客 · 点击选中，拖动调整`;
+          dot.dataset.id = point.id;
+          dot.addEventListener('pointerdown', (event) => { event.stopPropagation(); selectedId = point.id; dragId = point.id; dragPointerId = event.pointerId; dot.setPointerCapture(event.pointerId); dot.classList.add('selected'); renderSelected(); });
+          dot.addEventListener('pointermove', (event) => { if (dragId !== point.id || event.pointerId !== dragPointerId) return; const rect = stage.getBoundingClientRect(); point.x_ratio = clamp((event.clientX - rect.left) / rect.width); point.y_ratio = clamp((event.clientY - rect.top) / rect.height); dot.style.left = `${point.x_ratio * 100}%`; dot.style.top = `${point.y_ratio * 100}%`; const coordinate = selectedPanel.querySelector('small'); if (coordinate) coordinate.textContent = `${point.x_ratio.toFixed(6)}, ${point.y_ratio.toFixed(6)}`; });
+          dot.addEventListener('pointerup', (event) => { if (event.pointerId === dragPointerId) { dragId = ''; dragPointerId = null; persist(); } });
+          stage.appendChild(dot);
+        });
+        renderSelected();
+      }
+      function renderSelected() {
+        const point = getPoints().find((item) => item.id === selectedId);
+        if (!point) { selectedPanel.innerHTML = '<strong>尚未选中点位</strong><small>点击地图上的圆点后可调整</small>'; return; }
+        selectedPanel.innerHTML = `<strong>已选中模拟游客点</strong><small>${point.x_ratio.toFixed(6)}, ${point.y_ratio.toFixed(6)}</small><input id="weightInput" type="number" min="1" step="1" value="${point.weight}" aria-label="人数权重" />`;
+        document.getElementById('weightInput').addEventListener('change', (event) => { point.weight = Math.max(1, Number(event.target.value) || 1); persist(); render(); setStatus('人数权重已更新'); });
+      }
+      function addPoint(x, y, weight = 1) { const point = { id: uid(), x_ratio: clamp(x), y_ratio: clamp(y), weight }; getPoints().push(point); selectedId = point.id; persist(); render(); }
+      stage.addEventListener('pointerdown', (event) => { if (event.target !== stage && event.target.tagName !== 'IMG') return; const rect = stage.getBoundingClientRect(); addPoint((event.clientX - rect.left) / rect.width, (event.clientY - rect.top) / rect.height); });
+      document.querySelectorAll('[data-map]').forEach((button) => button.addEventListener('click', () => { activeMapId = button.dataset.map; selectedId = ''; document.querySelectorAll('[data-map]').forEach((item) => item.classList.toggle('active', item === button)); loadMapImage(); }));
+      document.getElementById('addFive').addEventListener('click', () => { const point = getPoints().find((item) => item.id === selectedId); if (!point) { setStatus('请先选中一个地图点位'); return; } for (let i = 0; i < 5; i += 1) getPoints().push({ id: uid(), x_ratio: clamp(point.x_ratio + (Math.random() - .5) * .018), y_ratio: clamp(point.y_ratio + (Math.random() - .5) * .018), weight: 1 }); persist(); render(); setStatus('已在附近增加 5 位模拟游客'); });
+      document.getElementById('deletePoint').addEventListener('click', () => { if (!selectedId) { setStatus('请先选中一个地图点位'); return; } data.maps[activeMapId].points = getPoints().filter((point) => point.id !== selectedId); selectedId = ''; persist(); render(); setStatus('点位已删除'); });
+      document.getElementById('clearMap').addEventListener('click', () => { if (!getPoints().length || confirm(`确定清空${MAPS[activeMapId].title}的全部演示点位吗？`)) { data.maps[activeMapId].points = []; selectedId = ''; persist(); render(); setStatus('当前地图已清空'); } });
+      document.getElementById('copyJson').addEventListener('click', async () => { const text = JSON.stringify(exportPayload(), null, 2); try { await navigator.clipboard.writeText(text); setStatus('JSON 已复制到剪贴板'); } catch { setStatus('复制失败，请使用“下载 JSON”'); } });
+      document.getElementById('downloadJson').addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'scenic-heatmap-demo.json'; link.click(); URL.revokeObjectURL(link.href); setStatus('JSON 文件已下载'); });
+      document.getElementById('importJson').addEventListener('click', () => document.getElementById('fileInput').click());
+      document.getElementById('fileInput').addEventListener('change', async (event) => { const file = event.target.files[0]; if (!file) return; try { const parsed = JSON.parse(await file.text()); if (!parsed.maps?.['ling-shan'] || !parsed.maps?.['nianhua-bay']) throw new Error('maps'); data = { ...defaultData, ...parsed, maps: { 'ling-shan': { ...defaultData.maps['ling-shan'], ...parsed.maps['ling-shan'] }, 'nianhua-bay': { ...defaultData.maps['nianhua-bay'], ...parsed.maps['nianhua-bay'] } } }; selectedId = ''; persist(); render(); setStatus('演示数据已导入'); } catch { setStatus('导入失败：请确认是热力图演示 JSON'); } event.target.value = ''; });
+      function loadMapImage() { stage.innerHTML = ''; const image = document.createElement('img'); image.src = MAPS[activeMapId].image; image.alt = MAPS[activeMapId].title; image.draggable = false; stage.appendChild(image); render(); }
+      try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); if (saved?.maps?.['ling-shan'] && saved?.maps?.['nianhua-bay']) data = saved; } catch { /* ignore invalid local demo data */ }
+      fetch(`${PUBLIC_ROOT}data/scenic-heatmap-demo.json`).then((response) => response.ok ? response.json() : null).then((remote) => { if (!localStorage.getItem(STORAGE_KEY) && remote?.maps) { data = remote; render(); } }).catch(() => undefined);
+      loadMapImage();
+    </script>
+  </body>
+</html>

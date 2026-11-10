@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $Root = Split-Path -Parent $PSScriptRoot
 $ReleaseRoot = Join-Path $Root ".release"
-$PackageName = "P2-Haru-AIGuide-portable"
+$PackageName = "lingshiyin-agentic-guide"
 $StageDir = Join-Path $ReleaseRoot $PackageName
 $ZipPath = Join-Path $ReleaseRoot "$PackageName.zip"
 
@@ -20,6 +20,11 @@ try {
   Write-Host "Project root: $Root"
 
   Write-Step "[1/3] Preparing release folder"
+  $resolvedRoot = [IO.Path]::GetFullPath($Root).TrimEnd('\') + '\'
+  $resolvedStage = [IO.Path]::GetFullPath($StageDir)
+  if (-not $resolvedStage.StartsWith($resolvedRoot + '.release\', [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Release directory must stay inside this project."
+  }
   if (Test-Path $StageDir) {
     Remove-Item -LiteralPath $StageDir -Recurse -Force
   }
@@ -27,6 +32,11 @@ try {
 
   Write-Step "[2/3] Copying source files"
   $excludeDirs = @(
+    ".git",
+    (Join-Path $Root "backend\data"),
+    (Join-Path $Root "artifacts"),
+    (Join-Path $Root "models"),
+    (Join-Path $Root "data"),
     ".release",
     ".cache",
     ".render-temp",
@@ -48,10 +58,17 @@ try {
     "*.err",
     "*.err.log",
     "*.pyc",
-    "debug-*.db",
+    "*.db",
+    "*.db-*",
+    "*.sqlite*",
+    "*.local.toml",
+    "*.safetensors",
+    "*.xlsx",
+    "*.xls",
+    "*.zip",
+    "*.partial",
     "structured_qa_eval_report*.json",
-    ".env",
-    ".env.local"
+    ".env*"
   )
 
   $robocopyArgs = @(
@@ -70,6 +87,9 @@ try {
   if ($LASTEXITCODE -ge 8) {
     throw "robocopy failed with exit code $LASTEXITCODE"
   }
+  foreach ($area in @("backend", "frontend")) {
+    Copy-Item -LiteralPath (Join-Path $Root "$area\.env.example") -Destination (Join-Path $StageDir "$area\.env.example")
+  }
 
   Write-Step "[3/3] Creating zip"
   if (Test-Path $ZipPath) {
@@ -81,8 +101,8 @@ try {
   Write-Host "Portable package created:" -ForegroundColor Green
   Write-Host $ZipPath
   Write-Host ""
-  Write-Host "Send this zip to teammates. They only need to unzip it and double-click START-HERE.bat."
-  Write-Host "System prerequisites: Python 3.10+ and Node.js 18+."
+  Write-Host "Follow README.md for configuration, model services and index initialization."
+  Write-Host "System prerequisites: Python 3.11/3.12, Node.js 20+, Docker and configured models."
 } catch {
   Write-Host ""
   Write-Host "Packaging failed: $($_.Exception.Message)" -ForegroundColor Red

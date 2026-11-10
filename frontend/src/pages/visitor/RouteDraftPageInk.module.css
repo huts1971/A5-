@@ -1,0 +1,779 @@
+@font-face {
+  font-family: "RouteCyberRajdhani";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/route-cyber/rajdhani-400.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "RouteCyberRajdhani";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/route-cyber/rajdhani-600.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "RouteCyberRajdhani";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/route-cyber/rajdhani-700.ttf") format("truetype");
+}
+
+.page {
+  --route-chroma-base-hue: 84;
+  --route-chroma-color-1: oklch(0.76 0.085 84);
+  --route-chroma-color-2: oklch(0.67 0.105 28);
+  --route-chroma-color-3: oklch(0.68 0.085 174);
+  --route-chroma-ambient: oklch(from var(--route-chroma-color-1) 0.15 0.05 h);
+  --route-chroma-glass: oklch(from var(--route-chroma-color-1) 0.2 0.02 h / 0.18);
+  --route-chroma-border: oklch(from var(--route-chroma-color-1) 0.9 0.05 h / 0.34);
+  --route-chroma-border-strong: oklch(from var(--route-chroma-color-1) 0.95 0.1 h / 0.58);
+  --route-chroma-text: rgba(255, 255, 255, 0.9);
+  --route-chroma-muted: rgba(255, 255, 255, 0.62);
+  --route-chroma-faint: rgba(255, 255, 255, 0.12);
+  --cp-primary: oklch(0.8671 0.1599 89.31);
+  --cp-cyan: oklch(0.87 0.148144 202.8755);
+  --cp-cyan-muted: oklch(0.2845 0.0271 203.48);
+  --cp-cyan-muted-fill: oklch(0.2151 0.0203 212.7);
+  --cp-red: oklch(0.6926 0.1926 27.58);
+  --cp-red-fill: oklch(0.4552 0.1345 23.12);
+  --cp-red-muted: oklch(0.2362 0.052 21.83);
+  --cp-red-muted-fill: oklch(0.1742 0.0181 359.51);
+  --cp-black: oklch(0.1397 0.0167 263.51);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 20px);
+  max-width: none;
+  height: calc(100dvh - var(--route-subview-header-height, 64px));
+  min-height: 0;
+  margin-inline: auto;
+  gap: 16px;
+  padding: 14px 0 18px;
+  overflow: hidden;
+  color: var(--route-chroma-text);
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 46% 34%, var(--route-chroma-ambient) 0%, rgba(5, 5, 5, 0.96) 64%, #050505 100%),
+    #050505;
+  isolation: isolate;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.fluidMesh {
+  position: absolute;
+  inset: -16vh -10vw;
+  z-index: 0;
+  overflow: hidden;
+  filter: blur(80px);
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50vmin;
+  height: 50vmin;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  translate: -50% -50%;
+  will-change: transform;
+}
+
+.orbOne {
+  background: var(--route-chroma-color-1);
+  animation: routeChromaOrbitOne 14s ease-in-out infinite alternate;
+}
+
+.orbTwo {
+  background: var(--route-chroma-color-2);
+  animation: routeChromaOrbitTwo 18s ease-in-out infinite alternate-reverse;
+}
+
+.orbThree {
+  background: var(--route-chroma-color-3);
+  animation: routeChromaOrbitThree 22s linear infinite;
+}
+
+.heading,
+.workspace {
+  position: relative;
+  z-index: 1;
+}
+
+.heading {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: 0 2px 2px;
+}
+
+.heading h1 {
+  margin: 4px 0 0 !important;
+  color: transparent !important;
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif !important;
+  font-size: clamp(28px, 3.4vw, 42px) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0 !important;
+  background: linear-gradient(135deg, var(--route-chroma-color-1), var(--route-chroma-color-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.page :global(.mono-label) {
+  color: var(--route-chroma-muted);
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.headingActions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: min(100%, 720px);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(540px, 1.05fr) minmax(520px, 0.95fr);
+  flex: 1 1 auto;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mapPanel,
+.spotList,
+.page :global(.ant-card) {
+  position: relative;
+  overflow: hidden;
+  color: var(--route-chroma-text);
+  background:
+    linear-gradient(145deg, rgba(12, 10, 28, 0.68), rgba(4, 14, 16, 0.42)),
+    var(--route-chroma-glass);
+  border: 0;
+  border-radius: 24px;
+  box-shadow:
+    0 30px 60px color-mix(in oklab, var(--route-chroma-color-1) 18%, black),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  isolation: isolate;
+}
+
+.mapPanel::before,
+.spotList::before,
+.page :global(.ant-card)::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(
+      135deg,
+      var(--route-chroma-border-strong),
+      color-mix(in oklab, var(--route-chroma-color-2) 42%, transparent),
+      color-mix(in oklab, var(--route-chroma-color-3) 34%, transparent),
+      rgba(255, 255, 255, 0.06)
+    );
+  border-radius: inherit;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.mapPanel > *,
+.spotList > *,
+.page :global(.ant-card > *) {
+  position: relative;
+  z-index: 2;
+}
+
+.mapPanel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.mapPanel :global(.route-map-scroll-area) {
+  border-color: var(--route-chroma-faint);
+  background: rgba(5, 5, 12, 0.72);
+}
+
+.mapHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 13px;
+  color: var(--route-chroma-text);
+  background: rgba(255, 255, 255, 0.035);
+  border-bottom: 1px solid var(--route-chroma-faint);
+}
+
+.mapHeader::after {
+  position: absolute;
+  right: 18px;
+  bottom: -1px;
+  left: 18px;
+  height: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--route-chroma-color-1) 55%, transparent),
+      color-mix(in oklab, var(--route-chroma-color-2) 48%, transparent),
+      transparent
+    );
+  box-shadow: 0 0 18px color-mix(in oklab, var(--route-chroma-color-1) 24%, transparent);
+  content: "";
+}
+
+.mapHeader strong {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: transparent;
+  font: 800 24px/1.05 Inter, "Microsoft YaHei", system-ui, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--route-chroma-color-1), var(--route-chroma-color-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.mapSwitcher {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+  min-width: min(100%, 224px);
+  overflow: visible;
+}
+
+.mapSwitch {
+  --accent-color: var(--unchecked-border);
+  --notch-size: 0.5rem;
+  --notch-size-left: 0;
+  --checked-bg: linear-gradient(135deg, #a9dfdc, #78c9be);
+  --checked-color: var(--cp-black);
+  --checked-border: #88d2ca;
+  --unchecked-color: #38524e;
+  --unchecked-border: rgba(120, 191, 181, 0.42);
+  --unchecked-bg: rgba(254, 253, 251, 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  min-height: 32px;
+  padding: 6px 11px;
+  overflow: hidden;
+  color: var(--unchecked-color);
+  font: 700 14px/1 "RouteCyberRajdhani", "Rajdhani", "Microsoft YaHei", sans-serif;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--unchecked-bg);
+  border: 1px solid var(--unchecked-border);
+  border-radius: 0;
+  border-bottom-right-radius: var(--notch-size);
+  corner-shape: superellipse(0);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.mapSwitch:first-child {
+  --notch-size: 0;
+  --notch-size-left: 0.5rem;
+  --checked-bg: linear-gradient(135deg, #e7c77d, #c9785c);
+  --checked-color: #2d2118;
+  --checked-border: #d99a62;
+  --unchecked-color: #5a3b2f;
+  --unchecked-border: rgba(204, 120, 92, 0.42);
+  --unchecked-bg: rgba(254, 253, 251, 0.86);
+  border-bottom-left-radius: var(--notch-size-left);
+}
+
+.mapSwitchActive {
+  --accent-color: var(--checked-border);
+  color: var(--checked-color);
+  background: var(--checked-bg);
+  border-color: var(--checked-border);
+}
+
+.mapSwitch:hover,
+.mapSwitch:focus-visible {
+  --shadow: color-mix(in oklch, var(--accent-color) 55%, transparent);
+  color: var(--checked-color);
+  border-color: var(--accent-color);
+  outline: 0;
+  box-shadow: 0 0 1rem var(--shadow);
+}
+
+.editor {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.addCard :global(.ant-card-head) {
+  min-height: 42px;
+  color: var(--route-chroma-text);
+  background: rgba(255, 255, 255, 0.035);
+  border-bottom: 1px solid var(--route-chroma-faint);
+}
+
+.addCard :global(.ant-card-head-title) {
+  color: var(--route-chroma-muted);
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.addCard :global(.ant-card-body) {
+  padding: 10px;
+}
+
+.addRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.darkSelect {
+  color: var(--route-chroma-text);
+}
+
+.darkSelect :global(.ant-select-selector) {
+  min-height: 36px !important;
+  color: var(--route-chroma-text) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  border-color: var(--route-chroma-faint) !important;
+  border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.darkSelect :global(.ant-select-selection-item),
+.darkSelect :global(.ant-select-selection-placeholder),
+.darkSelect :global(.ant-select-selection-search-input),
+.darkSelect :global(.ant-select-arrow) {
+  color: var(--route-chroma-text) !important;
+}
+
+.darkSelect :global(.ant-select-selection-placeholder) {
+  opacity: 0.72;
+}
+
+.darkSelectPopup {
+  color: var(--route-chroma-text) !important;
+  background:
+    linear-gradient(145deg, rgba(12, 10, 28, 0.9), rgba(4, 14, 16, 0.72)),
+    #070712 !important;
+  border: 1px solid var(--route-chroma-border);
+  border-radius: 18px !important;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.darkSelectPopup :global(.ant-select-item) {
+  color: var(--route-chroma-muted) !important;
+  background: transparent !important;
+}
+
+.darkSelectPopup :global(.ant-select-item-option-active),
+.darkSelectPopup :global(.ant-select-item-option-selected) {
+  color: #fff !important;
+  background: color-mix(in oklab, var(--route-chroma-color-1) 24%, transparent) !important;
+}
+
+.spotList {
+  display: grid;
+  align-content: start;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: color-mix(in oklab, var(--route-chroma-color-1) 42%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.emptyRoute {
+  padding: 28px 20px;
+  color: var(--route-chroma-muted);
+  font-size: 15px;
+  line-height: 1.65;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.spotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.052);
+  border-bottom: 1px solid var(--route-chroma-faint);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.spotRow:last-child {
+  border-bottom: 0;
+}
+
+.spotRowActive {
+  color: #fff;
+  background: color-mix(in oklab, var(--route-chroma-color-1) 16%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in oklab, var(--route-chroma-color-1) 62%, white);
+}
+
+.spotMain {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--route-chroma-text);
+  font-family: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.spotMain:hover,
+.spotMain:focus-visible {
+  color: #fff;
+  outline: none;
+}
+
+.spotMain strong,
+.spotMain small {
+  display: block;
+}
+
+.spotMain strong {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spotMain small {
+  margin-top: 3px;
+  color: var(--route-chroma-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.spotMain .missingPoint {
+  color: color-mix(in oklab, var(--route-chroma-color-2) 65%, white);
+}
+
+.sequence {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: #fff;
+  font: 800 12px/1 "RouteCyberRajdhani", "Rajdhani", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, var(--route-chroma-color-1), var(--route-chroma-color-2));
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 50%;
+  box-shadow: 0 0 14px color-mix(in oklab, var(--route-chroma-color-1) 28%, transparent);
+}
+
+.rowActions {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 34px 34px 64px;
+  width: 144px;
+  max-width: 100%;
+  flex: none;
+  justify-content: end;
+  justify-self: end;
+  gap: 6px;
+  min-width: 0;
+  visibility: visible;
+  opacity: 1;
+}
+
+.inkButton,
+.iconButton {
+  --accent-color: var(--cp-cyan);
+  --notch-size: 0.8rem;
+  --notch-size-left: 0;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  min-height: 34px !important;
+  padding: 0.5rem 1rem !important;
+  overflow: hidden !important;
+  color: var(--accent-color) !important;
+  font-family: "RouteCyberRajdhani", "Rajdhani", "Microsoft YaHei", sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  font-synthesis: none;
+  text-align: center;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  background: transparent !important;
+  border: 1px solid var(--accent-color) !important;
+  border-radius: 0 !important;
+  border-bottom-right-radius: var(--notch-size) !important;
+  border-bottom-left-radius: var(--notch-size-left) !important;
+  box-shadow: none !important;
+  corner-shape: superellipse(0);
+  cursor: pointer;
+}
+
+.inkButton:hover,
+.inkButton:focus-visible,
+.iconButton:hover,
+.iconButton:focus-visible {
+  --shadow: color-mix(in oklch, var(--accent-color) 58%, transparent);
+  outline: 0;
+  box-shadow: 0 0 1rem var(--shadow) !important;
+}
+
+.inkButtonPrimary {
+  --accent-color: var(--cp-primary);
+  color: var(--cp-black) !important;
+  background: var(--accent-color) !important;
+}
+
+.inkButtonSecondary {
+  --accent-color: var(--cp-cyan);
+}
+
+.inkButtonGhost {
+  --accent-color: var(--cp-primary);
+}
+
+.inkButtonDanger,
+.iconButtonDanger {
+  --accent-color: var(--cp-red);
+}
+
+.addButton {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: 108px;
+}
+
+.iconButton {
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+}
+
+.rowActionButton {
+  width: 64px !important;
+  min-width: 0 !important;
+  max-width: 64px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 5px !important;
+  gap: 4px;
+  font-size: 12px !important;
+}
+
+.rowMoveButton {
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  padding: 0 !important;
+}
+
+.iconButtonDanger {
+  color: var(--cp-red) !important;
+}
+
+.page :global(.ant-btn[disabled]),
+.page :global(.ant-btn.ant-btn-disabled) {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+.page :global(.ant-alert) {
+  position: relative;
+  z-index: 1;
+  color: var(--route-chroma-text);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--route-chroma-faint);
+  border-radius: 16px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.page :global(.ant-alert-message),
+.page :global(.ant-alert-description) {
+  color: inherit;
+}
+
+@keyframes routeChromaOrbitOne {
+  0% {
+    transform: translate(-18vw, -16vh) scale(0.95);
+  }
+  50% {
+    transform: translate(22vw, 2vh) scale(1.42);
+  }
+  100% {
+    transform: translate(6vw, 20vh) scale(1.04);
+  }
+}
+
+@keyframes routeChromaOrbitTwo {
+  0% {
+    transform: translate(22vw, -10vh) scale(1.08);
+  }
+  50% {
+    transform: translate(-6vw, 18vh) scale(1.38);
+  }
+  100% {
+    transform: translate(-24vw, -2vh) scale(0.9);
+  }
+}
+
+@keyframes routeChromaOrbitThree {
+  0% {
+    transform: translate(-4vw, 22vh) scale(1);
+  }
+  33% {
+    transform: translate(27vw, 8vh) scale(1.34);
+  }
+  66% {
+    transform: translate(-20vw, -12vh) scale(0.86);
+  }
+  100% {
+    transform: translate(-4vw, 22vh) scale(1);
+  }
+}
+
+@media (max-width: 1120px) {
+  .page {
+    width: calc(100% - 16px);
+    margin: 0 auto;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .mapPanel {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .page {
+    width: calc(100vw - 16px);
+    gap: 12px;
+    padding-top: 10px;
+  }
+
+  .fluidMesh {
+    inset: -22vh -42vw;
+    filter: blur(62px);
+  }
+
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headingActions {
+    display: grid;
+    width: 100%;
+    max-width: none;
+    grid-template-columns: 1fr;
+  }
+
+  .addRow {
+    grid-template-columns: 1fr;
+  }
+
+  .mapHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mapSwitcher {
+    width: 100%;
+  }
+
+  .mapSwitch {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .spotRow {
+    grid-template-columns: 1fr;
+  }
+
+  .rowActions {
+    display: grid;
+    grid-template-columns: 34px 34px 64px;
+    width: 144px;
+    justify-self: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb {
+    animation: none;
+  }
+}

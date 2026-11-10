@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="寺院建筑封面">
-  <rect width="960" height="540" fill="#f2eee0"/>
-  <path d="M0 380c160-68 314-72 462-12 144 58 310 40 498-54v226H0z" fill="#dfe9da"/>
-  <path d="M210 292h540l-88 72H298z" fill="#9d4f3f"/>
-  <path d="M272 232h416l-64 62H336z" fill="#c6903e"/>
-  <path d="M326 364h308v108H326z" fill="#fff7e8"/>
-  <path d="M370 386h70v86h-70zM520 386h70v86h-70z" fill="#1e625b" opacity=".82"/>
-</svg>

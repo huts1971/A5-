@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>双景区真实步行路网标定工具</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        color: #f4f1e8;
+        background: #080a08;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; background: #080a08; }
+      button, select, input { font: inherit; }
+      button { cursor: pointer; }
+      .app { width: min(1680px, calc(100% - 28px)); margin: auto; padding: 20px 0 36px; }
+      .header, .toolbar, .row, .actions { display: flex; gap: 10px; align-items: center; }
+      .header { justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #30352f; }
+      h1 { margin: 0; font: 500 clamp(26px, 4vw, 44px)/1.2 "Songti SC", serif; }
+      h2 { margin: 0 0 12px; font-size: 16px; }
+      .eyebrow, label, .status, .meta { font-family: Consolas, monospace; }
+      .eyebrow { color: #a9b89d; font-size: 12px; }
+      .meta { color: #aaa; font-size: 12px; text-align: right; }
+      .layout { display: grid; grid-template-columns: minmax(600px, 1fr) 420px; gap: 16px; margin-top: 18px; align-items: start; }
+      .panel { border: 1px solid #30352f; background: #0e110e; }
+      .toolbar { justify-content: space-between; flex-wrap: wrap; padding: 12px; border-bottom: 1px solid #30352f; }
+      .modes { display: flex; border: 1px solid #3a4038; }
+      .modes button { min-height: 38px; padding: 8px 13px; color: #aaa; background: transparent; border: 0; }
+      .modes button.active { color: #080a08; background: #d8c58b; font-weight: 700; }
+      .status { color: #e3d29d; font-size: 12px; }
+      .viewport {
+        position: relative;
+        width: 100%;
+        height: min(78vh, 1020px);
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable both-edges;
+        background: #151915;
+        touch-action: pan-x pan-y;
+      }
+      .canvas {
+        position: relative;
+        width: min(100%, 860px);
+        margin: 0 auto;
+        transform-origin: 0 0;
+        cursor: crosshair;
+        touch-action: none;
+      }
+      .canvas img { display: block; width: 100%; height: auto; user-select: none; pointer-events: none; }
+      .overlay { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; overflow: visible; }
+      .road { fill: none; stroke: rgba(230, 210, 143, .72); stroke-width: 3; vector-effect: non-scaling-stroke; pointer-events: stroke; cursor: pointer; }
+      .road.selected { stroke: #45d6ff; stroke-width: 5; filter: drop-shadow(0 0 5px #1ba7d0); }
+      .draft { fill: none; stroke: #f2b43f; stroke-width: 4; vector-effect: non-scaling-stroke; pointer-events: none; }
+      .marker, .node, .vertex { position: absolute; z-index: 4; padding: 0; transform: translate(-50%, -50%); }
+      .marker { width: 22px; height: 26px; color: white; background: #205b8f; border: 2px solid white; border-radius: 50% 50% 50% 0; transform: translate(-50%, -88%) rotate(-45deg); }
+      .marker b { display: block; font: 700 8px/1 Consolas; transform: rotate(45deg); }
+      .marker.selected { background: #d59b2e; box-shadow: 0 0 0 5px rgba(242,180,63,.35); }
+      .node { width: 13px; height: 13px; background: #f5f1e4; border: 2px solid #1d6c88; border-radius: 50%; }
+      .node.dangling { box-shadow: 0 0 0 4px rgba(230, 90, 70, .45); }
+      .node.selected { border-color: #f2b43f; box-shadow: 0 0 0 5px rgba(242,180,63,.38); }
+      .vertex { width: 11px; height: 11px; background: #45d6ff; border: 2px solid #071012; border-radius: 50%; }
+      .control { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; padding: 15px; }
+      .section + .section { margin-top: 16px; padding-top: 16px; border-top: 1px solid #2b302a; }
+      .field + .field { margin-top: 10px; }
+      label { display: block; margin-bottom: 5px; color: #aaa; font-size: 11px; }
+      select, input { width: 100%; min-height: 39px; padding: 7px 9px; color: #f4f1e8; background: #111511; border: 1px solid #3b4139; }
+      input[type="checkbox"] { width: auto; min-height: auto; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .actions { flex-wrap: wrap; margin-top: 11px; }
+      .action { min-height: 38px; padding: 7px 10px; color: #f4f1e8; background: transparent; border: 1px solid #4a5147; }
+      .action.primary { color: #080a08; background: #d8c58b; border-color: #d8c58b; font-weight: 700; }
+      .action.danger { color: #f1a49b; border-color: #71433e; }
+      .hint, .validation { color: #aaa; font-size: 12px; line-height: 1.65; }
+      .validation { display: grid; gap: 6px; max-height: 180px; overflow: auto; }
+      .issue { padding: 7px 8px; background: #151915; border-left: 3px solid #d7bb75; }
+      .issue.ok { border-color: #83b98a; }
+      .list { display: grid; gap: 6px; max-height: 190px; overflow: auto; }
+      .item { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px; font-size: 12px; border: 1px solid #30352f; }
+      .hidden { display: none !important; }
+      .zoom { color: #aaa; font: 11px/1 Consolas; }
+      @media (max-width: 1050px) {
+        .layout { grid-template-columns: 1fr; }
+        .control { position: static; max-height: none; }
+        .viewport { height: 72vh; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <span class="eyebrow">[ ROAD NETWORK CALIBRATOR V3 ]</span>
+          <h1>双景区真实步行路网标定</h1>
+        </div>
+        <div class="meta" id="mapMeta"></div>
+      </header>
+      <div class="layout">
+        <section class="panel">
+          <div class="toolbar">
+            <div class="modes">
+              <button data-mode="point" class="active">景点点位</button>
+              <button data-mode="road">道路描绘</button>
+              <button data-mode="anchor">时间标定</button>
+            </div>
+            <div class="row">
+              <button class="action" id="undo">撤销</button>
+              <button class="action" id="redo">重做</button>
+              <button class="action" id="resetView">重置视图</button>
+              <span class="zoom" id="zoomValue">100%</span>
+            </div>
+            <span class="status" id="status">选择景点后点击建筑中心</span>
+          </div>
+          <div class="viewport" id="viewport">
+            <div class="canvas" id="canvas">
+              <img id="mapImage" alt="景区鸟瞰图" draggable="false" />
+              <svg class="overlay" id="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+              <div id="markers"></div>
+              <div id="nodes"></div>
+              <div id="vertices"></div>
+            </div>
+          </div>
+        </section>
+        <aside class="panel control">
+          <section class="section">
+            <h2>地图与数据</h2>
+            <div class="field"><label>景区地图</label><select id="mapSelect"></select></div>
+            <div class="field"><label>导入路网或点位 JSON</label><input id="importFile" type="file" accept=".json" /></div>
+            <p class="hint">滚轮上下浏览完整地图；Ctrl + 滚轮缩放；按住空格或鼠标中键拖动画布。所有坐标均保存为比例值。</p>
+          </section>
+          <section class="section mode-panel" data-panel="point">
+            <h2>景点中心</h2>
+            <div class="field"><label>当前景点</label><select class="spotSelect"></select></div>
+            <div class="grid2">
+              <div class="field"><label>服务分类</label><select id="serviceCategory">
+                <option value="restroom">卫生间</option>
+                <option value="dining">餐饮</option>
+                <option value="lodging">住宿</option>
+                <option value="shop">商铺</option>
+                <option value="shuttle">观光车站</option>
+              </select></div>
+              <div class="field"><label>新增服务点名称</label><input id="servicePointName" placeholder="例如：东门卫生间" /></div>
+            </div>
+            <div class="actions"><button class="action primary" id="addServicePoint">新增服务点</button></div>
+            <div class="actions">
+              <button class="action danger" id="deletePoint">删除点位</button>
+              <button class="action primary" id="copyMap">复制点位 JSON</button>
+            </div>
+          </section>
+          <section class="section mode-panel hidden" data-panel="road">
+            <h2>道路编辑</h2>
+            <p class="hint">按住鼠标沿道路滑动，松开后自动抽稀。删除道路会自动清理孤立白点；若白点仍连接其他道路，可点击白点后使用“删除选中节点”。景点会按位置自动吸附到最近道路。</p>
+            <div class="actions">
+              <button class="action" id="splitEdge">拆分选中道路</button>
+              <button class="action" id="mergeEdge">合并相邻道路</button>
+              <button class="action danger" id="deleteEdge">删除选中道路</button>
+              <button class="action danger" id="deleteNode">删除选中节点</button>
+              <button class="action" id="pruneNodes">清理孤立节点</button>
+            </div>
+          </section>
+          <section class="section mode-panel hidden" data-panel="anchor">
+            <h2>实测时间锚点</h2>
+            <div class="grid2">
+              <div class="field"><label>起点景点</label><select id="anchorFrom"></select></div>
+              <div class="field"><label>终点景点</label><select id="anchorTo"></select></div>
+            </div>
+            <div class="field"><label>正常连续步行分钟</label><input id="anchorMinutes" type="number" min="1" value="10" /></div>
+            <div class="actions"><button class="action primary" id="saveAnchor">保存时间锚点</button></div>
+            <div class="list" id="anchorList"></div>
+          </section>
+          <section class="section">
+            <h2>路网检查</h2>
+            <div class="validation" id="validation"></div>
+            <div class="actions">
+              <button class="action" id="validate">重新检查</button>
+              <button class="action" id="restoreSeed">恢复内置路网</button>
+              <button class="action primary" id="copyNetwork">复制路网 JSON</button>
+              <button class="action primary" id="copyAnchors">复制时间 JSON</button>
+            </div>
+          </section>
+          <section class="section">
+            <h2>已保存道路</h2>
+            <div class="list" id="edgeList"></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <script src="../scenic/networks/road-network-seed-v1.js"></script>
+    <script>
+      const maps = {
+        "ling-shan": {
+          id:"ling-shan", name:"灵山胜境建筑参照图", version:"ling-shan-overview-v1",
+          image_url:"../scenic/maps/ling-shan-overview-v1.webp", width:941, height:1672,
+          spots:[
+            ["spot_ls_entrance","景区入口"],
+            ["spot_ls_001","灵山大照壁"],["spot_ls_002","五明桥"],["spot_ls_003","佛足坛"],["spot_ls_004","五智门"],
+            ["spot_ls_005","菩提大道"],["spot_nine_dragons","九龙灌浴"],["spot_ls_007","降魔浮雕"],["spot_ls_008","阿育王柱"],
+            ["spot_ls_009","百子戏弥勒"],["spot_xiangfu_temple","祥符禅寺"],["spot_ling_shan_buddha","灵山大佛"],
+            ["spot_ls_012","佛教文化博览馆"],["spot_brahma_palace","灵山梵宫"],["spot_five_mudra_mandala","五印坛城"],
+            ["spot_ls_015","曼飞龙塔"],["spot_ls_016","无尽意斋"]
+          ]
+        },
+        "nianhua-bay": {
+          id:"nianhua-bay", name:"拈花湾禅意小镇建筑参照图", version:"nianhua-bay-overview-v1",
+          image_url:"../scenic/maps/nianhua-bay-overview-v1.png", width:941, height:1672,
+          spots:[
+            ["spot_nh_entrance","景区入口"],
+            ["spot_nh_001","拈花广场"],["spot_nh_002","梵天花海"],["spot_nh_003","香月花街"],
+            ["spot_nh_004","拈花堂"],["spot_nh_005","五灯湖"],["spot_nh_006","鹿鸣谷"]
+          ]
+        }
+      };
+      const initialPoints = {
+        "ling-shan":{"spot_ls_entrance":[.462791,.969331],"spot_ls_001":[.478509,.836011],"spot_ls_002":[.477632,.808365],"spot_ls_003":[.484211,.734312],"spot_ls_004":[.487281,.700741],"spot_ls_005":[.489035,.670626],"spot_nine_dragons":[.490789,.578801],"spot_ls_007":[.493421,.520546],"spot_ls_008":[.495175,.472165],"spot_ls_009":[.536842,.404036],"spot_xiangfu_temple":[.499561,.367997],"spot_ling_shan_buddha":[.501316,.163117],"spot_ls_012":[.501316,.19027],"spot_brahma_palace":[.737281,.449949],"spot_five_mudra_mandala":[.6642,.6663],"spot_ls_015":[.806579,.608422],"spot_ls_016":[.430263,.266297]},
+        "nianhua-bay":{"spot_nh_entrance":[.326357,.850663],"spot_nh_001":[.38374,.564316],"spot_nh_002":[.468293,.639585],"spot_nh_003":[.367073,.622426],"spot_nh_004":[.387805,.550589],"spot_nh_005":[.463415,.500257],"spot_nh_006":[.691463,.271019]}
+      };
+      const $ = (id) => document.getElementById(id);
+      const clone = (value) => structuredClone(value);
+      const storageKey = "a5-real-road-network-calibration-v4";
+      let mapId = "ling-shan";
+      let mode = "point";
+      let selectedEdgeId = "";
+      let selectedNodeId = "";
+      let drawing = null;
+      let dragging = null;
+      let panning = null;
+      let view = {scale:1,x:0,y:0};
+      const embeddedSeed = globalThis.SCENIC_ROAD_NETWORK_SEED || {networks:{},anchors:[]};
+      function seededNetwork(targetMapId){
+        const payload=clone(embeddedSeed.networks?.[targetMapId]||{});
+        return {
+          nodes:payload.nodes||[],
+          edges:payload.edges||[],
+          anchors:(embeddedSeed.anchors||[])
+            .filter((anchor)=>anchor.map_id===targetMapId)
+            .map((anchor)=>({
+              from_spot_id:anchor.from_spot_id,
+              to_spot_id:anchor.to_spot_id,
+              observed_minutes:anchor.observed_minutes,
+              road_edge_ids:anchor.road_edge_ids||[]
+            }))
+        };
+      }
+      let state = {
+        points:clone(initialPoints),
+        pointMeta:{"ling-shan":{},"nianhua-bay":{}},
+        networks:{
+          "ling-shan":seededNetwork("ling-shan"),
+          "nianhua-bay":seededNetwork("nianhua-bay")
+        }
+      };
+      let undoStack = [], redoStack = [];
+
+      function config(){ return maps[mapId]; }
+      function network(){ return state.networks[mapId]; }
+      function selectedSpot(){ return document.querySelector(`.mode-panel[data-panel="${mode}"] .spotSelect`)?.value || config().spots[0][0]; }
+      function ensurePointDefinitions(targetMapId){
+        const catalog=maps[targetMapId]?.spots||[];
+        Object.entries(state.pointMeta?.[targetMapId]||{}).forEach(([id,meta])=>{
+          if(!catalog.some(([spotId])=>spotId===id))catalog.push([id,meta.name,meta.point_type]);
+        });
+      }
+      function pointDefinition(id){
+        const saved=state.pointMeta?.[mapId]?.[id];
+        const defined=config().spots.find(([spotId])=>spotId===id);
+        return {
+          name:saved?.name||defined?.[1]||id,
+          point_type:saved?.point_type||defined?.[2]||(id.endsWith("_entrance")?"entrance":"spot")
+        };
+      }
+      function spotName(id){ return pointDefinition(id).name; }
+      function optionMarkup(){ return config().spots.map(([id,name])=>`<option value="${id}">${name}</option>`).join(""); }
+      function setStatus(text){ $("status").textContent=text; }
+      function saveLocal(){ localStorage.setItem(storageKey,JSON.stringify(state)); }
+      function loadLocal(){
+        try{
+          const saved=JSON.parse(localStorage.getItem(storageKey)||"null");
+          if(!saved?.points||!saved?.networks)return;
+          state.points={
+            "ling-shan":{...initialPoints["ling-shan"],...(saved.points["ling-shan"]||{})},
+            "nianhua-bay":{...initialPoints["nianhua-bay"],...(saved.points["nianhua-bay"]||{})}
+          };
+          state.pointMeta={
+            "ling-shan":{...(saved.pointMeta?.["ling-shan"]||{})},
+            "nianhua-bay":{...(saved.pointMeta?.["nianhua-bay"]||{})}
+          };
+          ensurePointDefinitions("ling-shan");
+          ensurePointDefinitions("nianhua-bay");
+          for(const targetMapId of Object.keys(state.networks)){
+            const current=saved.networks[targetMapId];
+            if(!current)continue;
+            state.networks[targetMapId]={
+              nodes:current.nodes||[],
+              edges:current.edges||[],
+              anchors:current.anchors||[]
+            };
+          }
+        }catch{}
+      }
+      function restoreSeed(){
+        commit("已恢复当前景区的内置初始路网",()=>{
+          state.networks[mapId]=seededNetwork(mapId);
+          selectedEdgeId="";
+          selectedNodeId="";
+        });
+      }
+      function snapshot(){ return clone(state); }
+      function commit(label, mutation){
+        undoStack.push(snapshot()); if(undoStack.length>50)undoStack.shift(); redoStack=[]; mutation(); saveLocal(); setStatus(label); renderAll();
+      }
+      function undo(){ if(!undoStack.length)return; redoStack.push(snapshot()); state=undoStack.pop(); saveLocal(); renderAll(); setStatus("已撤销"); }
+      function redo(){ if(!redoStack.length)return; undoStack.push(snapshot()); state=redoStack.pop(); saveLocal(); renderAll(); setStatus("已重做"); }
+      function applyView(){ $("canvas").style.transform=`translate(${view.x}px,${view.y}px) scale(${view.scale})`; $("zoomValue").textContent=`${Math.round(view.scale*100)}%`; }
+      function ratioFromEvent(event){
+        const rect=$("canvas").getBoundingClientRect();
+        return {x_ratio:Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width)),y_ratio:Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height))};
+      }
+      function distancePx(a,b){
+        const rect=$("canvas").getBoundingClientRect();
+        return Math.hypot((a.x_ratio-b.x_ratio)*rect.width,(a.y_ratio-b.y_ratio)*rect.height);
+      }
+      function nodeById(id){ return network().nodes.find((node)=>node.id===id); }
+      function edgeById(id){ return network().edges.find((edge)=>edge.id===id); }
+      function idPrefix(){ return mapId==="ling-shan"?"ls":"nh"; }
+      function nextId(kind, collection){ let index=collection.length+1,id; do{id=`${idPrefix()}_v1_${kind}_${String(index++).padStart(3,"0")}`;}while(collection.some((item)=>item.id===id)); return id; }
+      function nearestNode(point,limit=16){ return network().nodes.map((node)=>({node,distance:distancePx(point,node)})).filter((item)=>item.distance<=limit).sort((a,b)=>a.distance-b.distance)[0]?.node; }
+      function ensureNode(point,type="junction"){
+        const snapped=nearestNode(point); if(snapped)return snapped;
+        const node={id:nextId("road_node",network().nodes),x_ratio:+point.x_ratio.toFixed(6),y_ratio:+point.y_ratio.toFixed(6),node_type:type,calibration_status:"verified"};
+        network().nodes.push(node); return node;
+      }
+      function pruneUnusedNodes(){
+        const used=new Set(network().edges.flatMap((edge)=>[edge.from_node_id,edge.to_node_id]));
+        const before=network().nodes.length;
+        network().nodes=network().nodes.filter((node)=>used.has(node.id));
+        if(selectedNodeId&&!used.has(selectedNodeId))selectedNodeId="";
+        return before-network().nodes.length;
+      }
+      function polylineLength(points){ return points.slice(1).reduce((sum,p,index)=>sum+Math.hypot((p.x_ratio-points[index].x_ratio)*config().width,(p.y_ratio-points[index].y_ratio)*config().height),0); }
+      function perpendicularDistance(point,start,end){
+        const dx=end.x_ratio-start.x_ratio,dy=end.y_ratio-start.y_ratio;
+        if(!dx&&!dy)return Math.hypot(point.x_ratio-start.x_ratio,point.y_ratio-start.y_ratio);
+        const t=Math.max(0,Math.min(1,((point.x_ratio-start.x_ratio)*dx+(point.y_ratio-start.y_ratio)*dy)/(dx*dx+dy*dy)));
+        return Math.hypot(point.x_ratio-(start.x_ratio+t*dx),point.y_ratio-(start.y_ratio+t*dy));
+      }
+      function simplifyRdp(points,tolerance=.0017){
+        if(points.length<=2)return points;
+        let max=0,index=0;
+        for(let i=1;i<points.length-1;i++){const value=perpendicularDistance(points[i],points[0],points.at(-1));if(value>max){max=value;index=i;}}
+        if(max<=tolerance)return [points[0],points.at(-1)];
+        const left=simplifyRdp(points.slice(0,index+1),tolerance),right=simplifyRdp(points.slice(index),tolerance);
+        return [...left.slice(0,-1),...right];
+      }
+      function intersection(a,b,c,d){
+        const denominator=(a.x_ratio-b.x_ratio)*(c.y_ratio-d.y_ratio)-(a.y_ratio-b.y_ratio)*(c.x_ratio-d.x_ratio);
+        if(Math.abs(denominator)<1e-9)return null;
+        const x=((a.x_ratio*b.y_ratio-a.y_ratio*b.x_ratio)*(c.x_ratio-d.x_ratio)-(a.x_ratio-b.x_ratio)*(c.x_ratio*d.y_ratio-c.y_ratio*d.x_ratio))/denominator;
+        const y=((a.x_ratio*b.y_ratio-a.y_ratio*b.x_ratio)*(c.y_ratio-d.y_ratio)-(a.y_ratio-b.y_ratio)*(c.x_ratio*d.y_ratio-c.y_ratio*d.x_ratio))/denominator;
+        const inside=(v,p,q)=>v>=Math.min(p,q)-1e-7&&v<=Math.max(p,q)+1e-7;
+        if(!inside(x,a.x_ratio,b.x_ratio)||!inside(y,a.y_ratio,b.y_ratio)||!inside(x,c.x_ratio,d.x_ratio)||!inside(y,c.y_ratio,d.y_ratio))return null;
+        const point={x_ratio:x,y_ratio:y};
+        if([a,b,c,d].some((item)=>distancePx(item,point)<7))return null;
+        return point;
+      }
+      function firstIntersection(points){
+        for(let newIndex=0;newIndex<points.length-1;newIndex++){
+          for(const edge of network().edges){
+            for(let edgeIndex=0;edgeIndex<edge.points.length-1;edgeIndex++){
+              const point=intersection(points[newIndex],points[newIndex+1],edge.points[edgeIndex],edge.points[edgeIndex+1]);
+              if(point)return {point,newIndex,edge,edgeIndex};
+            }
+          }
+        }
+        return null;
+      }
+      function edgeTemplate(from,to,points){
+        return {id:nextId("road_edge",network().edges),from_node_id:from,to_node_id:to,points:points.map((p)=>({x_ratio:+p.x_ratio.toFixed(6),y_ratio:+p.y_ratio.toFixed(6)})),map_length_px:+polylineLength(points).toFixed(3)};
+      }
+      function splitExisting(edge,segmentIndex,point,junction){
+        const inserted=[...edge.points.slice(0,segmentIndex+1),point,...edge.points.slice(segmentIndex+1)];
+        const cut=segmentIndex+1;
+        network().edges=network().edges.filter((item)=>item.id!==edge.id);
+        network().edges.push(edgeTemplate(edge.from_node_id,junction.id,inserted.slice(0,cut+1),edge));
+        network().edges.push(edgeTemplate(junction.id,edge.to_node_id,inserted.slice(cut),edge));
+      }
+      function addRoad(points){
+        const simplified=simplifyRdp(points);
+        if(simplified.length<2||distancePx(simplified[0],simplified.at(-1))<8)return setStatus("描绘距离太短，未保存");
+        const crossing=firstIntersection(simplified);
+        const start=ensureNode(simplified[0]),end=ensureNode(simplified.at(-1));
+        simplified[0]={x_ratio:start.x_ratio,y_ratio:start.y_ratio}; simplified[simplified.length-1]={x_ratio:end.x_ratio,y_ratio:end.y_ratio};
+        if(crossing&&confirm("检测到道路交叉。是否在此创建真实连通路口？")){
+          const junction=ensureNode(crossing.point,"junction");
+          splitExisting(crossing.edge,crossing.edgeIndex,crossing.point,junction);
+          const augmented=[...simplified.slice(0,crossing.newIndex+1),crossing.point,...simplified.slice(crossing.newIndex+1)];
+          const cut=crossing.newIndex+1;
+          network().edges.push(edgeTemplate(start.id,junction.id,augmented.slice(0,cut+1)));
+          network().edges.push(edgeTemplate(junction.id,end.id,augmented.slice(cut)));
+          setStatus("道路已保存并创建交叉路口；密集交叉请分段继续描绘");
+        }else{
+          network().edges.push(edgeTemplate(start.id,end.id,simplified));
+          setStatus("道路已保存");
+        }
+      }
+      function renderMarkers(){
+        $("markers").innerHTML="";
+        Object.entries(state.points[mapId]||{}).forEach(([id,[x,y]],index)=>{
+          const button=document.createElement("button");button.className=`marker ${selectedSpot()===id?"selected":""}`;button.innerHTML=`<b>${index+1}</b>`;button.title=spotName(id);button.style.left=`${x*100}%`;button.style.top=`${y*100}%`;
+          button.onpointerdown=(event)=>{if(mode!=="point")return;event.stopPropagation();undoStack.push(snapshot());redoStack=[];dragging={kind:"point",id};};
+          button.onclick=(event)=>{event.stopPropagation();document.querySelectorAll(".spotSelect").forEach((select)=>select.value=id);renderAll();};
+          $("markers").appendChild(button);
+        });
+      }
+      function renderRoads(){
+        const svg=$("overlay");svg.innerHTML="";
+        network().edges.forEach((edge)=>{
+          const line=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+          line.setAttribute("points",edge.points.map((p)=>`${p.x_ratio*1000},${p.y_ratio*1000}`).join(" "));
+          line.setAttribute("class",`road ${selectedEdgeId===edge.id?"selected":""}`);
+          line.onclick=(event)=>{event.stopPropagation();selectedEdgeId=edge.id;selectedNodeId="";renderAll();};
+          svg.appendChild(line);
+        });
+        if(drawing?.length>1){const line=document.createElementNS("http://www.w3.org/2000/svg","polyline");line.setAttribute("class","draft");line.setAttribute("points",drawing.map((p)=>`${p.x_ratio*1000},${p.y_ratio*1000}`).join(" "));svg.appendChild(line);}
+      }
+      function renderNodes(){
+        $("nodes").innerHTML="";
+        const degrees=new Map();network().edges.forEach((edge)=>{degrees.set(edge.from_node_id,(degrees.get(edge.from_node_id)||0)+1);degrees.set(edge.to_node_id,(degrees.get(edge.to_node_id)||0)+1);});
+        if(mode!=="road")return;
+        network().nodes.forEach((node)=>{
+          const button=document.createElement("button");button.className=`node ${selectedNodeId===node.id?"selected":""} ${(degrees.get(node.id)||0)<=1?"dangling":""}`;button.title=`${node.id}（点击选择，拖动修正）`;button.style.left=`${node.x_ratio*100}%`;button.style.top=`${node.y_ratio*100}%`;
+          button.onpointerdown=(event)=>{event.stopPropagation();undoStack.push(snapshot());redoStack=[];dragging={kind:"road-node",id:node.id};};
+          button.onclick=(event)=>{event.stopPropagation();selectedNodeId=node.id;selectedEdgeId="";renderAll();};
+          $("nodes").appendChild(button);
+        });
+      }
+      function renderVertices(){
+        $("vertices").innerHTML="";if(mode!=="road"||!selectedEdgeId)return;
+        const edge=edgeById(selectedEdgeId);if(!edge)return;
+        edge.points.slice(1,-1).forEach((point,index)=>{
+          const button=document.createElement("button");button.className="vertex";button.style.left=`${point.x_ratio*100}%`;button.style.top=`${point.y_ratio*100}%`;button.title="拖动修正折线节点";
+          button.onpointerdown=(event)=>{event.stopPropagation();undoStack.push(snapshot());redoStack=[];dragging={kind:"vertex",edgeId:edge.id,index:index+1};};
+          $("vertices").appendChild(button);
+        });
+      }
+      function renderLists(){
+        $("edgeList").innerHTML=network().edges.map((edge)=>`<div class="item"><span>${edge.id} · ${Math.round(edge.map_length_px||polylineLength(edge.points))}px</span><button data-edge="${edge.id}">选择</button></div>`).join("")||'<p class="hint">尚未描绘道路。</p>';
+        $("edgeList").querySelectorAll("button").forEach((button)=>button.onclick=()=>{selectedEdgeId=button.dataset.edge;switchMode("road");});
+        $("anchorList").innerHTML=network().anchors.map((anchor,index)=>`<div class="item"><span>${spotName(anchor.from_spot_id)} → ${spotName(anchor.to_spot_id)} · ${anchor.observed_minutes}分钟</span><button data-anchor="${index}">删除</button></div>`).join("")||'<p class="hint">尚未录入时间锚点。</p>';
+        $("anchorList").querySelectorAll("button").forEach((button)=>button.onclick=()=>commit("时间锚点已删除",()=>network().anchors.splice(Number(button.dataset.anchor),1)));
+      }
+      function refreshPointSelects(){
+        const currentId=document.querySelector('.mode-panel[data-panel="point"] .spotSelect')?.value;
+        document.querySelectorAll(".spotSelect,#anchorFrom,#anchorTo").forEach((select)=>{
+          select.innerHTML=optionMarkup();
+          if(currentId&&config().spots.some(([id])=>id===currentId))select.value=currentId;
+        });
+      }
+      function renderAll(){
+        const current=config();
+        refreshPointSelects();
+        if($("mapImage").dataset.mapId!==mapId){
+          $("mapImage").dataset.mapId=mapId;
+          $("mapImage").src=current.image_url;
+        }
+        $("mapMeta").innerHTML=`${current.version}<br>${current.width} × ${current.height} · ${current.spots.length} 个景点`;
+        renderMarkers();renderRoads();renderNodes();renderVertices();renderLists();applyView();validateNetwork();
+      }
+      function switchMode(next){
+        mode=next;drawing=null;dragging=null;document.querySelectorAll("[data-mode]").forEach((button)=>button.classList.toggle("active",button.dataset.mode===mode));document.querySelectorAll(".mode-panel").forEach((panel)=>panel.classList.toggle("hidden",panel.dataset.panel!==mode));
+        const messages={point:"选择景点后点击大概位置",road:"按住鼠标沿游客可走道路滑动",anchor:"录入正常连续步行时间"};
+        setStatus(messages[mode]);renderAll();
+      }
+      function splitSelectedEdge(){
+        const edge=edgeById(selectedEdgeId);if(!edge)return setStatus("请先选择道路");
+        commit("道路已拆分",()=>{
+          let points=[...edge.points],cut=Math.floor(points.length/2);
+          if(points.length===2){const middle={x_ratio:(points[0].x_ratio+points[1].x_ratio)/2,y_ratio:(points[0].y_ratio+points[1].y_ratio)/2};points=[points[0],middle,points[1]];cut=1;}
+          const node=ensureNode(points[cut],"junction");network().edges=network().edges.filter((item)=>item.id!==edge.id);
+          network().edges.push(edgeTemplate(edge.from_node_id,node.id,points.slice(0,cut+1),edge),edgeTemplate(node.id,edge.to_node_id,points.slice(cut),edge));selectedEdgeId="";
+        });
+      }
+      function mergeSelectedEdge(){
+        const edge=edgeById(selectedEdgeId);if(!edge)return setStatus("请先选择道路");
+        const candidates=network().edges.filter((item)=>item.id!==edge.id&&[edge.from_node_id,edge.to_node_id].some((node)=>[item.from_node_id,item.to_node_id].includes(node)));
+        const other=candidates.find((item)=>{
+          const shared=[edge.from_node_id,edge.to_node_id].find((node)=>[item.from_node_id,item.to_node_id].includes(node));
+          const degree=network().edges.filter((candidate)=>candidate.from_node_id===shared||candidate.to_node_id===shared).length;
+          return degree===2;
+        });
+        if(!other)return setStatus("没有可安全合并的相邻道路");
+        commit("相邻道路已合并",()=>{
+          const shared=[edge.from_node_id,edge.to_node_id].find((node)=>[other.from_node_id,other.to_node_id].includes(node));
+          const orient=(item,startAtShared)=>{const starts=item.from_node_id===shared;const points=starts?item.points:[...item.points].reverse();return startAtShared?points:[...points].reverse();};
+          const first=edge.to_node_id===shared?edge:other,second=first===edge?other:edge;
+          const firstPoints=first.to_node_id===shared?first.points:[...first.points].reverse();
+          const secondPoints=second.from_node_id===shared?second.points:[...second.points].reverse();
+          const from=first.to_node_id===shared?first.from_node_id:first.to_node_id,to=second.from_node_id===shared?second.to_node_id:second.from_node_id;
+          network().edges=network().edges.filter((item)=>![edge.id,other.id].includes(item.id));network().nodes=network().nodes.filter((node)=>node.id!==shared);
+          network().edges.push(edgeTemplate(from,to,[...firstPoints,...secondPoints.slice(1)],edge));selectedEdgeId="";
+        });
+      }
+      function validateNetwork(){
+        const issues=[],net=network();
+        const degree=new Map();net.edges.forEach((edge)=>{degree.set(edge.from_node_id,(degree.get(edge.from_node_id)||0)+1);degree.set(edge.to_node_id,(degree.get(edge.to_node_id)||0)+1);});
+        const orphaned=net.nodes.filter((node)=>(degree.get(node.id)||0)===0);if(orphaned.length)issues.push(`${orphaned.length} 个孤立节点可直接清理`);
+        if(net.nodes.length&&net.edges.length){
+          const graph=new Map();net.edges.forEach((edge)=>{graph.set(edge.from_node_id,[...(graph.get(edge.from_node_id)||[]),edge.to_node_id]);graph.set(edge.to_node_id,[...(graph.get(edge.to_node_id)||[]),edge.from_node_id]);});
+          const start=net.edges[0].from_node_id,seen=new Set([start]),queue=[start];while(queue.length){for(const next of graph.get(queue.shift())||[])if(!seen.has(next)){seen.add(next);queue.push(next);}}
+          const disconnected=net.nodes.filter((node)=>(degree.get(node.id)||0)>0&&!seen.has(node.id));if(disconnected.length)issues.push(`${disconnected.length} 个道路节点未连接到主路网`);
+        }
+        $("validation").innerHTML=issues.length?issues.map((text)=>`<div class="issue">${text}</div>`).join(""):'<div class="issue ok">路网结构检查通过，景点会自动吸附到最近道路</div>';
+        return issues;
+      }
+      function mapPayload(){const c=config();return {map:{id:c.id,name:c.name,image_url:c.image_url,version:c.version,width:c.width,height:c.height,center_lat:0,center_lng:0,authorization_status:"pending_confirmation",source_note:"人工标定导出",is_active:true},points:Object.entries(state.points[mapId]).map(([spot_id,[x_ratio,y_ratio]])=>{const definition=pointDefinition(spot_id);return {spot_id,name:definition.name,x_ratio,y_ratio,point_type:definition.point_type,calibration_status:"verified"};})};}
+      function networkPayload(){const c=config();pruneUnusedNodes();return {id:`${mapId}-road-network-v1`,map_id:mapId,data_version:`${mapId}-road-network-v1`,status:"provisional",is_active:true,source_note:"用户人工描绘的游客可走道路。所有道路统一按普通双向步行处理，时间仅为地图粗略估算。",nodes:network().nodes.map(({id,x_ratio,y_ratio})=>({id,x_ratio,y_ratio})),edges:network().edges.map(({id,from_node_id,to_node_id,points})=>({id,from_node_id,to_node_id,points})),map_width:c.width,map_height:c.height};}
+      function anchorsPayload(){return {data_version:"road-time-anchors-v1",anchors:network().anchors.map((item,index)=>({id:`anchor_${mapId.replaceAll("-","_")}_${String(index+1).padStart(3,"0")}`,map_id:mapId,...item,measurement_type:"rough_reference",confidence:.55,source_note:"人工录入的粗略步行时间参考。"}))};}
+      async function copyJson(payload,label){await navigator.clipboard.writeText(JSON.stringify(payload,null,2));setStatus(`${label}已复制`);}
+
+      $("mapSelect").innerHTML=Object.values(maps).map((item)=>`<option value="${item.id}">${item.name}</option>`).join("");
+      document.querySelectorAll(".spotSelect,#anchorFrom,#anchorTo").forEach((select)=>select.innerHTML=optionMarkup());
+      $("anchorTo").selectedIndex=1;
+      document.querySelectorAll("[data-mode]").forEach((button)=>button.onclick=()=>switchMode(button.dataset.mode));
+      document.querySelectorAll(".spotSelect").forEach((select)=>select.onchange=()=>{document.querySelectorAll(".spotSelect").forEach((other)=>other.value=select.value);renderAll();});
+      $("mapSelect").onchange=(event)=>{mapId=event.target.value;selectedEdgeId="";selectedNodeId="";document.querySelectorAll(".spotSelect,#anchorFrom,#anchorTo").forEach((select)=>select.innerHTML=optionMarkup());$("anchorTo").selectedIndex=1;view={scale:1,x:0,y:0};$("viewport").scrollTop=0;$("viewport").scrollLeft=0;renderAll();};
+      $("undo").onclick=undo;$("redo").onclick=redo;$("resetView").onclick=()=>{view={scale:1,x:0,y:0};$("viewport").scrollTop=0;$("viewport").scrollLeft=0;applyView();};
+      $("viewport").onwheel=(event)=>{
+        if(!(event.ctrlKey||event.metaKey))return;
+        event.preventDefault();
+        const old=view.scale;
+        view.scale=Math.max(.65,Math.min(4,view.scale*(event.deltaY<0?1.12:.89)));
+        const rect=$("viewport").getBoundingClientRect(),mx=event.clientX-rect.left,my=event.clientY-rect.top;
+        view.x=mx-(mx-view.x)*(view.scale/old);
+        view.y=my-(my-view.y)*(view.scale/old);
+        applyView();
+      };
+      window.onkeydown=(event)=>{if(event.code==="Space")document.body.dataset.space="1";if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z"){event.preventDefault();event.shiftKey?redo():undo();}};
+      window.onkeyup=(event)=>{if(event.code==="Space")delete document.body.dataset.space;};
+      $("viewport").onpointerdown=(event)=>{
+        if(event.button===1||document.body.dataset.space){panning={x:event.clientX,y:event.clientY,viewX:view.x,viewY:view.y};return;}
+        if(event.target.closest("button")||event.target.closest(".road"))return;
+        const ratio=ratioFromEvent(event);
+        if(mode==="point")commit("景点中心已更新",()=>state.points[mapId][selectedSpot()]=[+ratio.x_ratio.toFixed(6),+ratio.y_ratio.toFixed(6)]);
+        if(mode==="road"){undoStack.push(snapshot());redoStack=[];drawing=[ratio];$("viewport").setPointerCapture(event.pointerId);}
+      };
+      $("viewport").onpointermove=(event)=>{
+        if(panning){view.x=panning.viewX+event.clientX-panning.x;view.y=panning.viewY+event.clientY-panning.y;applyView();return;}
+        if(drawing){const ratio=ratioFromEvent(event);if(distancePx(drawing.at(-1),ratio)>4){drawing.push(ratio);renderRoads();}}
+        if(dragging){
+          const ratio=ratioFromEvent(event);
+          if(dragging.kind==="point")state.points[mapId][dragging.id]=[ratio.x_ratio,ratio.y_ratio];
+          if(dragging.kind==="road-node"){const node=nodeById(dragging.id);if(node){node.x_ratio=ratio.x_ratio;node.y_ratio=ratio.y_ratio;network().edges.forEach((edge)=>{if(edge.from_node_id===node.id)edge.points[0]={...ratio};if(edge.to_node_id===node.id)edge.points[edge.points.length-1]={...ratio};edge.map_length_px=polylineLength(edge.points);});}}
+          if(dragging.kind==="vertex"){const edge=edgeById(dragging.edgeId);if(edge){edge.points[dragging.index]=ratio;edge.map_length_px=polylineLength(edge.points);}}
+          renderAll();
+        }
+      };
+      window.onpointerup=()=>{
+        if(drawing){const points=drawing;drawing=null;addRoad(points);saveLocal();renderAll();}
+        if(dragging){dragging=null;saveLocal();setStatus("位置修正已保存");renderAll();}
+        panning=null;
+      };
+      $("addServicePoint").onclick=()=>{
+        const name=$("servicePointName").value.trim();
+        const pointType=$("serviceCategory").value;
+        if(!name)return setStatus("请先填写服务点名称");
+        const id=`${idPrefix()}_poi_${pointType}_${Date.now().toString(36)}`;
+        commit("服务点已新增",()=>{
+          state.pointMeta[mapId][id]={name,point_type:pointType};
+          config().spots.push([id,name,pointType]);
+          state.points[mapId][id]=[.5,.5];
+        });
+        document.querySelectorAll(".spotSelect").forEach((select)=>select.value=id);
+        $("servicePointName").value="";
+        renderAll();
+      };
+      $("deletePoint").onclick=()=>{
+        const id=selectedSpot();
+        commit("点位已删除",()=>{
+          delete state.points[mapId][id];
+          if(state.pointMeta[mapId]?.[id]){
+            delete state.pointMeta[mapId][id];
+            config().spots= config().spots.filter(([spotId])=>spotId!==id);
+          }
+        });
+      };
+      $("splitEdge").onclick=splitSelectedEdge;$("mergeEdge").onclick=mergeSelectedEdge;
+      $("deleteEdge").onclick=()=>{if(!edgeById(selectedEdgeId))return setStatus("请先选择道路");commit("道路及其孤立节点已删除",()=>{network().edges=network().edges.filter((item)=>item.id!==selectedEdgeId);selectedEdgeId="";pruneUnusedNodes();});};
+      $("deleteNode").onclick=()=>{if(!nodeById(selectedNodeId))return setStatus("请先点击选择道路节点");commit("节点及相连道路已删除",()=>{network().edges=network().edges.filter((edge)=>edge.from_node_id!==selectedNodeId&&edge.to_node_id!==selectedNodeId);network().nodes=network().nodes.filter((node)=>node.id!==selectedNodeId);selectedNodeId="";selectedEdgeId="";pruneUnusedNodes();});};
+      $("pruneNodes").onclick=()=>{const removable=network().nodes.filter((node)=>!network().edges.some((edge)=>edge.from_node_id===node.id||edge.to_node_id===node.id)).length;if(!removable)return setStatus("当前没有孤立节点");commit(`已清理 ${removable} 个孤立节点`,pruneUnusedNodes);};
+      $("saveAnchor").onclick=()=>{const from=$("anchorFrom").value,to=$("anchorTo").value,minutes=Number($("anchorMinutes").value);if(from===to||!minutes)return setStatus("请选择不同景点并填写时间");commit("时间锚点已保存",()=>{network().anchors=network().anchors.filter((item)=>!(item.from_spot_id===from&&item.to_spot_id===to));network().anchors.push({from_spot_id:from,to_spot_id:to,observed_minutes:minutes,road_edge_ids:[]});});};
+      $("validate").onclick=()=>{const issues=validateNetwork();setStatus(issues.length?`发现 ${issues.length} 类问题`:"路网结构检查通过");};
+      $("restoreSeed").onclick=restoreSeed;
+      $("copyMap").onclick=()=>copyJson(mapPayload(),"点位 JSON");$("copyNetwork").onclick=()=>copyJson(networkPayload(),"路网 JSON");$("copyAnchors").onclick=()=>copyJson(anchorsPayload(),"时间锚点 JSON");
+      $("importFile").onchange=async(event)=>{const file=event.target.files?.[0];if(!file)return;try{const payload=JSON.parse(await file.text());commit("JSON 导入完成",()=>{if(payload.map?.id&&payload.points){mapId=payload.map.id;state.points[mapId]={...initialPoints[mapId],...Object.fromEntries(payload.points.map((p)=>[p.spot_id,[p.x_ratio,p.y_ratio]]))};}if(payload.map_id&&payload.nodes&&payload.edges){mapId=payload.map_id;state.networks[mapId]={...state.networks[mapId],nodes:payload.nodes,edges:payload.edges};pruneUnusedNodes();}if(payload.anchors){payload.anchors.forEach((anchor)=>{const target=anchor.map_id||mapId;state.networks[target].anchors.push(anchor);});}$("mapSelect").value=mapId;document.querySelectorAll(".spotSelect,#anchorFrom,#anchorTo").forEach((select)=>select.innerHTML=optionMarkup());});}catch{setStatus("JSON 解析失败");}};
+      $("importFile").addEventListener("change",async(event)=>{
+        const file=event.target.files?.[0];
+        if(!file)return;
+        try{
+          const payload=JSON.parse(await file.text());
+          if(!payload.map?.id||!payload.points)return;
+          mapId=payload.map.id;
+          state.pointMeta[mapId]={...state.pointMeta[mapId],...Object.fromEntries(payload.points.filter((p)=>p.name||p.point_type).map((p)=>[p.spot_id,{name:p.name||p.spot_id,point_type:p.point_type||"spot"}]))};
+          ensurePointDefinitions(mapId);
+          saveLocal();
+          renderAll();
+        }catch{}
+      });
+      $("mapImage").onload=()=>setStatus(`${config().name}底图已加载，可以直接沿图中道路描绘`);
+      $("mapImage").onerror=()=>{
+        const fallback=new URL(`../scenic/maps/${mapId==="ling-shan"?"ling-shan-overview-v1.webp":"nianhua-bay-overview-v1.png"}`,location.href).href;
+        if($("mapImage").src!==fallback){$("mapImage").src=fallback;return;}
+        setStatus("底图加载失败，请通过项目的 http://127.0.0.1:5173/tools/scenic-map-calibrator.html 打开");
+      };
+      loadLocal();renderAll();
+    </script>
+  </body>
+</html>

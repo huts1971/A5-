@@ -8,6 +8,8 @@ from app.services.mimo import MimoClient
 
 
 def test_settings_use_mimo_api_key_alias_and_model_defaults(monkeypatch):
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.delenv("TTS_API_KEY", raising=False)
     monkeypatch.delenv("LLM_MODEL", raising=False)
     monkeypatch.delenv("TTS_MODEL", raising=False)
     monkeypatch.delenv("TTS_AUDIO_FORMAT", raising=False)
@@ -62,6 +64,44 @@ def test_mimo_chat_completion_uses_openai_compatible_request():
         {"role": "system", "content": "system"},
         {"role": "user", "content": "user"},
     ]
+
+
+def test_mimo_vision_chat_completion_uses_multimodal_message():
+    captured = {}
+    image_data_url = "data:image/jpeg;base64,aW1hZ2U="
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": "\u56fe\u7247\u91cc\u662f\u666f\u70b9"}}]},
+        )
+
+    client = MimoClient(
+        "https://api.xiaomimimo.com/v1",
+        "test-key",
+        transport=httpx.MockTransport(handler),
+    )
+
+    answer = client.vision_chat_completion(
+        model="mimo-v2.5",
+        system_prompt="system",
+        user_prompt="user",
+        image_data_url=image_data_url,
+    )
+
+    assert answer == "\u56fe\u7247\u91cc\u662f\u666f\u70b9"
+    assert captured["body"]["messages"] == [
+        {"role": "system", "content": "system"},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "user"},
+                {"type": "image_url", "image_url": {"url": image_data_url}},
+            ],
+        },
+    ]
+    assert captured["body"]["stream"] is False
 
 
 def test_mimo_chat_completion_stream_reads_delta_chunks():

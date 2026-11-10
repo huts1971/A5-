@@ -1,0 +1,156 @@
+.viewer {
+  --viewer-text: #141413;
+  --viewer-muted: #686762;
+  --viewer-accent: #b86449;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--viewer-text);
+  background: #eeeee9;
+}
+
+.panoramaFrame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #eeeee9;
+  border: 0;
+}
+
+.loadingState {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  background: rgba(250, 249, 245, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.loadingState > span:first-child {
+  color: var(--viewer-accent);
+  font-size: 24px;
+}
+
+.loadingState strong {
+  font-size: 15px;
+}
+
+.loadingState span:last-child {
+  color: var(--viewer-muted);
+  font-size: 11px;
+}
+
+.viewSwitcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: min(248px, 100%);
+  padding: 10px;
+  background: rgba(254, 253, 251, 0.97);
+  border: 0;
+  border-right: 1px solid rgba(254, 253, 251, 0.86);
+  border-bottom: 1px solid rgba(254, 253, 251, 0.86);
+  border-radius: 0 0 8px;
+  box-shadow: 0 16px 36px rgba(28, 27, 24, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.viewList {
+  display: grid;
+  gap: 3px;
+}
+
+.viewButton,
+.viewButtonActive {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 8px;
+  color: var(--viewer-muted);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+
+.viewButton:hover,
+.viewButton:focus-visible {
+  color: var(--viewer-text);
+  background: rgba(20, 20, 19, 0.05);
+  outline: 0;
+}
+
+.viewButtonActive {
+  color: var(--viewer-accent);
+  background: rgba(217, 119, 87, 0.14);
+}
+
+.viewButton > span,
+.viewButtonActive > span {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.viewButton strong,
+.viewButtonActive strong {
+  overflow: hidden;
+  color: inherit;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .viewSwitcher {
+    right: 0;
+    left: 0;
+    width: auto;
+    padding: 8px;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .viewList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .viewButton,
+  .viewButtonActive {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-height: 48px;
+    padding: 6px 4px;
+    text-align: center;
+  }
+
+  .viewButton > span,
+  .viewButtonActive > span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewButton,
+  .viewButtonActive {
+    transition: none;
+  }
+}

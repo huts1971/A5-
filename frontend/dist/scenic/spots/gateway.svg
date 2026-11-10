@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="景区入口牌坊封面">
-  <rect width="960" height="540" fill="#eef4ec"/>
-  <path d="M0 372c150-52 300-56 450-12 150 44 320 20 510-72v252H0z" fill="#dce9db"/>
-  <path d="M218 202h524l-70 70H288z" fill="#1e625b"/>
-  <path d="M260 272h440v58H260z" fill="#f7edd5"/>
-  <path d="M318 330h64v138h-64zM578 330h64v138h-64z" fill="#1e625b" opacity=".88"/>
-  <path d="M404 330h152v138H404z" fill="#fff8e8"/>
-  <circle cx="730" cy="126" r="58" fill="#d59d45" opacity=".68"/>
-</svg>

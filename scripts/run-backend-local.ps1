@@ -6,7 +6,7 @@ $python = Join-Path $backend '.venv\Scripts\python.exe'
 $log = Join-Path $backend 'backend-local-server-8001.log'
 
 if (-not (Test-Path $python)) {
-  throw "Backend venv python not found: $python. Recreate it in V1\backend first."
+  throw "Backend venv python not found: $python. Run init-env.bat from the project root first."
 }
 
 Set-Location $backend

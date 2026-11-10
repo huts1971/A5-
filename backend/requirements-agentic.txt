@@ -1,0 +1,2 @@
+-r requirements.txt
+-e ../packages/scenic-guide-core[ingest,retrieval]

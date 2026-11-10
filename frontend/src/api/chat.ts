@@ -1,9 +1,42 @@
 import { requestJson, toApiError } from './client';
+import { readVisitorToken } from './auth';
 import { API_BASE_URL, USE_MOCK_API } from './config';
 import { mockChatAnswers } from './mock/visitorData';
+import { toRoutePlan } from './routes';
 import type { ChatRequest, ChatResponse } from '../types/scenic';
 
-const wait = (ms = 520) => new Promise((resolve) => window.setTimeout(resolve, ms));
+const wait = (ms = 520, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(createAbortError(signal));
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      signal?.removeEventListener('abort', handleAbort);
+      resolve();
+    }, ms);
+    const handleAbort = () => {
+      window.clearTimeout(timer);
+      signal?.removeEventListener('abort', handleAbort);
+      reject(createAbortError(signal));
+    };
+    signal?.addEventListener('abort', handleAbort, { once: true });
+  });
+
+function createAbortError(signal?: AbortSignal): unknown {
+  return signal?.reason ?? new DOMException('The operation was aborted.', 'AbortError');
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    (typeof DOMException !== 'undefined' && error instanceof DOMException && error.name === 'AbortError') ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      (error as { name?: unknown }).name === 'AbortError')
+  );
+}
 
 function createFallbackResponse(error: unknown): ChatResponse {
   const apiError = toApiError(error, 'AI 服务暂时不可用，已切换为本地兜底回答。');
@@ -47,6 +80,8 @@ interface BackendChatResponse {
   tts_status: string;
   mode: string;
   degraded: boolean;
+  guide_action?: BackendGuideAction | null;
+  emotion_cue?: string;
   metrics?: {
     retrieval_ms: number;
     llm_ms: number;
@@ -54,11 +89,36 @@ interface BackendChatResponse {
     total_ms: number;
     cache_hit: boolean;
     degraded: boolean;
+    guide_intent?: string;
+    evidence_profile?: string;
+    route_triggered?: boolean;
+    answer_style?: string;
+    llm_model?: string;
+    embedding_model?: string;
+    first_delta_ms?: number;
+    retrieval_cache_hit?: boolean;
+    answer_cache_hit?: boolean;
+    embedding_cache_hit?: boolean;
+    warmup_status?: string;
   };
 }
 
-interface StreamChatOptions {
+interface BackendGuideAction {
+  type: string;
+  title?: string;
+  route?: unknown;
+  preference?: {
+    map_id?: 'ling-shan' | 'nianhua-bay';
+    duration_minutes?: number;
+    physical_level?: 'low' | 'medium' | 'high';
+    interest_tags?: string[];
+    accessible_required?: boolean;
+  } | null;
+}
+
+export interface StreamChatOptions {
   onDelta?: (text: string) => void;
+  signal?: AbortSignal;
 }
 
 function toBackendChatRequest(input: ChatRequest) {
@@ -66,15 +126,78 @@ function toBackendChatRequest(input: ChatRequest) {
     question: input.question,
     spot_id: input.spotId,
     session_id: input.sessionId,
+    image: input.image
+      ? {
+          mime_type: input.image.mimeType,
+          size_bytes: input.image.sizeBytes,
+          data_url: input.image.dataUrl,
+        }
+      : undefined,
     profile: {
-      visitor_type: input.visitorType,
       preference: input.preference,
+      route_preference: input.routePreference
+        ? {
+            map_id: input.routePreference.mapId,
+            duration_minutes: input.routePreference.durationMinutes,
+            physical_level: input.routePreference.physicalLevel,
+            interest_tags: input.routePreference.interestTags,
+          }
+        : undefined,
+      route_context: input.routeContext ? toBackendRouteContext(input.routeContext) : undefined,
       current_spot_name: input.currentSpotName,
     },
   };
 }
 
+function toBackendRouteContext(context: NonNullable<ChatRequest['routeContext']>) {
+  return {
+    map_id: context.mapId,
+    scenic_name: context.scenicName,
+    route_id: context.routeId,
+    draft_id: context.draftId,
+    tour_id: context.tourId,
+    route_name: context.routeName,
+    total_minutes: context.totalMinutes,
+    current_index: context.currentIndex,
+    current_spot: context.currentSpot ? toBackendRouteContextSpot(context.currentSpot) : undefined,
+    next_spot: context.nextSpot ? toBackendRouteContextSpot(context.nextSpot) : undefined,
+    ordered_spots: context.orderedSpots.map(toBackendRouteContextSpot),
+    location_assist: context.locationAssist
+      ? {
+          mode: context.locationAssist.mode,
+          status: context.locationAssist.status,
+          accuracy_meters: context.locationAssist.accuracyMeters,
+          display_spot_id: context.locationAssist.displaySpotId,
+          updated_at: context.locationAssist.updatedAt,
+        }
+      : undefined,
+    preference: context.preference
+      ? {
+          map_id: context.preference.mapId,
+          duration_minutes: context.preference.durationMinutes,
+          physical_level: context.preference.physicalLevel,
+          interest_tags: context.preference.interestTags,
+        }
+      : undefined,
+    status: context.status,
+  };
+}
+
+function toBackendRouteContextSpot(spot: NonNullable<ChatRequest['routeContext']>['orderedSpots'][number]) {
+  return {
+    spot_id: spot.spotId,
+    name: spot.name,
+    stay_minutes: spot.stayMinutes,
+    transition_minutes: spot.transitionMinutes,
+    transition_note: spot.transitionNote,
+    sequence: spot.sequence,
+    status: spot.status,
+    reason: spot.reason,
+  };
+}
+
 function toChatResponse(response: BackendChatResponse): ChatResponse {
+  const guideAction = toGuideAction(response.guide_action);
   return {
     answer: response.answer,
     sources: response.sources.map((source, index) => ({
@@ -92,6 +215,8 @@ function toChatResponse(response: BackendChatResponse): ChatResponse {
     ttsStatus: response.tts_status as ChatResponse['ttsStatus'],
     sessionId: response.session_id,
     isFallback: response.degraded || response.mode === 'fallback',
+    guideAction,
+    emotionCue: response.emotion_cue,
     metrics: response.metrics
       ? {
           retrievalMs: response.metrics.retrieval_ms,
@@ -100,6 +225,33 @@ function toChatResponse(response: BackendChatResponse): ChatResponse {
           totalMs: response.metrics.total_ms,
           cacheHit: response.metrics.cache_hit,
           degraded: response.metrics.degraded,
+          guideIntent: response.metrics.guide_intent,
+          evidenceProfile: response.metrics.evidence_profile,
+          routeTriggered: response.metrics.route_triggered,
+          answerStyle: response.metrics.answer_style,
+          firstDeltaMs: response.metrics.first_delta_ms,
+          retrievalCacheHit: response.metrics.retrieval_cache_hit,
+          answerCacheHit: response.metrics.answer_cache_hit,
+          embeddingCacheHit: response.metrics.embedding_cache_hit,
+          warmupStatus: response.metrics.warmup_status,
+        }
+      : undefined,
+  };
+}
+
+function toGuideAction(action?: BackendGuideAction | null): ChatResponse['guideAction'] {
+  if (!action) return undefined;
+  const isRouteAction = action.type === 'route_recommendation';
+  return {
+    type: action.type,
+    title: action.title,
+    route: isRouteAction && action.route ? toRoutePlan(action.route as any) : undefined,
+    preference: isRouteAction && action.preference
+      ? {
+          mapId: action.preference.map_id ?? 'ling-shan',
+          durationMinutes: action.preference.duration_minutes ?? 120,
+          physicalLevel: action.preference.physical_level ?? 'medium',
+          interestTags: action.preference.interest_tags ?? [],
         }
       : undefined,
   };
@@ -125,9 +277,9 @@ function matchMockAnswer(question: string): ChatResponse {
   return mockChatAnswers.fallback;
 }
 
-export async function mockChatApi(input: ChatRequest | string): Promise<ChatResponse> {
+export async function mockChatApi(input: ChatRequest | string, signal?: AbortSignal): Promise<ChatResponse> {
   const request = normalizeQuestion(input);
-  await wait();
+  await wait(520, signal);
 
   if (request.question.includes('模拟失败')) {
     throw new Error('mock_chat_api_failed');
@@ -141,8 +293,10 @@ export async function mockChatApi(input: ChatRequest | string): Promise<ChatResp
 
 export async function realChatApi(input: ChatRequest | string): Promise<ChatResponse> {
   const request = normalizeQuestion(input);
+  const token = readVisitorToken();
   const response = await requestJson<BackendChatResponse, unknown>('/api/chat', {
     method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: toBackendChatRequest(request),
   });
   return toChatResponse(response);
@@ -154,16 +308,22 @@ export async function streamChatWithGuide(
 ): Promise<ChatResponse> {
   try {
     if (USE_MOCK_API) {
-      const response = await mockChatApi(input);
+      const response = await mockChatApi(input, options.signal);
       for (let index = 0; index < response.answer.length; index += 18) {
+        if (options.signal?.aborted) {
+          throw createAbortError(options.signal);
+        }
         options.onDelta?.(response.answer.slice(index, index + 18));
-        await wait(80);
+        await wait(80, options.signal);
       }
       return response;
     }
 
     return await realStreamChatApi(input, options);
   } catch (error) {
+    if (options.signal?.aborted || isAbortError(error)) {
+      throw error;
+    }
     return createFallbackResponse(error);
   }
 }
@@ -173,12 +333,15 @@ async function realStreamChatApi(
   options: StreamChatOptions,
 ): Promise<ChatResponse> {
   const request = normalizeQuestion(input);
+  const token = readVisitorToken();
   const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(toBackendChatRequest(request)),
+    signal: options.signal,
   });
 
   if (!response.ok || !response.body) {

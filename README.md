@@ -4,6 +4,12 @@
 
 **技术栈：** React / TypeScript / Vite / Ant Design · FastAPI / SQLAlchemy · LangGraph · Qwen3-Embedding / BM25 / Milvus / RRF / Cross-Encoder · PEFT / RAGAS。
 
+## 景区一览
+
+| 灵山胜境 · 灵山大佛 | 拈花湾 · 香月花街 |
+| --- | --- |
+| ![灵山胜境灵山大佛](frontend/public/scenic/spots/photos/LS-011_灵山大佛/2.jpg) | ![拈花湾香月花街](frontend/public/scenic/spots/photos/NH-003_香月花街/1.jpeg) |
+
 ## 环境要求
 
 - Python 3.11 或 3.12、Node.js 20+、Docker Compose。
@@ -82,4 +88,4 @@ infra/                     本地 Milvus Compose
 docs/                      架构、部署、训练评估与发布说明
 ```
 
-详细资料：[架构与接入](docs/architecture.md) · [部署与配置](docs/deployment.md) · [训练与评估](docs/training-evaluation.md) · [代码审视](docs/code-review.md) · [指标记录](docs/results.md) · [发布说明](docs/release-review.md) · [资源来源](THIRD_PARTY_NOTICES.md)。
+详细资料：[架构与接入](docs/architecture.md) · [部署与配置](docs/deployment.md) · [训练与评估](docs/training-evaluation.md) · [指标记录](docs/results.md) · [发布说明](docs/release-review.md) · [资源来源](THIRD_PARTY_NOTICES.md)。

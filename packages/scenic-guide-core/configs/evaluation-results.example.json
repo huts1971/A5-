@@ -1,0 +1,9 @@
+{
+  "dataset_hash": null,
+  "corpus_id": null,
+  "base_model_revision": null,
+  "adapter_revision": null,
+  "retrieval": {"vector_recall_at_5": null, "hybrid_rerank_recall_at_5": null},
+  "generation": {"faithfulness": null, "answer_relevancy": null},
+  "memory": {"locomo_single_hop_f1_percent": null, "locomo_multi_hop_f1_percent": null}
+}

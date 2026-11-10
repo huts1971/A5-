@@ -1,0 +1,504 @@
+{
+  "map": {
+    "id": "ling-shan",
+    "name": "灵山胜境",
+    "image_url": "/scenic/maps/ling-shan-overview-v1.webp",
+    "version": "ling-shan-overview-v1",
+    "width": 941,
+    "height": 1672,
+    "center_lat": 31.421388,
+    "center_lng": 120.102499,
+    "authorization_status": "pending_confirmation",
+    "source_note": "临时资源提取自《灵山胜境智能路线系统升级方案》内嵌无标记鸟瞰图；发布前需替换或确认独立原图授权。",
+    "is_active": true
+  },
+  "points": [
+    {
+      "spot_id": "spot_ls_entrance",
+      "x_ratio": 0.462791,
+      "y_ratio": 0.969331,
+      "point_type": "entrance",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_001",
+      "x_ratio": 0.478509,
+      "y_ratio": 0.836011,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_002",
+      "x_ratio": 0.477632,
+      "y_ratio": 0.808365,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_003",
+      "x_ratio": 0.484211,
+      "y_ratio": 0.734312,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_004",
+      "x_ratio": 0.487281,
+      "y_ratio": 0.700741,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_005",
+      "x_ratio": 0.489035,
+      "y_ratio": 0.670626,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nine_dragons",
+      "x_ratio": 0.490789,
+      "y_ratio": 0.578801,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_007",
+      "x_ratio": 0.493421,
+      "y_ratio": 0.520546,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_008",
+      "x_ratio": 0.495175,
+      "y_ratio": 0.472165,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_009",
+      "x_ratio": 0.536842,
+      "y_ratio": 0.404036,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_xiangfu_temple",
+      "x_ratio": 0.499561,
+      "y_ratio": 0.367997,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ling_shan_buddha",
+      "x_ratio": 0.501316,
+      "y_ratio": 0.163117,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_012",
+      "x_ratio": 0.501316,
+      "y_ratio": 0.19027,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_brahma_palace",
+      "x_ratio": 0.737281,
+      "y_ratio": 0.449949,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_five_mudra_mandala",
+      "x_ratio": 0.6642,
+      "y_ratio": 0.6663,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_015",
+      "x_ratio": 0.806579,
+      "y_ratio": 0.608422,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_ls_016",
+      "x_ratio": 0.430263,
+      "y_ratio": 0.266297,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_001",
+      "name": "卫生间",
+      "x_ratio": 0.392667,
+      "y_ratio": 0.926414,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_002",
+      "name": "卫生间",
+      "x_ratio": 0.546759,
+      "y_ratio": 0.892901,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_003",
+      "name": "卫生间",
+      "x_ratio": 0.582891,
+      "y_ratio": 0.825275,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_004",
+      "name": "卫生间",
+      "x_ratio": 0.387354,
+      "y_ratio": 0.749271,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_005",
+      "name": "卫生间",
+      "x_ratio": 0.69412,
+      "y_ratio": 0.643942,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_006",
+      "name": "卫生间",
+      "x_ratio": 0.790117,
+      "y_ratio": 0.572127,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_007",
+      "name": "卫生间",
+      "x_ratio": 0.758236,
+      "y_ratio": 0.436875,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_008",
+      "name": "卫生间",
+      "x_ratio": 0.65232,
+      "y_ratio": 0.533825,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_009",
+      "name": "卫生间",
+      "x_ratio": 0.385228,
+      "y_ratio": 0.398973,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_010",
+      "name": "卫生间",
+      "x_ratio": 0.385228,
+      "y_ratio": 0.279879,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_011",
+      "name": "卫生间",
+      "x_ratio": 0.482997,
+      "y_ratio": 0.194898,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_restroom_012",
+      "name": "卫生间",
+      "x_ratio": 0.342012,
+      "y_ratio": 0.564147,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_002",
+      "name": "半间·小食令",
+      "x_ratio": 0.545342,
+      "y_ratio": 0.93998,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_001",
+      "name": "吉祥食集",
+      "x_ratio": 0.544633,
+      "y_ratio": 0.82707,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_003",
+      "name": "彩虹·小食令",
+      "x_ratio": 0.485122,
+      "y_ratio": 0.602449,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_004",
+      "name": "如一味咖啡",
+      "x_ratio": 0.616897,
+      "y_ratio": 0.570132,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_005",
+      "name": "蔬食馆",
+      "x_ratio": 0.602019,
+      "y_ratio": 0.494726,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_006",
+      "name": "灵山五观堂",
+      "x_ratio": 0.743358,
+      "y_ratio": 0.425903,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_007",
+      "name": "如愿食令",
+      "x_ratio": 0.52763,
+      "y_ratio": 0.270902,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_dining_008",
+      "name": "山边·小食令",
+      "x_ratio": 0.530818,
+      "y_ratio": 0.188315,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_lodging_001",
+      "name": "灵山精舍",
+      "x_ratio": 0.912327,
+      "y_ratio": 0.485749,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_001",
+      "name": "福运·如愿",
+      "x_ratio": 0.43057,
+      "y_ratio": 0.895295,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_002",
+      "name": "福佑·如愿",
+      "x_ratio": 0.512752,
+      "y_ratio": 0.895694,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_003",
+      "name": "福应·灵山",
+      "x_ratio": 0.509564,
+      "y_ratio": 0.864175,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_004",
+      "name": "喜福·福礼",
+      "x_ratio": 0.6339,
+      "y_ratio": 0.796349,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_005",
+      "name": "五色·福礼",
+      "x_ratio": 0.68916,
+      "y_ratio": 0.649128,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_006",
+      "name": "梵华·有礼",
+      "x_ratio": 0.771343,
+      "y_ratio": 0.475974,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_007",
+      "name": "梵心·福礼",
+      "x_ratio": 0.802869,
+      "y_ratio": 0.41154,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_008",
+      "name": "花开·有礼",
+      "x_ratio": 0.497875,
+      "y_ratio": 0.610827,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_009",
+      "name": "欢喜·如愿",
+      "x_ratio": 0.476621,
+      "y_ratio": 0.389397,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_010",
+      "name": "福安·如愿",
+      "x_ratio": 0.535423,
+      "y_ratio": 0.406952,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_011",
+      "name": "印记·灵山",
+      "x_ratio": 0.531173,
+      "y_ratio": 0.431289,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_012",
+      "name": "福田·有礼",
+      "x_ratio": 0.466702,
+      "y_ratio": 0.430491,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_013",
+      "name": "福慧·如愿",
+      "x_ratio": 0.468119,
+      "y_ratio": 0.408947,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_014",
+      "name": "杏运·有礼",
+      "x_ratio": 0.48831,
+      "y_ratio": 0.278084,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_015",
+      "name": "莲花·福礼",
+      "x_ratio": 0.535423,
+      "y_ratio": 0.193103,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_016",
+      "name": "随喜·福礼",
+      "x_ratio": 0.525505,
+      "y_ratio": 0.173952,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shop_017",
+      "name": "般若·福礼",
+      "x_ratio": 0.460326,
+      "y_ratio": 0.173154,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_001",
+      "name": "大照壁站",
+      "x_ratio": 0.470244,
+      "y_ratio": 0.852804,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_002",
+      "name": "佛足坛站",
+      "x_ratio": 0.446865,
+      "y_ratio": 0.736105,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_003",
+      "name": "五印坛城站",
+      "x_ratio": 0.609458,
+      "y_ratio": 0.711967,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_004",
+      "name": "九龙灌浴站",
+      "x_ratio": 0.417109,
+      "y_ratio": 0.614418,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_005",
+      "name": "蔬食馆站",
+      "x_ratio": 0.526567,
+      "y_ratio": 0.477969,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_006",
+      "name": "曼飞龙站",
+      "x_ratio": 0.792242,
+      "y_ratio": 0.586889,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_007",
+      "name": "梵宫广场站",
+      "x_ratio": 0.770988,
+      "y_ratio": 0.498915,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "ls_service_shuttle_008",
+      "name": "杏仁广场站",
+      "x_ratio": 0.55101,
+      "y_ratio": 0.278682,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    }
+  ]
+}

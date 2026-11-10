@@ -1,0 +1,336 @@
+.strip {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 32px auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 6px 8px;
+  color: rgba(255, 255, 255, 0.94);
+  background:
+    linear-gradient(112deg, rgba(9, 13, 11, 0.24), rgba(9, 13, 11, 0.1)),
+    rgba(18, 22, 20, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px) saturate(116%);
+  -webkit-backdrop-filter: blur(8px) saturate(116%);
+}
+
+.empty {
+  display: flex;
+  min-height: 72px;
+}
+
+.empty > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.empty strong {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.navButton:global(.ant-btn) {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(16, 20, 18, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.navButton:global(.ant-btn):not(:disabled):hover,
+.navButton:global(.ant-btn):not(:disabled):focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.navButton:global(.ant-btn):disabled {
+  color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.scroller {
+  min-width: 0;
+  padding: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-inline: contain;
+}
+
+.scroller:focus-visible {
+  outline: 2px solid rgba(255, 206, 153, 0.92);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.stopList {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stop {
+  position: relative;
+  flex: 0 0 auto;
+  padding-right: 24px;
+  scroll-snap-align: center;
+}
+
+.stop:last-child {
+  padding-right: 0;
+}
+
+.stop:not(:last-child)::after {
+  position: absolute;
+  top: 16px;
+  right: 4px;
+  width: 16px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.28);
+  content: '';
+}
+
+.stopButton {
+  display: grid;
+  grid-template-columns: 26px minmax(48px, auto);
+  grid-template-areas:
+    'marker name'
+    'marker badge';
+  column-gap: 7px;
+  align-items: center;
+  min-height: 38px;
+  margin: 0;
+  padding: 3px 6px 3px 3px;
+  color: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.stopButton:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stopButton:focus-visible {
+  outline: 2px solid rgba(255, 206, 153, 0.94);
+  outline-offset: 2px;
+}
+
+.stopButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.stopMarker {
+  display: grid;
+  grid-area: marker;
+  width: 26px;
+  height: 26px;
+  color: rgba(33, 31, 29, 0.92);
+  font-size: 11px;
+  font-weight: 750;
+  background: rgba(242, 232, 221, 0.86);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  place-items: center;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.stopName {
+  grid-area: name;
+  max-width: 112px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 620;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.realBadge {
+  display: inline-flex;
+  grid-area: badge;
+  align-items: center;
+  width: max-content;
+  gap: 3px;
+  color: rgba(255, 221, 179, 0.84);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.previewStop .stopButton {
+  color: #fff;
+  background: rgba(213, 116, 78, 0.28);
+  border-color: rgba(255, 190, 157, 0.42);
+}
+
+.previewStop .stopMarker {
+  color: #fff;
+  background: #d97752;
+  border-color: rgba(255, 224, 208, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(217, 119, 82, 0.18),
+    0 5px 14px rgba(0, 0, 0, 0.22);
+  transform: translateY(-1px);
+}
+
+.realStop:not(.previewStop) .stopMarker {
+  box-shadow:
+    0 0 0 3px rgba(255, 210, 151, 0.44),
+    0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.finishedStop .stopMarker {
+  color: #fff;
+  background: #5d8971;
+  border-color: rgba(209, 237, 221, 0.78);
+}
+
+.completeButton:global(.ant-btn) {
+  min-width: 128px;
+  height: 34px;
+  padding-inline: 11px;
+  color: #3b241c;
+  font-size: 12px;
+  font-weight: 650;
+  background: #f3cba8;
+  border-color: rgba(255, 226, 201, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(60, 31, 20, 0.16);
+}
+
+.completeButton:global(.ant-btn):not(:disabled):hover,
+.completeButton:global(.ant-btn):not(:disabled):focus-visible {
+  color: #2d1a14;
+  background: #ffd9b8;
+  border-color: #ffe5cd;
+}
+
+@media (max-width: 720px) {
+  .strip {
+    grid-template-columns: 32px minmax(0, 1fr) 32px auto;
+    gap: 6px;
+    min-height: 0;
+    padding: 7px 8px;
+    border-radius: 14px;
+  }
+
+  .previousButton {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .scroller {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .nextButton {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .completeButton {
+    grid-column: 4;
+    grid-row: 1;
+    width: 34px;
+    min-width: 34px;
+    padding: 0;
+    overflow: hidden;
+    font-size: 0;
+  }
+
+  .completeButton :global(.anticon) {
+    margin-inline-end: 0;
+    font-size: 13px;
+  }
+
+  .stopName {
+    max-width: 96px;
+  }
+}
+
+@media (max-width: 420px) {
+  .stop {
+    padding-right: 18px;
+  }
+
+  .stop:not(:last-child)::after {
+    right: 3px;
+    width: 12px;
+  }
+
+  .stopName {
+    max-width: 82px;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 720px) {
+  .strip {
+    grid-template-columns: 44px minmax(0, 1fr) 44px auto;
+  }
+
+  .navButton:global(.ant-btn) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+  }
+
+  .completeButton:global(.ant-btn) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .strip {
+    background: rgba(28, 32, 30, 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .strip {
+    background: rgba(28, 32, 30, 0.86);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stopButton,
+  .stopMarker {
+    transition: none;
+  }
+}

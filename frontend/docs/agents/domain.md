@@ -28,7 +28,7 @@ The business context comes from `D:\ws01\A5_景区导览服务AI数字人_P0第�
 
 ## Use the glossary's vocabulary
 
-When naming issues, tests, components, refactors, or hypotheses, prefer the vocabulary in `CONTEXT.md`: 游知灵, 景区 AI 数字人导览系统, 游客端, 管理后台, AI 导游问答, 路线推荐, 知识库, RAG, 数字人轻量展示, Mock 模式, 演示链路.
+When naming issues, tests, components, refactors, or hypotheses, prefer the vocabulary in `CONTEXT.md`: 灵诗音, 景区 AI 数字人导览系统, 游客端, 管理后台, AI 导游问答, 路线推荐, 知识库, RAG, 数字人轻量展示, Mock 模式, 演示链路.
 
 Do not drift into broader platform language such as multi-scenic SaaS, real GPS navigation, real 3D digital human, or complex multi-agent orchestration unless the task explicitly moves beyond P0.
 

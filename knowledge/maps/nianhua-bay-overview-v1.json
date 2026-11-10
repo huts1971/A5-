@@ -1,0 +1,394 @@
+{
+  "map": {
+    "id": "nianhua-bay",
+    "name": "拈花湾禅意小镇建筑参照图",
+    "image_url": "/scenic/maps/nianhua-bay-overview-v1.png",
+    "version": "nianhua-bay-overview-v1",
+    "width": 941,
+    "height": 1672,
+    "center_lat": 31.49,
+    "center_lng": 120.06,
+    "authorization_status": "pending_confirmation",
+    "source_note": "用户于 2026-06-20 提供的拈花湾禅意小镇完整鸟瞰图；发布前仍需确认图片来源与授权。",
+    "is_active": true
+  },
+  "points": [
+    {
+      "spot_id": "spot_nh_entrance",
+      "x_ratio": 0.326357,
+      "y_ratio": 0.850663,
+      "point_type": "entrance",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_001",
+      "x_ratio": 0.38374,
+      "y_ratio": 0.564316,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_002",
+      "x_ratio": 0.468293,
+      "y_ratio": 0.639585,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_003",
+      "x_ratio": 0.367073,
+      "y_ratio": 0.622426,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_004",
+      "x_ratio": 0.387805,
+      "y_ratio": 0.550589,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_005",
+      "x_ratio": 0.463415,
+      "y_ratio": 0.500257,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "spot_nh_006",
+      "x_ratio": 0.691463,
+      "y_ratio": 0.271019,
+      "point_type": "spot",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_001",
+      "name": "拈花湾公交站",
+      "x_ratio": 0.358661,
+      "y_ratio": 0.759444,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_002",
+      "name": "游客中心站",
+      "x_ratio": 0.388062,
+      "y_ratio": 0.710969,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_003",
+      "name": "水街码头站",
+      "x_ratio": 0.363974,
+      "y_ratio": 0.60205,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_004",
+      "name": "五灯湖站",
+      "x_ratio": 0.51169,
+      "y_ratio": 0.526045,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_005",
+      "name": "云树码头站",
+      "x_ratio": 0.455367,
+      "y_ratio": 0.390794,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_006",
+      "name": "微笑码头站",
+      "x_ratio": 0.543571,
+      "y_ratio": 0.321971,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_007",
+      "name": "鹿鸣谷站",
+      "x_ratio": 0.685972,
+      "y_ratio": 0.272698,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shuttle_008",
+      "name": "云树帆影站",
+      "x_ratio": 0.630712,
+      "y_ratio": 0.393587,
+      "point_type": "shuttle",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_001",
+      "name": "捌渡",
+      "x_ratio": 0.352285,
+      "y_ratio": 0.641947,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_002",
+      "name": "品渔味",
+      "x_ratio": 0.35441,
+      "y_ratio": 0.580904,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_003",
+      "name": "星巴克",
+      "x_ratio": 0.414984,
+      "y_ratio": 0.556966,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_004",
+      "name": "拈花锡食",
+      "x_ratio": 0.454304,
+      "y_ratio": 0.524649,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_005",
+      "name": "花面包房",
+      "x_ratio": 0.516295,
+      "y_ratio": 0.510685,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_006",
+      "name": "拈花露营吧",
+      "x_ratio": 0.476621,
+      "y_ratio": 0.472583,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_007",
+      "name": "谷本鲜粥",
+      "x_ratio": 0.514878,
+      "y_ratio": 0.409745,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_dining_008",
+      "name": "酒店三楼西餐厅",
+      "x_ratio": 0.785866,
+      "y_ratio": 0.309802,
+      "point_type": "dining",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_001",
+      "name": "卫生间",
+      "x_ratio": 0.3661,
+      "y_ratio": 0.733711,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_002",
+      "name": "卫生间",
+      "x_ratio": 0.368225,
+      "y_ratio": 0.712166,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_003",
+      "name": "卫生间",
+      "x_ratio": 0.514878,
+      "y_ratio": 0.667282,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_004",
+      "name": "卫生间",
+      "x_ratio": 0.369288,
+      "y_ratio": 0.557764,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_005",
+      "name": "卫生间",
+      "x_ratio": 0.505313,
+      "y_ratio": 0.530833,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_006",
+      "name": "卫生间",
+      "x_ratio": 0.493624,
+      "y_ratio": 0.418323,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_007",
+      "name": "卫生间",
+      "x_ratio": 0.467056,
+      "y_ratio": 0.388998,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_008",
+      "name": "卫生间",
+      "x_ratio": 0.552072,
+      "y_ratio": 0.387203,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_009",
+      "name": "卫生间",
+      "x_ratio": 0.598831,
+      "y_ratio": 0.353091,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_010",
+      "name": "卫生间",
+      "x_ratio": 0.619022,
+      "y_ratio": 0.259133,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_restroom_011",
+      "name": "卫生间",
+      "x_ratio": 0.710414,
+      "y_ratio": 0.174152,
+      "point_type": "restroom",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_001",
+      "name": "无相",
+      "x_ratio": 0.397981,
+      "y_ratio": 0.599456,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_002",
+      "name": "萤火小墅",
+      "x_ratio": 0.395855,
+      "y_ratio": 0.548587,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_003",
+      "name": "一花一世界",
+      "x_ratio": 0.478038,
+      "y_ratio": 0.508291,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_004",
+      "name": "放下睡眠酒店",
+      "x_ratio": 0.389479,
+      "y_ratio": 0.514675,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_005",
+      "name": "半窗疏影",
+      "x_ratio": 0.51169,
+      "y_ratio": 0.431289,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_lodging_006",
+      "name": "波罗蜜多酒店",
+      "x_ratio": 0.776302,
+      "y_ratio": 0.318181,
+      "point_type": "lodging",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_001",
+      "name": "拈花香铺",
+      "x_ratio": 0.368225,
+      "y_ratio": 0.622198,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_002",
+      "name": "拈花华服",
+      "x_ratio": 0.367163,
+      "y_ratio": 0.71855,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_003",
+      "name": "拈花便利店",
+      "x_ratio": 0.411796,
+      "y_ratio": 0.538414,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_004",
+      "name": "拈花华服",
+      "x_ratio": 0.504251,
+      "y_ratio": 0.500711,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_005",
+      "name": "无意",
+      "x_ratio": 0.459617,
+      "y_ratio": 0.485749,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_006",
+      "name": "云舒馆",
+      "x_ratio": 0.701913,
+      "y_ratio": 0.378027,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_007",
+      "name": "又见山书社",
+      "x_ratio": 0.502125,
+      "y_ratio": 0.388799,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    },
+    {
+      "spot_id": "nh_service_shop_008",
+      "name": "鹿鸣茶院",
+      "x_ratio": 0.781615,
+      "y_ratio": 0.151211,
+      "point_type": "shop",
+      "calibration_status": "verified"
+    }
+  ]
+}

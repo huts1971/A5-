@@ -1,0 +1,52 @@
+.timelineItemInteractive,
+:global(.route-card-content) {
+  min-width: 0;
+}
+
+:global(.route-card-content) {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.timelineItemInteractive {
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.timelineItemInteractive:hover,
+.timelineItemInteractive:focus-visible,
+.timelineItemActive {
+  background: rgba(22, 143, 124, 0.16);
+  border-color: rgba(202, 164, 93, 0.48);
+  outline: none;
+  transform: translateX(3px);
+}
+
+.transition {
+  display: block;
+  margin-top: 5px;
+  color: #b8aa8a;
+  font: 12px/1.5 "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+}
+
+.transitionMissing {
+  color: #d7b56f;
+}
+
+.missingPoint {
+  display: block;
+  margin-top: 4px;
+  color: #d7b56f;
+  font: 11px/1.35 "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timelineItemInteractive {
+    transition: none;
+  }
+}

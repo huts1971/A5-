@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="休憩茶舍封面">
-  <rect width="960" height="540" fill="#edf2e7"/>
-  <path d="M0 388c140-50 280-52 420-8 130 42 310 16 540-78v238H0z" fill="#d8e6d4"/>
-  <path d="M252 282h456l-84-64H336z" fill="#1e625b"/>
-  <rect x="302" y="282" width="356" height="148" fill="#fff7e8"/>
-  <path d="M376 430c18-62 52-94 104-94s86 32 104 94z" fill="#d4a04b" opacity=".82"/>
-  <circle cx="720" cy="150" r="52" fill="#d59d45" opacity=".7"/>
-</svg>

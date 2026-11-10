@@ -1,0 +1,35 @@
+allow_network = false
+corpus_path = "../artifacts/core/corpus.jsonl"
+max_agent_rounds = 6
+max_tool_calls = 8
+max_prompt_chars = 28000
+
+[models]
+embedding_path = "../models/Qwen3-Embedding-0.6B"
+reranker_path = "../models/bge-reranker-v2-m3"
+embedding_revision = "SET_LOCAL_MODEL_REVISION"
+reranker_revision = "SET_LOCAL_MODEL_REVISION"
+device = "cpu"
+chat_base_url = "http://127.0.0.1:8002/v1"
+chat_model = "Qwen3-8B"
+chat_template_kwargs = { enable_thinking = false }
+api_key_env = "SCENIC_LLM_API_KEY"
+chat_timeout_seconds = 60
+max_output_tokens = 1536
+
+[retrieval]
+milvus_uri = "http://127.0.0.1:19530"
+collection_prefix = "lingshiyin"
+candidates_per_route = 24
+rerank_candidates = 20
+top_k = 5
+rrf_k = 60
+bm25_weight = 1.0
+vector_weight = 1.0
+max_context_chars = 12000
+
+[memory]
+url = "sqlite:///../backend/data/guide-memory.db"
+dynamic_ttl_days = 7
+max_items = 8
+lease_seconds = 180

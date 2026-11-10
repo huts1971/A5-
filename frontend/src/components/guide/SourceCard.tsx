@@ -40,7 +40,7 @@ export default function SourceCard({
   }
 
   return (
-    <Card size="small" className="source-card">
+    <Card size="small" className="source-card" data-cue="[ SOURCE ]">
       <Space size={6} wrap>
         <Tag color={provenanceMeta(source).color}>{provenanceMeta(source).label}</Tag>
         {source.sourceLevel ? <Tag>{source.sourceLevel}</Tag> : null}

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="山谷生态封面">
-  <rect width="960" height="540" fill="#e5f1e8"/>
-  <path d="M0 372l190-174 168 146 198-210 214 210 190-126v322H0z" fill="#cde0c7"/>
-  <path d="M0 418c170-58 318-58 444 0 134 62 306 54 516-24v146H0z" fill="#edf6ed"/>
-  <g fill="#1e625b" opacity=".72"><circle cx="170" cy="330" r="48"/><circle cx="786" cy="326" r="58"/><circle cx="650" cy="366" r="38"/></g>
-</svg>

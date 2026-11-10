@@ -102,8 +102,8 @@ export default function AdminSpotPage() {
       subtitle: '',
       summary: '',
       story: '',
-      tags: '历史，建筑',
-      crowdTypes: '历史文化游，亲子游',
+      tags: '佛教文化，建筑艺术',
+      crowdTypes: '研学，拍照',
       durationMinutes: 20,
       openInfo: '随景区开放时间参观',
       serviceHint: '请注意现场导览标识',
@@ -148,17 +148,17 @@ export default function AdminSpotPage() {
       title: '景点名称',
       dataIndex: 'name',
       width: 150,
-      render: (_, spot) => (
-        <Space direction="vertical" size={0}>
-          <Typography.Text strong>{spot.name}</Typography.Text>
-          <Typography.Text type="secondary">{spot.subtitle}</Typography.Text>
-        </Space>
-      ),
+      render: (_, spot) => <Typography.Text strong>{spot.name}</Typography.Text>,
     },
     {
       title: '标签',
       dataIndex: 'tags',
-      render: (tags: string[]) => tags.map((tag) => <Tag key={tag}>{tag}</Tag>),
+      render: (tags: string[]) =>
+        tags.length ? (
+          tags.map((tag) => <Tag key={tag}>{tag}</Tag>)
+        ) : (
+          <Typography.Text type="secondary">-</Typography.Text>
+        ),
     },
     {
       title: '适合人群',
@@ -198,12 +198,6 @@ export default function AdminSpotPage() {
     <div className="admin-page">
       {contextHolder}
       <div className="admin-toolbar">
-        <Space direction="vertical" size={2}>
-          <Typography.Title level={2} style={{ margin: 0 }}>
-            景点管理
-          </Typography.Title>
-          <Typography.Text type="secondary">维护景点基础资料，供游客端展示和 AI 问答引用。</Typography.Text>
-        </Space>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
           新增景点
         </Button>
@@ -221,6 +215,7 @@ export default function AdminSpotPage() {
       </Card>
 
       <Modal
+        className="admin-spot-modal"
         title={editingSpot ? '编辑景点' : '新增景点'}
         open={modalOpen}
         width={760}
@@ -250,11 +245,11 @@ export default function AdminSpotPage() {
               <Select options={toneOptions} />
             </Form.Item>
           </Space>
-          <Form.Item name="tags" label="标签" rules={[{ required: true, message: '请输入标签' }]}>
-            <Input placeholder="历史，建筑，拍照" />
+          <Form.Item name="tags" label="标签">
+            <Input placeholder="佛教文化，建筑艺术，摄影打卡；景区入口可留空" />
           </Form.Item>
           <Form.Item name="crowdTypes" label="适合人群" rules={[{ required: true, message: '请输入适合人群' }]}>
-            <Input placeholder="亲子游，历史文化游" />
+            <Input placeholder="亲子，长者，拍照" />
           </Form.Item>
           <Form.Item name="openInfo" label="开放信息" rules={[{ required: true, message: '请输入开放信息' }]}>
             <Input />

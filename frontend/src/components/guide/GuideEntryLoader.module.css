@@ -1,0 +1,319 @@
+/*
+  Adapted from "CSS3 Loading Animation" by Max:
+  https://codepen.io/MyXoToD/pen/nqjjNN
+  MIT License. Runtime code is fully localized in this project.
+*/
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  display: grid;
+  place-items: center;
+  min-width: 320px;
+  overflow: hidden;
+  color: #f6f3ea;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(238, 238, 238, 0.28), transparent 22%),
+    radial-gradient(circle at 50% 50%, #eeeeee 0%, #444444 100%);
+  opacity: 0;
+  transform: translateZ(0);
+  will-change: opacity, filter;
+  animation: overlayEnter 280ms ease-out forwards;
+}
+
+.preserveHeader {
+  top: var(--visitor-fixed-header-offset, 122px);
+}
+
+:global(body.guide-workbench-active) .preserveHeader {
+  top: var(--guide-workbench-header-height, 64px);
+}
+
+.overlay::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.24), transparent 18%),
+    radial-gradient(circle at 78% 72%, rgba(0, 0, 0, 0.16), transparent 24%);
+}
+
+.overlay::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at center, #000 0%, transparent 74%);
+}
+
+.leaving {
+  pointer-events: none;
+  animation: overlayExit 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.preserveHeader .shell {
+  --loader-scale: 0.82;
+  --loader-leave-scale: 0.79;
+}
+
+.shell {
+  --loader-scale: 0.85;
+  --loader-leave-scale: 0.82;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: 32px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px) scale(var(--loader-scale));
+  will-change: opacity, transform;
+  animation: contentEnter 360ms cubic-bezier(0.22, 1, 0.36, 1) 70ms forwards;
+}
+
+.leaving .shell {
+  animation: contentExit 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(175px, calc(100vw - 64px));
+  height: 100px;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.22));
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.loader span {
+  display: block;
+  width: 7px;
+  height: 10%;
+  margin-right: 5px;
+  background: #cccccc;
+  border-radius: 14px;
+  backface-visibility: hidden;
+  animation: load 2.5s infinite linear;
+}
+
+.loader span:last-child {
+  margin-right: 0;
+}
+
+.loader span:nth-child(1) {
+  animation-delay: 1.4s;
+}
+
+.loader span:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+.loader span:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.loader span:nth-child(4) {
+  animation-delay: 0.8s;
+}
+
+.loader span:nth-child(5) {
+  animation-delay: 0.6s;
+}
+
+.loader span:nth-child(6) {
+  animation-delay: 0.4s;
+}
+
+.loader span:nth-child(7) {
+  animation-delay: 0.2s;
+}
+
+.loader span:nth-child(8) {
+  animation-delay: 0s;
+}
+
+.loader span:nth-child(9) {
+  animation-delay: 0.2s;
+}
+
+.loader span:nth-child(10) {
+  animation-delay: 0.4s;
+}
+
+.loader span:nth-child(11) {
+  animation-delay: 0.6s;
+}
+
+.loader span:nth-child(12) {
+  animation-delay: 0.8s;
+}
+
+.loader span:nth-child(13) {
+  animation-delay: 1s;
+}
+
+.loader span:nth-child(14) {
+  animation-delay: 1.2s;
+}
+
+.loader span:nth-child(15) {
+  animation-delay: 1.4s;
+}
+
+.kicker {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.34em;
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.caption {
+  margin: 0;
+  color: #ffffff;
+  font-family:
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    sans-serif;
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+}
+
+@keyframes load {
+  0% {
+    height: 10%;
+    background: #cccccc;
+  }
+
+  50% {
+    height: 100%;
+    background: #444444;
+  }
+
+  100% {
+    height: 10%;
+    background: #cccccc;
+  }
+}
+
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayExit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@keyframes contentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(var(--loader-scale));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(var(--loader-scale));
+  }
+}
+
+@keyframes contentExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(var(--loader-scale));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(var(--loader-leave-scale));
+  }
+}
+
+@media (max-width: 520px) {
+  :global(body.guide-workbench-active) .preserveHeader {
+    top: var(--guide-workbench-header-height, 96px);
+  }
+
+  .shell {
+    --loader-scale: 0.66;
+    --loader-leave-scale: 0.63;
+  }
+
+  .preserveHeader .shell {
+    --loader-scale: 0.62;
+    --loader-leave-scale: 0.59;
+  }
+
+  .shell {
+    gap: 14px;
+    padding: 24px;
+  }
+
+  .loader {
+    width: min(150px, calc(100vw - 48px));
+    height: 86px;
+  }
+
+  .loader span {
+    width: 6px;
+    margin-right: 4px;
+  }
+
+  .kicker {
+    font-size: 0.66rem;
+    letter-spacing: 0.26em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .shell,
+  .leaving,
+  .leaving .shell,
+  .loader span {
+    animation: none;
+  }
+
+  .overlay,
+  .shell {
+    opacity: 1;
+    transform: none;
+  }
+
+  .leaving {
+    opacity: 0;
+    filter: none;
+  }
+
+  .loader span {
+    height: 70%;
+    background: #cccccc;
+  }
+}

@@ -1,0 +1,12 @@
+# Single-GPU recipe; no training is started merely by reading this file.
+model_path = "../models/Qwen3-8B"
+train_file = "../artifacts/sft/train.jsonl"
+dev_file = "../artifacts/sft/dev.jsonl"
+output_dir = "../artifacts/qwen3-8b-scenic-lora"
+qlora = false
+rank = 16
+alpha = 32
+max_length = 4096
+epochs = 3
+gradient_accumulation_steps = 16
+learning_rate = 0.0001

@@ -5,6 +5,18 @@ export interface ApiError {
   detail?: unknown;
 }
 
+export interface AuthUser {
+  id: string;
+  username: string;
+  role: 'visitor' | 'admin';
+}
+
+export interface AuthResponse {
+  token: string;
+  tokenType: 'bearer';
+  user: AuthUser;
+}
+
 export interface KnowledgeRebuildResult {
   status: 'queued' | 'running' | 'completed' | 'failed';
   message: string;
@@ -29,7 +41,19 @@ export type WebFactCandidateStatus =
   | 'rejected'
   | 'ignored';
 
-export type WebFactReviewAction = 'approve_supplemental' | 'approve_official' | 'reject' | 'ignore';
+export type WebFactReviewAction = 'approve_official' | 'reject' | 'ignore';
+
+export interface WebFactCandidateUpdate {
+  entityType?: string;
+  entityId?: string;
+  entityName?: string;
+  factKey?: string;
+  factValue?: string;
+  sourceUrl?: string;
+  sourceLevel?: string;
+  question?: string;
+  answerExcerpt?: string;
+}
 
 export interface WebFactCandidate {
   id: number;
@@ -44,6 +68,25 @@ export interface WebFactCandidate {
   answerExcerpt: string;
   status: WebFactCandidateStatus;
   createdAt: string;
+}
+
+export interface OfficialWebFact {
+  id: number;
+  spotId: string;
+  spotName: string;
+  factKey: string;
+  factLabel: string;
+  factValue: string;
+  sourceUrl: string;
+  sourceType: string;
+  updatedAt: string;
+}
+
+export interface OfficialWebFactUpdate {
+  spotId?: string;
+  factKey?: string;
+  factValue?: string;
+  sourceUrl?: string;
 }
 
 export interface ChatLogItem {
@@ -84,6 +127,19 @@ export interface ChatLogDeleteResult {
   deletedCount: number;
 }
 
+export interface UserFeedbackItem {
+  id: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+}
+
+export interface UserFeedbackCreate {
+  rating: number;
+  content: string;
+  pagePath?: string;
+}
+
 export interface AdminDashboardSummary {
   totalQuestions: number;
   todayQuestions: number;
@@ -93,6 +149,84 @@ export interface AdminDashboardSummary {
   knowledgeChunkCount: number;
   degradedCount: number;
   avgTotalMs: number;
+}
+
+export interface OperationsOverview {
+  range: 'today' | 'week' | '7d' | '30d';
+  period: {
+    start: string;
+    end: string;
+  };
+  summary: {
+    todayServiceSessions: number;
+    weekServiceSessions: number;
+    todayQuestions: number;
+    weekQuestions: number;
+    rangeServiceSessions: number;
+    rangeQuestions: number;
+    avgSatisfactionScore: number | null;
+  };
+  sentimentTrend: Array<{
+    date: string;
+    consultation: number;
+    risk: number;
+    praise: number;
+    uncertain: number;
+  }>;
+  consultationTopicTrend: Array<{
+    date: string;
+    ticketOpening: number;
+    routePlanning: number;
+    locationTraffic: number;
+    spotExplanation: number;
+    facilities: number;
+  }>;
+  satisfactionTrend: Array<{
+    date: string;
+    avgSatisfactionScore: number | null;
+  }>;
+}
+
+export interface VisitorInsightsReport {
+  range: 'today' | 'week' | '7d' | '30d';
+  period: {
+    start: string;
+    end: string;
+  };
+  totalQuestions: number;
+  topicCategories: string[];
+  popularQuestionClusters: Array<{
+    clusterLabel: string;
+    representativeQuestion: string;
+    questions: string[];
+    count: number;
+    intentCategory: string;
+    sentiment: 'consultation' | 'risk' | 'praise' | 'uncertain';
+  }>;
+  concernTopics: Array<{
+    topic: string;
+    count: number;
+    share: number;
+    feedbackTendency: {
+      consultation: number;
+      risk: number;
+      praise: number;
+      uncertain: number;
+    };
+    representativeQuestions: string[];
+  }>;
+  serviceSuggestions: Array<{
+    type: 'high_frequency_topic' | 'negative_topic';
+    topic: string;
+    message: string;
+  }>;
+  report: {
+    generatedBy: 'rule_based' | 'llm_enhanced';
+    llmStatus: 'success' | 'skipped_no_key' | 'pending' | 'failed';
+    llmError?: string;
+    summary: string;
+    ruleSummary: string;
+  };
 }
 
 export interface BehaviorSummary {
@@ -148,6 +282,8 @@ export interface BehaviorSummary {
 
 export interface AdminDashboardData {
   summary: AdminDashboardSummary;
+  operationsOverview?: OperationsOverview;
+  visitorInsightsReport?: VisitorInsightsReport;
   topQuestions: Array<{
     question: string;
     count: number;
@@ -164,6 +300,15 @@ export interface AdminDashboardData {
     date: string;
     count: number;
   }>;
+  qaHourlyHeatmap: Array<{
+    date: string;
+    hour: number;
+    count: number;
+  }>;
+  topicRank: Array<{
+    topic: string;
+    count: number;
+  }>;
   recentLogs: Array<{
     id: string;
     question: string;
@@ -172,4 +317,31 @@ export interface AdminDashboardData {
     createdAt: string;
   }>;
   behaviorSummary?: BehaviorSummary;
+}
+
+export interface DigitalHumanAvatar {
+  id: string;
+  name: string;
+  note: string;
+  sourceFilename: string;
+  resourceSize: number;
+  isBuiltin: boolean;
+  isActive: boolean;
+  uploadedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  activatedAt?: string;
+}
+
+export interface DigitalHumanRuntimeConfig {
+  avatarId: string;
+  version: string;
+  loaderUrl: string;
+  dataUrl: string;
+  frameworkUrl: string;
+  codeUrl: string;
+  streamingAssetsUrl: string;
+  fallbackUrl: string;
+  bridgeObjectName: string;
+  expiresAt?: string;
 }

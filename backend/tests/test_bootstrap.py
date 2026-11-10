@@ -30,6 +30,7 @@ def test_startup_creates_p0_tables(tmp_path):
 
     assert {
         "scenic_spot",
+        "spot_recommendation_profile",
         "route",
         "route_spot",
         "knowledge_doc",
@@ -43,6 +44,11 @@ def test_startup_creates_p0_tables(tmp_path):
         "web_fact_candidate",
         "chat_session",
         "chat_message",
+        "road_network_version",
+        "road_node",
+        "road_edge",
+        "spot_road_access",
+        "route_time_anchor",
     }.issubset(table_names)
 
 
@@ -52,6 +58,7 @@ def test_empty_database_bootstraps_curated_spot_data(tmp_path):
         Settings(
             database_url=f"sqlite:///{db_path}",
             source_package_path=str(SOURCE_PACKAGE_PATH),
+            derived_knowledge_path=str(DERIVED_KNOWLEDGE_PATH),
         )
     )
 
@@ -69,7 +76,7 @@ def test_empty_database_bootstraps_curated_spot_data(tmp_path):
             row[0] for row in connection.execute("select name from scenic_spot")
         }
 
-    assert spot_count == 22
+    assert spot_count == 24
     assert route_count >= 2
     assert route_spot_count >= 5
     assert doc_count >= 2
@@ -107,9 +114,25 @@ def test_bootstrap_imports_derived_knowledge_package_without_touching_raw_files(
         pass
 
     with sqlite3.connect(db_path) as connection:
+        connection.execute(
+            """
+            update knowledge_chunk
+            set spot_id = null
+            where doc_id in (
+                select id
+                from knowledge_doc
+                where title = 'LS-011-灵山大佛'
+            )
+            """
+        )
+
+    with TestClient(app):
+        pass
+
+    with sqlite3.connect(db_path) as connection:
         derived_doc = connection.execute(
             """
-            select d.title, c.chunk_text
+            select d.title, c.chunk_text, c.spot_id
             from knowledge_doc d
             join knowledge_chunk c on c.doc_id = d.id
             where d.source_type = 'md'
@@ -118,11 +141,25 @@ def test_bootstrap_imports_derived_knowledge_package_without_touching_raw_files(
             limit 1
             """
         ).fetchone()
+        scoped_chunk_stats = connection.execute(
+            """
+            select
+                count(*),
+                sum(case when c.spot_id is null then 1 else 0 end)
+            from knowledge_doc d
+            join knowledge_chunk c on c.doc_id = d.id
+            where d.source_type = 'md'
+            and (d.title like 'LS-%' or d.title like 'NH-%')
+            """
+        ).fetchone()
 
     assert (DERIVED_KNOWLEDGE_PATH / "curated" / "facts.json").is_file()
     assert derived_doc is not None
     assert "灵山大佛" in derived_doc[0]
     assert "灵山大佛" in derived_doc[1]
+    assert derived_doc[2] == "spot_ling_shan_buddha"
+    assert scoped_chunk_stats[0] >= 22
+    assert scoped_chunk_stats[1] == 0
     assert _package_file_hashes(SOURCE_PACKAGE_PATH) == before
 
 

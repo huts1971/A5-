@@ -1,0 +1,881 @@
+:global(body.photo-workshop-active) {
+  overflow: hidden;
+}
+
+:global(body.photo-workshop-active .visitor-layout-sidebar),
+:global(body.photo-workshop-active .visitor-layout-sidebar .visitor-main-layout) {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+:global(body.photo-workshop-active
+    .visitor-layout-sidebar:not(.visitor-layout-home):not(.visitor-layout-spots):not(.visitor-layout-immersive)
+    .visitor-main-layout
+    > .visitor-content) {
+  width: 100%;
+  max-width: none;
+  height: calc(100dvh - 72px);
+  margin: 0;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.page {
+  --ink: #24231f;
+  --muted: #6f6a61;
+  --line: #ded7ca;
+  --paper: #fffdf8;
+  --paper-deep: #f5f0e7;
+  --gold: #d7ad5f;
+  --aqua: #8fd3cf;
+  width: min(1480px, 100%);
+  height: 100%;
+  min-width: 980px;
+  margin: 0 auto;
+  padding: 18px 24px 20px;
+  overflow: hidden;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.page button,
+.page textarea {
+  font: inherit;
+}
+
+.pageHeader {
+  flex: none;
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.pageInitial .pageHeader {
+  transform: translateY(88px);
+}
+
+.eyebrow {
+  color: #9b7959;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.23em;
+}
+
+.pageHeader h1 {
+  margin: 6px 0 8px;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "STSong", serif;
+  font-size: 40px;
+  line-height: 1.25;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.errorAlert {
+  width: min(1100px, 100%);
+  margin: 0 auto 16px;
+}
+
+.initialStage {
+  display: grid;
+  flex: 1;
+  gap: 24px;
+  align-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.composer {
+  position: relative;
+  width: min(960px, 100%);
+  padding: 14px 16px;
+  margin: 0 auto;
+  background:
+    radial-gradient(circle at 100% 0, rgba(215, 173, 95, 0.11), transparent 34%),
+    var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: 0 18px 50px rgba(72, 59, 38, 0.1);
+}
+
+.composerTop {
+  display: grid;
+  grid-template-areas:
+    "upload template"
+    "prompt prompt";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(46px, auto);
+  gap: 8px 16px;
+  min-height: 110px;
+  border-radius: 16px;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.composerWithoutImage .composerTop {
+  grid-template-areas: "upload prompt template";
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-rows: minmax(56px, auto);
+  gap: 0 12px;
+  min-height: 56px;
+}
+
+.composerTopDragging {
+  background: rgba(215, 173, 95, 0.09);
+  box-shadow: inset 0 0 0 2px rgba(184, 139, 69, 0.65);
+}
+
+.uploadArea {
+  grid-area: upload;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.uploadBox {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  overflow: hidden;
+  color: #8d816f;
+  font-size: 13px;
+  background: #f5f0e7;
+  border: 1px dashed #baa989;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.uploadBox > :global(.anticon) {
+  font-size: 21px;
+}
+
+.uploadPreview {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+}
+
+.uploadPreview > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid #d4c6b1;
+  border-radius: 10px;
+}
+
+.removeImageButton {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  z-index: 1;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  color: #fff;
+  place-items: center;
+  background: #4c4947;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  box-shadow: 0 3px 9px rgba(44, 40, 34, 0.25);
+  cursor: pointer;
+}
+
+.removeImageButton:hover {
+  background: #8f4f42;
+}
+
+.removeImageButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.uploadBox:hover {
+  color: #5d4930;
+  border-color: var(--gold);
+}
+
+.uploadBox:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.promptArea {
+  grid-area: prompt;
+  position: relative;
+  min-width: 0;
+}
+
+.promptArea textarea {
+  width: 100%;
+  height: auto;
+  min-height: 46px;
+  max-height: 96px;
+  padding: 2px 12px 22px 2px;
+  color: #211f1b;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-y: auto;
+  resize: none;
+  field-sizing: content;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+.promptArea textarea::placeholder {
+  color: #aaa298;
+}
+
+.counter {
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+  color: #8b857d;
+  font-size: 12px;
+}
+
+.templateToggle {
+  grid-area: template;
+  align-self: start;
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding: 9px 11px;
+  color: #645c50;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.templateToggle:hover,
+.templateToggleActive {
+  color: #7e5d2e;
+}
+
+.composerFooter {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 9px;
+  margin-top: 6px;
+  border-top: 1px solid #e8e1d6;
+}
+
+.composerFooter button:disabled {
+  --accent-color: #b7a789;
+  --accent-text: #5e574d;
+  opacity: 0.82;
+}
+
+.composerTools {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.parameterButton {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 13px;
+  color: #413d36;
+  background: #f4efe7;
+  border: 1px solid #d9d0c3;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.parameterButton:hover {
+  color: #76582e;
+  border-color: #c7a464;
+}
+
+.parameterButton:disabled,
+.templateToggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.settingsPopover :global(.ant-popover-inner) {
+  padding: 18px !important;
+  background: #fffdf9 !important;
+}
+
+.settingsPanel {
+  width: 620px;
+  color: #292620;
+}
+
+.settingsPanel strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.settingsPanel > div + div {
+  margin-top: 20px;
+}
+
+.settingsPanel p {
+  margin: 12px 0 0;
+  color: #7b746b;
+  font-size: 13px;
+}
+
+.ratioGrid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 5px;
+  padding: 8px;
+  background: #f3efe7;
+  border-radius: 10px;
+}
+
+.ratioGrid button,
+.resolutionGrid button {
+  display: grid;
+  gap: 7px;
+  place-items: center;
+  min-height: 68px;
+  color: #3c3933;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ratioGrid button:hover,
+.ratioGrid .ratioActive,
+.resolutionGrid button:hover,
+.resolutionGrid .resolutionActive {
+  color: #3a2e1d;
+  background: #fffdf8;
+  border-color: #d7c8af;
+}
+
+.ratioIcon {
+  display: block;
+  width: 19px;
+  height: 19px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+}
+
+.ratioIcon[data-ratio="3:4"],
+.ratioIcon[data-ratio="2:3"],
+.ratioIcon[data-ratio="9:16"] {
+  width: 12px;
+}
+
+.ratioIcon[data-ratio="4:3"],
+.ratioIcon[data-ratio="3:2"],
+.ratioIcon[data-ratio="16:9"],
+.ratioIcon[data-ratio="21:9"] {
+  height: 11px;
+}
+
+.ratioIcon[data-ratio="smart"] {
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px #fffdf8;
+}
+
+.resolutionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 6px;
+  background: #f3efe7;
+  border-radius: 10px;
+}
+
+.resolutionGrid button {
+  min-height: 42px;
+  font-weight: 700;
+}
+
+.templates {
+  width: min(960px, 100%);
+  padding: 16px;
+  margin: 0 auto;
+  background: rgba(255, 253, 248, 0.95);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 46px rgba(62, 50, 32, 0.09);
+}
+
+.templateHeading,
+.historyHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.templateHeading {
+  margin-bottom: 12px;
+}
+
+.templateHeading h2,
+.historyHeading h2 {
+  margin: 3px 0 0;
+  color: var(--ink);
+  font-family: "Noto Serif SC", serif;
+  font-size: 24px;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.templateCard {
+  position: relative;
+  aspect-ratio: 1 / 0.58;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  background: #eee9df;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.templateCard > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 350ms ease;
+}
+
+.templateLabel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  background: rgba(78, 78, 78, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 7px;
+  box-shadow: 0 5px 16px rgba(31, 31, 31, 0.12);
+  backdrop-filter: blur(12px) saturate(0.82);
+  transition: opacity 160ms ease;
+}
+
+.templateOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 12px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(29, 24, 19, 0.08), rgba(29, 24, 19, 0.92));
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.templateOverlay strong {
+  font-size: 15px;
+}
+
+.templateOverlay > span {
+  margin: 2px 0 5px;
+  color: #f0dfbf;
+  font-size: 12px;
+}
+
+.templateOverlay small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.templateOverlay em {
+  align-self: start;
+  padding: 5px 9px;
+  margin-top: 7px;
+  color: #2f2a21;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  background: #f1d28c;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 88% 100%, 0 100%);
+}
+
+.templateCard:hover > img {
+  transform: scale(1.035);
+}
+
+.templateCard:hover .templateLabel,
+.templateCard:focus-visible .templateLabel {
+  opacity: 0;
+}
+
+.templateCard:hover .templateOverlay,
+.templateCard:focus-visible .templateOverlay {
+  opacity: 1;
+}
+
+.templateCard:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.pageWithHistory .pageHeader {
+  display: none;
+}
+
+.historyViewport {
+  width: min(1080px, 100%);
+  min-height: 0;
+  flex: 1;
+  padding: 14px 24px 28px;
+  margin: 0 auto 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  scrollbar-width: none;
+}
+
+.historyViewport::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.historyHeading {
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #ded5c7;
+}
+
+.historyHeading > span {
+  color: #7b746a;
+  font-size: 13px;
+}
+
+.historyCard {
+  width: min(600px, 100%);
+  padding: 18px;
+  margin: 0 auto 22px;
+  background: #fffefa;
+  border: 1px solid #ddd4c6;
+  border-radius: 18px;
+  box-shadow: 0 12px 34px rgba(67, 55, 37, 0.08);
+}
+
+.historyCard time,
+.generatingLabel {
+  color: #8e8375;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.historyPrompt {
+  margin: 12px 0;
+  color: #292620;
+  font-size: 16px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.historyMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.historyMeta > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 9px;
+  color: #575044;
+  font-size: 13px;
+  background: #f0ece5;
+  border-radius: 6px;
+}
+
+.referenceBadge {
+  gap: 7px;
+  cursor: default;
+}
+
+.referenceBadge img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.referencePopoverImage {
+  display: block;
+  width: 230px;
+  max-height: 230px;
+  object-fit: contain;
+  background: #f3f0ea;
+  border-radius: 8px;
+}
+
+.resultFrame {
+  position: relative;
+  display: grid;
+  width: min(440px, 100%);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 0;
+  overflow: hidden;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(205, 188, 160, 0.28), transparent 60%),
+    #eeebe5;
+  border: 0;
+  border-radius: 12px;
+}
+
+button.resultFrame {
+  cursor: zoom-in;
+}
+
+.resultFrame > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.resultFrame > span:not(.loadingText) {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 6px 9px;
+  color: #fff;
+  font-size: 12px;
+  background: rgba(31, 28, 23, 0.64);
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.resultFrame:hover > span {
+  opacity: 1;
+}
+
+.loadingFrame {
+  background: #0a29ff;
+}
+
+.loadingText {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  z-index: 2;
+  padding: 8px 13px;
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  background: rgba(5, 9, 38, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
+}
+
+.historyActions {
+  display: flex;
+  gap: 12px;
+  width: min(440px, 100%);
+  margin: 15px auto 0;
+}
+
+.composerDock {
+  position: relative;
+  width: min(960px, 100%);
+  height: auto;
+  max-height: 20%;
+  flex: none;
+  margin: 0 auto;
+}
+
+.composerDock > .templates {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  left: 0;
+  z-index: 1;
+  margin-bottom: 0;
+  animation: template-panel-enter 220ms ease-out both;
+  transform-origin: bottom;
+}
+
+.pageWithHistory .composer {
+  height: auto;
+  min-height: 132px;
+  padding: 8px 12px;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.pageWithHistory .composerTop {
+  grid-template-rows: 36px minmax(34px, auto);
+  gap: 4px 12px;
+  min-height: 74px;
+}
+
+.pageWithHistory .composerWithoutImage .composerTop {
+  grid-template-areas: "upload prompt template";
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  grid-template-rows: minmax(74px, auto);
+  min-height: 74px;
+}
+
+.pageWithHistory .uploadArea {
+  gap: 6px;
+}
+
+.pageWithHistory .uploadBox,
+.pageWithHistory .uploadPreview {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+}
+
+.pageWithHistory .uploadBox {
+  gap: 0;
+  border-radius: 7px;
+}
+
+.pageWithHistory .uploadBox > :global(.anticon) {
+  font-size: 18px;
+}
+
+.pageWithHistory .uploadBox span {
+  display: none;
+}
+
+.pageWithHistory .removeImageButton {
+  top: -6px;
+  right: -6px;
+  width: 19px;
+  height: 19px;
+  font-size: 10px;
+}
+
+.pageWithHistory .promptArea textarea {
+  min-height: 34px;
+  max-height: 88px;
+  padding: 1px 8px 13px 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.pageWithHistory .counter {
+  right: 4px;
+  bottom: 0;
+  font-size: 10px;
+}
+
+.pageWithHistory .templateToggle {
+  padding: 5px 7px;
+  font-size: 13px;
+}
+
+.pageWithHistory .composerFooter {
+  gap: 10px;
+  padding-top: 4px;
+  margin-top: 4px;
+}
+
+.pageWithHistory .composerTools {
+  gap: 8px;
+}
+
+.pageWithHistory .composerFooter button {
+  min-height: 32px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 13px;
+}
+
+.previewModal :global(.ant-modal-content) {
+  padding: 0;
+  overflow: hidden;
+  background: #f4f2ed;
+  border-radius: 18px;
+}
+
+.previewBody {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: 92vh;
+}
+
+.previewToolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid #ddd8cf;
+}
+
+.previewToolbar button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  color: #2d2a25;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.previewToolbar button:hover {
+  color: #8a622c;
+}
+
+.previewBody > img {
+  width: 100%;
+  max-height: calc(92vh - 66px);
+  object-fit: contain;
+}
+
+@keyframes template-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scaleY(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}

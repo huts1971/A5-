@@ -1,0 +1,520 @@
+.page {
+  --scene-accent: #d97757;
+  --scene-surface: rgba(254, 253, 251, 0.9);
+  --scene-text: #171615;
+  --scene-muted: #67635f;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: #fdfbf8;
+  background: #242522;
+}
+
+.page:fullscreen {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+.backgroundStage,
+.backgroundImage,
+.loadingBackdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.backgroundStage {
+  z-index: -3;
+  overflow: hidden;
+  background: #242522;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: none;
+  user-select: none;
+}
+
+.backgroundPrevious {
+  z-index: 0;
+}
+
+.backgroundCurrent {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .backgroundCurrent {
+    animation: sceneBackgroundIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes sceneBackgroundIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.routeDock {
+  position: absolute;
+  top: 14px;
+  right: clamp(14px, 2.2vw, 30px);
+  left: clamp(14px, 2.2vw, 30px);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: start;
+  gap: 10px;
+}
+
+.fullscreenButton:global(.ant-btn) {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  margin-top: 7px;
+  color: rgba(255, 253, 248, 0.92);
+  background: rgba(18, 22, 20, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  box-shadow:
+    0 10px 28px rgba(12, 14, 13, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+.fullscreenButton:global(.ant-btn):hover,
+.fullscreenButton:global(.ant-btn):focus-visible {
+  color: #fffdf8;
+  background: rgba(18, 22, 20, 0.68);
+  border-color: rgba(255, 255, 255, 0.54);
+}
+
+.fullscreenButton:global(.ant-btn):focus-visible {
+  outline: 2px solid rgba(255, 246, 235, 0.92);
+  outline-offset: 3px;
+}
+
+.fullscreenButton:global(.ant-btn):active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.tourNotice {
+  position: absolute;
+  top: 112px;
+  left: clamp(18px, 2.5vw, 34px);
+  z-index: 16;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(440px, calc(100% - 36px));
+  padding: 9px 13px;
+  color: #30211b;
+  font-size: 13px;
+  background: rgba(255, 240, 226, 0.92);
+  border: 1px solid rgba(217, 119, 87, 0.38);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(32, 20, 14, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.tourNotice span {
+  min-width: 0;
+  line-height: 1.55;
+}
+
+.tourNotice a {
+  flex: 0 0 auto;
+}
+
+.tourNotice :global(.ant-btn-primary) {
+  color: #fff8f1;
+  background: #b95f43;
+  border-color: #b95f43;
+  box-shadow: none;
+}
+
+.petDock {
+  position: absolute;
+  right: clamp(14px, 2.4vw, 34px);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 18;
+  display: grid;
+  width: min(440px, calc(100% - 28px));
+  justify-items: end;
+  pointer-events: none;
+}
+
+.bubble {
+  position: relative;
+  width: min(350px, calc(100vw - 48px));
+  margin-right: 12px;
+  margin-bottom: -16px;
+  padding: 15px 17px 14px;
+  color: #111;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16)),
+    rgba(246, 247, 243, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 16px;
+  box-shadow:
+    0 14px 38px rgba(18, 22, 20, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+  pointer-events: auto;
+  backdrop-filter: blur(18px) saturate(140%) brightness(1.04);
+  -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(1.04);
+}
+
+.bubble::after {
+  position: absolute;
+  right: 136px;
+  bottom: -9px;
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.24);
+  border-right: 1px solid rgba(255, 255, 255, 0.66);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.66);
+  content: '';
+  backdrop-filter: blur(12px) saturate(140%) brightness(1.04);
+  -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(1.04);
+  transform: rotate(45deg);
+}
+
+.bubbleText {
+  margin: 0;
+  color: #111;
+  font-size: 14px;
+  line-height: 1.68;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.72);
+  white-space: pre-wrap;
+}
+
+.bubbleSentence {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bubbleSentence {
+    animation: sentenceBubbleIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes sentenceBubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubbleError {
+  margin: 8px 0 0;
+  color: #9e4434;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+}
+
+.typing span {
+  width: 5px;
+  height: 5px;
+  background: var(--scene-accent);
+  border-radius: 50%;
+  opacity: 0.42;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .typing span {
+    animation: sceneTyping 900ms ease-in-out infinite alternate;
+  }
+
+  .typing span:nth-child(2) {
+    animation-delay: 130ms;
+  }
+
+  .typing span:nth-child(3) {
+    animation-delay: 260ms;
+  }
+}
+
+@keyframes sceneTyping {
+  to {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.avatarWrap {
+  width: 360px;
+  height: 360px;
+  margin-right: 8px;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.avatarWrap :global(.avatar-guide-pet) {
+  --guide-pet-width: 360px;
+  --guide-pet-height: 360px;
+  width: 360px;
+  height: 360px;
+}
+
+.composerWrap {
+  width: min(340px, calc(100vw - 28px));
+  margin-top: 4px;
+  margin-right: 8px;
+  pointer-events: auto;
+}
+
+.statePage {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 24px;
+  overflow: hidden;
+  color: var(--scene-text);
+  background:
+    linear-gradient(135deg, rgba(246, 238, 231, 0.88), rgba(236, 225, 215, 0.76)),
+    #efe9e3;
+  place-items: center;
+}
+
+.statePanel {
+  width: min(520px, 100%);
+  padding: 30px;
+  text-align: center;
+  background: rgba(254, 253, 251, 0.92);
+  border: 1px solid rgba(76, 62, 54, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 20px 52px rgba(73, 53, 43, 0.12);
+}
+
+.statePanel :global(.ant-empty-description) {
+  color: var(--scene-muted);
+}
+
+.statePanel h1 {
+  margin: 0 0 10px;
+  color: var(--scene-text);
+  font-size: 24px;
+}
+
+.statePanel p {
+  margin: 0 auto 18px;
+  color: var(--scene-muted);
+  line-height: 1.7;
+}
+
+.statePanelActions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.statePrimary:global(.ant-btn) {
+  color: #fffaf6;
+  background: var(--scene-accent);
+  border-color: var(--scene-accent);
+  border-radius: 10px;
+}
+
+.loadingBackdrop {
+  background:
+    linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.11) 48%, transparent 66%),
+    linear-gradient(135deg, #454842, #252724);
+  background-size:
+    220% 100%,
+    100% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .loadingBackdrop {
+    animation: sceneSkeleton 1.4s linear infinite;
+  }
+}
+
+@keyframes sceneSkeleton {
+  to {
+    background-position:
+      -120% 0,
+      0 0;
+  }
+}
+
+.loadingRoute,
+.loadingBubble {
+  position: absolute;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+}
+
+.loadingRoute {
+  top: 14px;
+  right: 28px;
+  left: 28px;
+  height: 58px;
+}
+
+.loadingBubble {
+  right: 32px;
+  bottom: 400px;
+  width: min(350px, calc(100% - 48px));
+  height: 92px;
+}
+
+@media (max-width: 1100px) {
+  .petDock {
+    width: min(410px, calc(100% - 28px));
+  }
+
+  .avatarWrap {
+    width: 320px;
+    height: 320px;
+  }
+
+  .avatarWrap :global(.avatar-guide-pet) {
+    --guide-pet-width: 320px;
+    --guide-pet-height: 320px;
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 720px) {
+  .routeDock {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+
+  .fullscreenButton:global(.ant-btn) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    margin-top: 4px;
+  }
+
+  .tourNotice {
+    top: 172px;
+    left: 12px;
+    align-items: flex-start;
+    flex-direction: column;
+    max-width: calc(100% - 24px);
+  }
+
+  .petDock {
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: calc(100% - 16px);
+  }
+
+  .bubble {
+    width: min(330px, calc(100vw - 24px));
+    margin-right: 2px;
+    margin-bottom: -10px;
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  .bubble::after {
+    right: 92px;
+  }
+
+  .bubbleText {
+    font-size: 14px;
+    line-height: 1.58;
+  }
+
+  .avatarWrap {
+    width: 220px;
+    height: 220px;
+    margin-right: 4px;
+  }
+
+  .avatarWrap :global(.avatar-guide-pet) {
+    --guide-pet-width: 220px;
+    --guide-pet-height: 220px;
+    width: 220px;
+    height: 220px;
+  }
+
+  .composerWrap {
+    width: min(320px, calc(100vw - 28px));
+    margin-top: 4px;
+    margin-right: 4px;
+  }
+
+  .loadingRoute {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    height: 132px;
+  }
+
+  .loadingBubble {
+    right: 12px;
+    bottom: 298px;
+    height: 84px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bubble,
+  .tourNotice,
+  .statePanel,
+  .fullscreenButton:global(.ant-btn) {
+    background: #fefdfb;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .bubble::after {
+    background: #fefdfb;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .fullscreenButton:global(.ant-btn) {
+    color: #242522;
+    border-color: rgba(36, 37, 34, 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backgroundCurrent,
+  .loadingBackdrop,
+  .typing span,
+  .bubbleSentence {
+    animation: none;
+    transform: none;
+  }
+}

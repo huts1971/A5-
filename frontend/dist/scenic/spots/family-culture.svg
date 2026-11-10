@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="亲子文化景点封面">
-  <rect width="960" height="540" fill="#eef3e8"/>
-  <path d="M0 380c156-54 302-56 438-6 142 52 318 34 522-56v222H0z" fill="#dce8d5"/>
-  <circle cx="430" cy="240" r="90" fill="#d4a04b" opacity=".88"/>
-  <circle cx="575" cy="284" r="58" fill="#1e625b" opacity=".84"/>
-  <path d="M302 430c28-72 78-108 150-108 66 0 114 36 144 108z" fill="#fff8e8"/>
-  <path d="M520 430c18-52 52-78 102-78 44 0 78 26 102 78z" fill="#fff8e8" opacity=".9"/>
-  <circle cx="744" cy="126" r="54" fill="#d59d45" opacity=".68"/>
-</svg>

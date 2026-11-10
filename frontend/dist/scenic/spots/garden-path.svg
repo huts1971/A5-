@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="景区步道封面">
-  <rect width="960" height="540" fill="#e5f1e4"/>
-  <path d="M0 360c118-46 226-48 324-8 126 52 254 38 384-42 80-48 164-54 252-18v248H0z" fill="#cfe3ca"/>
-  <path d="M420 540c-10-128 16-228 78-300 36 68 54 168 54 300z" fill="#f7f0df"/>
-  <g fill="#1e625b" opacity=".72"><circle cx="168" cy="230" r="74"/><circle cx="292" cy="198" r="92"/><circle cx="712" cy="210" r="96"/><circle cx="826" cy="248" r="70"/></g>
-  <path d="M0 302h960" stroke="#fff9ea" stroke-width="12" opacity=".45"/>
-</svg>

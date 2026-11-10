@@ -1,0 +1,24 @@
+﻿{
+    "motions":  {
+                    "speaking":  [
+                                     "/avatar/uketsukejou151/motions/talk_basic_14.fbx",
+                                     "/avatar/uketsukejou151/motions/talk_basic_15.fbx",
+                                     "/avatar/uketsukejou151/motions/talk_confirm_32.fbx",
+                                     "/avatar/uketsukejou151/motions/talk_waist_48.fbx"
+                                 ],
+                    "welcome":  [
+                                    "/avatar/uketsukejou151/motions/welcome_wave_08.fbx"
+                                ],
+                    "idle":  [
+                                 "/avatar/uketsukejou151/motions/idle_neutral_04.fbx",
+                                 "/avatar/uketsukejou151/motions/idle_head_nod_19.fbx"
+                             ],
+                    "thinking":  [
+                                     "/avatar/uketsukejou151/motions/think_20.fbx",
+                                     "/avatar/uketsukejou151/motions/think_deep_nod_29.fbx"
+                                 ]
+                },
+    "model":  "/avatar/uketsukejou151/model/uketsukejou_1.0.vrm",
+    "id":  "uketsukejou151",
+    "fallbackAvatar":  "/avatar/uketsukejou151/avatar-151-chat.svg"
+}

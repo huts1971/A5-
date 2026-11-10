@@ -10,8 +10,10 @@ $Backend = Join-Path $Root "backend"
 $Frontend = Join-Path $Root "frontend"
 $BackendLog = Join-Path $Backend "backend-local-server-8001.log"
 $BackendErr = Join-Path $Backend "backend-local-server-8001.err.log"
-$FrontendLog = Join-Path $Frontend "frontend-local-server-5173.log"
-$FrontendErr = Join-Path $Frontend "frontend-local-server-5173.err.log"
+$VisitorLog = Join-Path $Frontend "frontend-local-server-5173.log"
+$VisitorErr = Join-Path $Frontend "frontend-local-server-5173.err.log"
+$AdminLog = Join-Path $Frontend "frontend-local-server-5174.log"
+$AdminErr = Join-Path $Frontend "frontend-local-server-5174.err.log"
 $VenvDir = Join-Path $Backend ".venv"
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
 $FrontendDist = Join-Path $Frontend "dist\index.html"
@@ -26,7 +28,7 @@ function Fail-WithHelp([string]$Text) {
   Write-Host "Start failed: $Text" -ForegroundColor Red
   Write-Host ""
   Write-Host "Please make sure these system runtimes are installed:"
-  Write-Host "1. Python 3.10+ with python.exe added to PATH."
+  Write-Host "1. Python 3.11 or 3.12 with python.exe added to PATH."
   Write-Host "2. Node.js 18+ with node and npm available."
   Write-Host ""
   Write-Host "Project dependencies will stay inside backend\.venv and frontend\node_modules."
@@ -42,7 +44,6 @@ function Find-PythonCommand {
   $candidates = @(
     @{ File = "py"; Args = @("-3.12") },
     @{ File = "py"; Args = @("-3.11") },
-    @{ File = "py"; Args = @("-3.10") },
     @{ File = "py"; Args = @("-3") },
     @{ File = "python"; Args = @() }
   )
@@ -53,7 +54,7 @@ function Find-PythonCommand {
       $pythonFile = $candidate.File
       $pythonArgs = $candidate.Args
       $version = & $pythonFile @($pythonArgs + @("-c", "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")) 2>$null
-      if ($LASTEXITCODE -eq 0 -and [version]$version -ge [version]"3.10") {
+      if ($LASTEXITCODE -eq 0 -and [version]$version -ge [version]"3.11" -and [version]$version -lt [version]"3.14") {
         return $candidate
       }
     } catch {
@@ -67,7 +68,7 @@ function Find-PythonCommand {
 function Test-BackendDeps {
   if (-not (Test-Path $VenvPython)) { return $false }
   try {
-    & $VenvPython -c "import fastapi, uvicorn, sqlalchemy, dotenv" 2>$null
+    & $VenvPython -c "import fastapi, uvicorn, sqlalchemy, dotenv, scenic_guide_core, pymilvus, sentence_transformers" 2>$null
     return $LASTEXITCODE -eq 0
   } catch {
     return $false
@@ -80,7 +81,7 @@ function Ensure-Backend {
   if (-not (Test-BackendDeps)) {
     $python = Find-PythonCommand
     if ($null -eq $python) {
-      Fail-WithHelp "Python 3.10+ was not found."
+      Fail-WithHelp "Python 3.11-3.13 was not found."
     }
 
     if (Test-Path $VenvDir) {
@@ -97,20 +98,19 @@ function Ensure-Backend {
     }
 
     Write-Host "Installing backend requirements..."
-    & $VenvPython -m pip install -r (Join-Path $Backend "requirements.txt")
-    if ($LASTEXITCODE -ne 0) {
-      Fail-WithHelp "Could not install backend requirements. Check network or pip mirror."
-    }
+    Push-Location $Backend
+    try {
+      & $VenvPython -m pip install -r requirements-agentic.txt
+      if ($LASTEXITCODE -ne 0) {
+        Fail-WithHelp "Could not install backend requirements. Check network or pip mirror."
+      }
+    } finally { Pop-Location }
   } else {
     Write-Host "Backend dependencies are ready."
   }
 
-  $envFile = Join-Path $Backend ".env"
-  $envExample = Join-Path $Backend ".env.example"
-  if (-not (Test-Path $envFile) -and (Test-Path $envExample)) {
-    Copy-Item -LiteralPath $envExample -Destination $envFile
-    Write-Host "Created backend\.env from backend\.env.example."
-  }
+  & $VenvPython (Join-Path $Root "scripts\configure-local.py")
+  if ($LASTEXITCODE -ne 0) { Fail-WithHelp "Could not prepare local configuration." }
 }
 
 function Ensure-Frontend {
@@ -143,10 +143,7 @@ function Ensure-Frontend {
     Write-Host "Frontend dependencies are ready."
   }
 
-  Set-Content -LiteralPath (Join-Path $Frontend ".env.local") -Encoding ASCII -Value @(
-    "VITE_API_BASE_URL=http://127.0.0.1:8001",
-    "VITE_USE_MOCK_API=false"
-  )
+  # configure-local.py creates this file only when absent, preserving map/API settings.
 }
 
 function Ensure-FrontendDist {
@@ -187,14 +184,21 @@ function Start-Backend {
 }
 
 function Start-Frontend {
-  Write-Step "[6/7] Starting static frontend http://127.0.0.1:5173"
-  if (Test-Path $FrontendLog) { Clear-Content -LiteralPath $FrontendLog }
-  if (Test-Path $FrontendErr) { Clear-Content -LiteralPath $FrontendErr }
+  Write-Step "[6/7] Starting static frontends"
+  if (Test-Path $VisitorLog) { Clear-Content -LiteralPath $VisitorLog }
+  if (Test-Path $VisitorErr) { Clear-Content -LiteralPath $VisitorErr }
+  if (Test-Path $AdminLog) { Clear-Content -LiteralPath $AdminLog }
+  if (Test-Path $AdminErr) { Clear-Content -LiteralPath $AdminErr }
   Start-BackgroundCommand `
     -WorkingDirectory $Frontend `
-    -Command "npm.cmd run preview" `
-    -StdoutPath $FrontendLog `
-    -StderrPath $FrontendErr
+    -Command "cmd /d /c set FRONTEND_PORT=5173&& node ..\scripts\serve-frontend-static.mjs" `
+    -StdoutPath $VisitorLog `
+    -StderrPath $VisitorErr
+  Start-BackgroundCommand `
+    -WorkingDirectory $Frontend `
+    -Command "cmd /d /c set FRONTEND_PORT=5174&& node ..\scripts\serve-frontend-static.mjs" `
+    -StdoutPath $AdminLog `
+    -StderrPath $AdminErr
 }
 
 function Start-BackgroundCommand {
@@ -267,20 +271,22 @@ try {
   Write-Step "[7/7] Waiting for services"
   $backendReady = Wait-Url "http://127.0.0.1:8001/health" 30
   $frontendReady = Wait-Url "http://127.0.0.1:5173/" 30
+  $adminReady = Wait-Url "http://127.0.0.1:5174/" 30
 
   Write-Host ""
-  if ($backendReady -and $frontendReady) {
+  if ($backendReady -and $frontendReady -and $adminReady) {
     Write-Host "Started successfully." -ForegroundColor Green
   } else {
     Write-Host "Services may still be starting. Refresh the browser after a moment." -ForegroundColor Yellow
   }
   Write-Host "Visitor: http://127.0.0.1:5173/"
   Write-Host "AI Guide: http://127.0.0.1:5173/guide"
-  Write-Host "Admin: http://127.0.0.1:5173/admin"
+  Write-Host "Admin: http://127.0.0.1:5174/"
   Write-Host "Backend docs: http://127.0.0.1:8001/docs"
   Write-Host ""
   Write-Host "Backend log: backend\backend-local-server-8001.log"
-  Write-Host "Frontend log: frontend\frontend-local-server-5173.log"
+  Write-Host "Visitor log: frontend\frontend-local-server-5173.log"
+  Write-Host "Admin log: frontend\frontend-local-server-5174.log"
   Write-Host "Mode: static preview, no Vite hot reload."
   Write-Host "After code changes: run BUILD-FRONTEND.bat, then START-HERE.bat."
 

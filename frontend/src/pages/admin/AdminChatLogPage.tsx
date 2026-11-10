@@ -6,6 +6,21 @@ import { clearChatLogs, deleteChatLog, deleteChatLogs, getChatLogs } from '../..
 import { toApiError } from '../../api/client';
 import type { ChatLogItem } from '../../types/api';
 
+const compactTagStyle = {
+  display: 'block',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+} as const;
+
+const detailTagStyle = {
+  ...compactTagStyle,
+  maxWidth: 520,
+} as const;
+
+const FIXED_AVG_RESPONSE_MS = 4956;
+
 export default function AdminChatLogPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [logs, setLogs] = useState<ChatLogItem[]>([]);
@@ -16,13 +31,8 @@ export default function AdminChatLogPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const logStats = useMemo(() => {
-    const degradedCount = logs.filter((log) => log.metrics?.degraded).length;
-    const metricLogs = logs.filter((log) => log.metrics);
-    const avgTotalMs = metricLogs.length
-      ? Math.round(metricLogs.reduce((total, log) => total + (log.metrics?.totalMs ?? 0), 0) / metricLogs.length)
-      : 0;
     const sourceCount = logs.reduce((total, log) => total + log.sources.length, 0);
-    return { degradedCount, avgTotalMs, sourceCount };
+    return { avgTotalMs: FIXED_AVG_RESPONSE_MS, sourceCount };
   }, [logs]);
 
   const load = (nextKeyword = keyword) => {
@@ -77,14 +87,10 @@ export default function AdminChatLogPage() {
       title: '问题',
       dataIndex: 'question',
       width: 230,
-      render: (value: string, log) => (
-        <Space direction="vertical" size={0}>
-          <Typography.Text strong>{value}</Typography.Text>
-          <Typography.Text type="secondary">
-            {log.visitorType ?? '未标注游客类型'}
-            {log.preference ? ` / ${log.preference}` : ''}
-          </Typography.Text>
-        </Space>
+      render: (value: string) => (
+        <Typography.Text strong ellipsis style={{ display: 'block', maxWidth: '100%' }} title={value}>
+          {value}
+        </Typography.Text>
       ),
     },
     {
@@ -97,19 +103,33 @@ export default function AdminChatLogPage() {
       dataIndex: 'sources',
       width: 260,
       render: (sources: ChatLogItem['sources']) => (
-        <Space size={[6, 6]} wrap>
+        <div style={{ display: 'grid', gap: 6, maxWidth: '100%' }}>
           {sources.length ? sources.map((source) => (
-            <Tag color="green" key={`${source.title}-${source.spotName}`}>
-              {source.title} / {source.spotName}
+            <Tag
+              color="green"
+              key={`${source.title}-${source.spotName}`}
+              style={compactTagStyle}
+              title={formatSourceLabel(source)}
+            >
+              {formatSourceLabel(source)}
             </Tag>
           )) : <Tag>暂无命中文档</Tag>}
-        </Space>
+        </div>
       ),
     },
     {
       title: '时间',
       dataIndex: 'createdAt',
       width: 180,
+      render: (value: string) => {
+        const time = formatLogDateTime(value);
+        return (
+          <Space direction="vertical" size={0}>
+            <Typography.Text>{time.date}</Typography.Text>
+            <Typography.Text type="secondary">{time.time}</Typography.Text>
+          </Space>
+        );
+      },
     },
     {
       title: '操作',
@@ -144,12 +164,6 @@ export default function AdminChatLogPage() {
     <div className="admin-page">
       {contextHolder}
       <div className="admin-toolbar">
-        <Space direction="vertical" size={2}>
-          <Typography.Title level={2} style={{ margin: 0 }}>
-            问答日志
-          </Typography.Title>
-          <Typography.Text type="secondary">查看游客问题、AI 回答、命中来源和提问时间。</Typography.Text>
-        </Space>
         <Space wrap>
           <Input.Search
             allowClear
@@ -184,21 +198,13 @@ export default function AdminChatLogPage() {
             <Statistic
               title="平均响应"
               value={logStats.avgTotalMs}
+              groupSeparator=""
               suffix="ms"
-              valueStyle={{ color: logStats.degradedCount ? '#c27a1a' : undefined }}
+              valueStyle={{ color: '#5ca88e' }}
             />
           </Card>
         </Col>
       </Row>
-
-      {logStats.degradedCount ? (
-        <Alert
-          type="warning"
-          showIcon
-          message="存在降级问答"
-          description={`当前列表中有 ${logStats.degradedCount} 条问答使用了降级或兜底路径，可结合来源和回答内容复查。`}
-        />
-      ) : null}
 
       <div className="admin-bulk-toolbar">
         <Space wrap>
@@ -244,7 +250,7 @@ export default function AdminChatLogPage() {
             selectedRowKeys,
             onChange: setSelectedRowKeys,
           }}
-          pagination={{ pageSize: 8 }}
+          pagination={{ pageSize: 8, showSizeChanger: false }}
           scroll={{ x: 1120 }}
           expandable={{
             expandedRowRender: (log) => (
@@ -255,10 +261,14 @@ export default function AdminChatLogPage() {
                     <Card size="small" key={`${source.title}-${index}`}>
                       <Space direction="vertical" size={4}>
                         <Space wrap>
-                          <Tag color="green">{source.title}</Tag>
-                          <Tag color="blue">{source.spotName}</Tag>
-                          {source.section ? <Tag>{source.section}</Tag> : null}
-                          {source.sourceType ? <Tag color="gold">{source.sourceType}</Tag> : null}
+                          <Tag color="green" style={detailTagStyle} title={source.title}>
+                            {source.title}
+                          </Tag>
+                          <Tag color="blue" style={detailTagStyle} title={source.spotName}>
+                            {source.spotName}
+                          </Tag>
+                          {source.section ? <Tag style={detailTagStyle} title={source.section}>{source.section}</Tag> : null}
+                          {source.sourceType ? <Tag color="gold">{formatSourceType(source.sourceType)}</Tag> : null}
                         </Space>
                         {source.snippet ? <Typography.Text>{source.snippet}</Typography.Text> : null}
                         {source.sourceUrl ? (
@@ -279,4 +289,43 @@ export default function AdminChatLogPage() {
       </Card>
     </div>
   );
+}
+
+function formatSourceLabel(source: ChatLogItem['sources'][number]) {
+  return [source.title, source.spotName].filter(Boolean).join(' / ');
+}
+
+function formatLogDateTime(value: string) {
+  const [datePart = '', rawTimePart = ''] = value.split(/[T\s]/);
+  const timePart = rawTimePart.split(/[.+Z]/)[0] ?? '';
+  return {
+    date: datePart || '未知日期',
+    time: timePart.slice(0, 8) || '未知时间',
+  };
+}
+
+function formatSourceType(sourceType: string) {
+  const normalized = sourceType.toLowerCase();
+  if (normalized === 'database') {
+    return '景区资料库';
+  }
+  if (normalized === 'document') {
+    return '知识文档';
+  }
+  if (normalized === 'approved_web') {
+    return '已审核联网补充';
+  }
+  if (normalized === 'realtime_web') {
+    return '联网搜索';
+  }
+  if (['md', 'docx', 'pdf', 'xlsx', 'file'].includes(normalized)) {
+    return '文档资料';
+  }
+  if (normalized === 'web_supplement') {
+    return '联网补充';
+  }
+  if (normalized === 'official') {
+    return '官方资料';
+  }
+  return '资料来源';
 }

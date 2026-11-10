@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>景区服务设施点位标注</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #24221e;
+        --muted: #77736b;
+        --line: rgba(67, 58, 46, 0.16);
+        --paper: #fbfaf7;
+        --panel: rgba(255, 255, 255, 0.82);
+        --accent: #b58a43;
+        --accent-soft: #efe2c2;
+        --danger: #a95347;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-width: 1060px;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 18% 12%, rgba(226, 205, 160, 0.24), transparent 30%),
+          linear-gradient(135deg, #f5f1e7, #fdfcf9 58%, #eee7d7);
+        font-family: "Noto Serif SC", "Songti SC", serif;
+      }
+
+      button,
+      input,
+      select { font: inherit; }
+
+      button { cursor: pointer; }
+
+      .app {
+        width: min(1800px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 22px 0 28px;
+      }
+
+      .header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 28px;
+        padding: 0 4px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-family: Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+      }
+
+      h1,
+      h2,
+      p { margin: 0; }
+
+      h1 {
+        margin-top: 8px;
+        font-size: clamp(28px, 3vw, 48px);
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .header-note {
+        max-width: 420px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+        text-align: right;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .panel {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel);
+        box-shadow: 0 16px 38px rgba(75, 63, 39, 0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .map-panel {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        min-height: calc(100vh - 150px);
+        overflow: hidden;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .toolbar-left,
+      .toolbar-actions,
+      .segmented,
+      .zoom-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .map-title {
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .status {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .action,
+      .map-tab,
+      .category-tab {
+        min-height: 34px;
+        padding: 5px 11px;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.68);
+      }
+
+      .action:hover,
+      .map-tab:hover,
+      .category-tab:hover { border-color: var(--accent); }
+
+      .action.primary,
+      .map-tab.active,
+      .category-tab.active {
+        color: #3d2f17;
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .action.danger {
+        color: var(--danger);
+        border-color: rgba(169, 83, 71, 0.35);
+      }
+
+      .viewport {
+        min-height: 0;
+        overflow: auto;
+        padding: 18px;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.48)),
+          repeating-linear-gradient(0deg, transparent 0 24px, rgba(103, 92, 71, 0.04) 25px),
+          #e9e5dc;
+      }
+
+      .map-frame {
+        position: relative;
+        width: 941px;
+        margin: 0 auto;
+        border: 1px solid rgba(50, 45, 36, 0.24);
+        background: #fff;
+        box-shadow: 0 14px 28px rgba(53, 46, 33, 0.18);
+        user-select: none;
+      }
+
+      .map-frame img {
+        display: block;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+      }
+
+      .map-frame.is-placing { cursor: crosshair; }
+
+      .marker {
+        position: absolute;
+        z-index: 2;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 50% 50% 50% 4px;
+        background: var(--marker-color, #9d7040);
+        box-shadow: 0 3px 8px rgba(28, 23, 15, 0.3);
+        transform: translate(-50%, -100%) rotate(-45deg);
+      }
+
+      .marker::after {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+      }
+
+      .marker.selected {
+        z-index: 3;
+        outline: 3px solid rgba(181, 138, 67, 0.38);
+        outline-offset: 3px;
+      }
+
+      .marker-label {
+        position: absolute;
+        left: 18px;
+        bottom: 22px;
+        width: max-content;
+        max-width: 180px;
+        padding: 4px 7px;
+        color: var(--ink);
+        border: 1px solid rgba(67, 58, 46, 0.16);
+        border-radius: 5px;
+        background: rgba(255, 253, 248, 0.94);
+        box-shadow: 0 3px 8px rgba(50, 42, 29, 0.1);
+        font-size: 12px;
+        line-height: 1.25;
+        text-align: left;
+        white-space: nowrap;
+        transform: rotate(45deg);
+        transform-origin: left bottom;
+      }
+
+      .map-frame.is-placing .marker-label { pointer-events: none; }
+
+      .side-panel {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 150px);
+        overflow: hidden;
+      }
+
+      .side-section {
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .side-section:last-child {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        border-bottom: 0;
+      }
+
+      .side-section h2 {
+        margin-bottom: 12px;
+        font-size: 17px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .field label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 38px;
+        padding: 7px 9px;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      input:focus,
+      select:focus { border-color: var(--accent); }
+
+      .hint {
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .side-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .side-actions .wide { grid-column: 1 / -1; }
+
+      .selected-point {
+        min-height: 52px;
+        margin-top: 10px;
+        padding: 9px;
+        border: 1px dashed var(--line);
+        border-radius: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .point-list {
+        display: grid;
+        gap: 7px;
+      }
+
+      .point-item {
+        display: grid;
+        grid-template-columns: 8px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 9px;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.58);
+        text-align: left;
+      }
+
+      .point-item:hover,
+      .point-item.selected { border-color: var(--accent); background: var(--accent-soft); }
+
+      .point-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--point-color, #9d7040);
+      }
+
+      .point-name {
+        overflow: hidden;
+        font-size: 13px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .point-coord {
+        color: var(--muted);
+        font-family: Consolas, monospace;
+        font-size: 10px;
+      }
+
+      .empty {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .footer-note {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      @media (max-width: 1180px) {
+        body { min-width: 0; }
+        .app { width: calc(100vw - 20px); }
+        .layout { grid-template-columns: minmax(0, 1fr) 300px; }
+        .header-note { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <span class="eyebrow">[ SERVICE POINT CALIBRATOR V1 ]</span>
+          <h1>景区服务设施点位标注</h1>
+        </div>
+        <p class="header-note">只标注卫生间、餐饮、住宿、商铺和观光车站。景点、路线和路网不会出现在这个工具里。</p>
+      </header>
+
+      <div class="layout">
+        <section class="panel map-panel">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <span class="map-title" id="mapTitle">灵山胜境</span>
+              <span class="status" id="status">选择类别和名称后，直接点击地图添加点位</span>
+            </div>
+            <div class="toolbar-actions">
+              <div class="zoom-actions">
+                <button class="action" id="zoomOut" type="button">−</button>
+                <span class="status" id="zoomValue">100%</span>
+                <button class="action" id="zoomIn" type="button">＋</button>
+              </div>
+              <button class="action" id="resetView" type="button">重置视图</button>
+            </div>
+          </div>
+          <div class="viewport" id="viewport">
+            <div class="map-frame is-placing" id="mapFrame">
+              <img id="mapImage" alt="景区服务设施标注底图" draggable="false" />
+              <div id="markers"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel side-panel">
+          <section class="side-section">
+            <h2>标注设置</h2>
+            <div class="field">
+              <label for="mapSelect">选择景区地图</label>
+              <select id="mapSelect">
+                <option value="ling-shan">灵山胜境</option>
+                <option value="nianhua-bay">拈花湾</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="categorySelect">服务类别</label>
+              <select id="categorySelect">
+                <option value="restroom">卫生间</option>
+                <option value="dining">餐饮</option>
+                <option value="lodging">住宿</option>
+                <option value="shop">商铺</option>
+                <option value="shuttle">观光车站</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="nameInput">服务点名称</label>
+              <input id="nameInput" type="text" placeholder="例如：灵山大佛附近卫生间" />
+            </div>
+            <p class="hint">填写名称后，直接点击地图上的设施位置。已添加的点位可以拖动修正。</p>
+            <div class="selected-point" id="selectedPoint">当前未选中点位</div>
+            <div class="side-actions">
+              <button class="action danger" id="deleteSelected" type="button">删除选中点位</button>
+              <button class="action" id="clearSelection" type="button">取消选择</button>
+            </div>
+          </section>
+
+          <section class="side-section">
+            <h2>数据导入导出</h2>
+            <div class="field">
+              <label for="importInput">导入已有地图 JSON（可选）</label>
+              <input id="importInput" type="file" accept=".json,application/json" />
+            </div>
+            <div class="side-actions">
+              <button class="action primary" id="copyService" type="button">复制服务点 JSON</button>
+              <button class="action primary" id="copyFull" type="button">复制完整地图 JSON</button>
+              <button class="action primary wide" id="downloadFull" type="button">下载完整地图 JSON</button>
+            </div>
+            <p class="footer-note">完整地图 JSON 会保留景点点位，并把当前服务点一起导出。推荐下载后替换对应的 knowledge/maps 文件。</p>
+          </section>
+
+          <section class="side-section">
+            <h2>当前服务点位 <span class="status" id="pointCount">0 个</span></h2>
+            <div class="point-list" id="pointList"></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const serviceTypes = {
+        restroom: { label: "卫生间", color: "#6f8e78" },
+        dining: { label: "餐饮", color: "#c27b4b" },
+        lodging: { label: "住宿", color: "#7e75a3" },
+        shop: { label: "商铺", color: "#a96a83" },
+        shuttle: { label: "观光车站", color: "#5288a0" },
+      };
+
+      const maps = {
+        "ling-shan": {
+          id: "ling-shan",
+          name: "灵山胜境",
+          image_url: "/scenic/maps/ling-shan-overview-v1.webp",
+          version: "ling-shan-overview-v1",
+          width: 941,
+          height: 1672,
+          center_lat: 31.421388,
+          center_lng: 120.102499,
+          authorization_status: "pending_confirmation",
+          source_note: "临时资源提取自景区鸟瞰图；服务设施点位由人工标注。",
+          is_active: true,
+          basePoints: [
+            ["spot_ls_entrance", "景区入口", .462791, .969331, "entrance"],
+            ["spot_ls_001", "灵山大照壁", .478509, .836011, "spot"],
+            ["spot_ls_002", "五明桥", .477632, .808365, "spot"],
+            ["spot_ls_003", "佛足坛", .484211, .734312, "spot"],
+            ["spot_ls_004", "五智门", .487281, .700741, "spot"],
+            ["spot_ls_005", "菩提大道", .489035, .670626, "spot"],
+            ["spot_nine_dragons", "九龙灌浴", .490789, .578801, "spot"],
+            ["spot_ls_007", "降魔浮雕", .493421, .520546, "spot"],
+            ["spot_ls_008", "阿育王柱", .495175, .472165, "spot"],
+            ["spot_ls_009", "百子戏弥勒", .536842, .404036, "spot"],
+            ["spot_xiangfu_temple", "祥符禅寺", .499561, .367997, "spot"],
+            ["spot_ling_shan_buddha", "灵山大佛", .501316, .163117, "spot"],
+            ["spot_ls_012", "佛教文化博览馆", .501316, .19027, "spot"],
+            ["spot_brahma_palace", "灵山梵宫", .737281, .449949, "spot"],
+            ["spot_five_mudra_mandala", "五印坛城", .6642, .6663, "spot"],
+            ["spot_ls_015", "曼飞龙塔", .806579, .608422, "spot"],
+            ["spot_ls_016", "无尽意斋", .430263, .266297, "spot"],
+          ],
+        },
+        "nianhua-bay": {
+          id: "nianhua-bay",
+          name: "拈花湾",
+          image_url: "/scenic/maps/nianhua-bay-overview-v1.png",
+          version: "nianhua-bay-overview-v1",
+          width: 941,
+          height: 1672,
+          center_lat: 31.49,
+          center_lng: 120.06,
+          authorization_status: "pending_confirmation",
+          source_note: "用户提供的拈花湾鸟瞰图；服务设施点位由人工标注。",
+          is_active: true,
+          basePoints: [
+            ["spot_nh_entrance", "景区入口", .326357, .850663, "entrance"],
+            ["spot_nh_001", "拈花广场", .38374, .564316, "spot"],
+            ["spot_nh_002", "梵天花海", .468293, .639585, "spot"],
+            ["spot_nh_003", "香月花街", .367073, .622426, "spot"],
+            ["spot_nh_004", "拈花堂", .387805, .550589, "spot"],
+            ["spot_nh_005", "五灯湖", .463415, .500257, "spot"],
+            ["spot_nh_006", "鹿鸣谷", .691463, .271019, "spot"],
+          ],
+        },
+      };
+
+      const storageKey = "a5-service-point-calibration-v1";
+      const $ = (id) => document.getElementById(id);
+      const clone = (value) => JSON.parse(JSON.stringify(value));
+      let mapId = "ling-shan";
+      let scale = 1;
+      let selectedId = "";
+      let state = {
+        points: {
+          "ling-shan": [],
+          "nianhua-bay": [],
+        },
+      };
+      let dragState = null;
+
+      function currentMap() { return maps[mapId]; }
+      function currentPoints() { return state.points[mapId]; }
+      function pointColor(point) { return serviceTypes[point.point_type]?.color || "#9d7040"; }
+      function clamp(value) { return Math.max(0, Math.min(1, value)); }
+
+      function saveState() {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+          if (!saved?.points) return;
+          for (const id of Object.keys(state.points)) {
+            if (Array.isArray(saved.points[id])) state.points[id] = saved.points[id];
+          }
+        } catch {
+          localStorage.removeItem(storageKey);
+        }
+      }
+
+      function setStatus(message) { $("status").textContent = message; }
+
+      function createId(type) {
+        const prefix = mapId === "ling-shan" ? "ls" : "nh";
+        const base = `${prefix}_service_${type}_`;
+        let index = 1;
+        while (currentPoints().some((point) => point.spot_id === `${base}${String(index).padStart(3, "0")}`)) index += 1;
+        return `${base}${String(index).padStart(3, "0")}`;
+      }
+
+      function pointLabel(point) {
+        return `${serviceTypes[point.point_type]?.label || point.point_type} · ${point.name}`;
+      }
+
+      function frameCoordinate(event) {
+        const rect = $("mapFrame").getBoundingClientRect();
+        return {
+          x_ratio: Number(clamp((event.clientX - rect.left) / rect.width).toFixed(6)),
+          y_ratio: Number(clamp((event.clientY - rect.top) / rect.height).toFixed(6)),
+        };
+      }
+
+      function updateSelectedPanel() {
+        const point = currentPoints().find((item) => item.spot_id === selectedId);
+        $("selectedPoint").textContent = point
+          ? `${pointLabel(point)}\nx=${point.x_ratio.toFixed(6)}，y=${point.y_ratio.toFixed(6)}`
+          : "当前未选中点位";
+      }
+
+      function renderMarkers() {
+        const container = $("markers");
+        container.innerHTML = "";
+        for (const point of currentPoints()) {
+          const marker = document.createElement("button");
+          marker.type = "button";
+          marker.className = `marker${point.spot_id === selectedId ? " selected" : ""}`;
+          marker.style.left = `${point.x_ratio * 100}%`;
+          marker.style.top = `${point.y_ratio * 100}%`;
+          marker.style.setProperty("--marker-color", pointColor(point));
+          marker.title = `${pointLabel(point)}（拖动修正）`;
+          marker.setAttribute("aria-label", pointLabel(point));
+          marker.addEventListener("click", (event) => {
+            event.stopPropagation();
+            selectedId = point.spot_id;
+            $("nameInput").value = point.name;
+            $("categorySelect").value = point.point_type;
+            renderAll();
+          });
+          marker.addEventListener("pointerdown", (event) => {
+            event.stopPropagation();
+            selectedId = point.spot_id;
+            dragState = { id: point.spot_id, pointerId: event.pointerId };
+            marker.setPointerCapture(event.pointerId);
+          });
+          marker.addEventListener("pointermove", (event) => {
+            if (!dragState || dragState.id !== point.spot_id) return;
+            const coordinate = frameCoordinate(event);
+            point.x_ratio = coordinate.x_ratio;
+            point.y_ratio = coordinate.y_ratio;
+            updateSelectedPanel();
+            marker.style.left = `${point.x_ratio * 100}%`;
+            marker.style.top = `${point.y_ratio * 100}%`;
+          });
+          marker.addEventListener("pointerup", () => {
+            if (!dragState || dragState.id !== point.spot_id) return;
+            dragState = null;
+            saveState();
+            setStatus("点位位置已保存");
+            renderAll();
+          });
+
+          const label = document.createElement("span");
+          label.className = "marker-label";
+          label.textContent = point.name;
+          marker.appendChild(label);
+          container.appendChild(marker);
+        }
+      }
+
+      function renderList() {
+        const list = $("pointList");
+        list.innerHTML = "";
+        $("pointCount").textContent = `${currentPoints().length} 个`;
+        if (!currentPoints().length) {
+          list.innerHTML = '<p class="empty">当前地图还没有服务点位。填写名称后直接点击地图即可添加。</p>';
+          return;
+        }
+        for (const point of currentPoints()) {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = `point-item${point.spot_id === selectedId ? " selected" : ""}`;
+          item.style.setProperty("--point-color", pointColor(point));
+          item.innerHTML = `<span class="point-dot"></span><span class="point-name">${pointLabel(point)}</span><span class="point-coord">${point.x_ratio.toFixed(3)},${point.y_ratio.toFixed(3)}</span>`;
+          item.addEventListener("click", () => {
+            selectedId = point.spot_id;
+            $("nameInput").value = point.name;
+            $("categorySelect").value = point.point_type;
+            renderAll();
+          });
+          list.appendChild(item);
+        }
+      }
+
+      function renderMap() {
+        const map = currentMap();
+        $("mapTitle").textContent = map.name;
+        $("mapImage").src = map.image_url;
+        $("mapImage").alt = `${map.name}服务设施标注底图`;
+        $("mapFrame").style.width = `${map.width * scale}px`;
+        $("zoomValue").textContent = `${Math.round(scale * 100)}%`;
+      }
+
+      function renderAll() {
+        renderMap();
+        renderMarkers();
+        renderList();
+        updateSelectedPanel();
+      }
+
+      function fullPayload() {
+        const map = currentMap();
+        const basePoints = map.basePoints.map(([spot_id, name, x_ratio, y_ratio, point_type]) => ({
+          spot_id,
+          name,
+          x_ratio,
+          y_ratio,
+          point_type,
+          calibration_status: "verified",
+        }));
+        return {
+          map: {
+            id: map.id,
+            name: map.name,
+            image_url: map.image_url,
+            version: map.version,
+            width: map.width,
+            height: map.height,
+            center_lat: map.center_lat,
+            center_lng: map.center_lng,
+            authorization_status: map.authorization_status,
+            source_note: map.source_note,
+            is_active: map.is_active,
+          },
+          points: [...basePoints, ...clone(currentPoints())],
+        };
+      }
+
+      function servicePayload() {
+        return { map_id: mapId, points: clone(currentPoints()) };
+      }
+
+      async function copyJson(value, label) {
+        await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+        setStatus(`${label}已复制`);
+      }
+
+      function downloadJson(value) {
+        const blob = new Blob([JSON.stringify(value, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${currentMap().version}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        setStatus("完整地图 JSON 已下载");
+      }
+
+      function importMapJson(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const payload = JSON.parse(String(reader.result));
+            const importedMap = payload.map;
+            if (!importedMap?.id || !maps[importedMap.id] || !Array.isArray(payload.points)) throw new Error("invalid");
+            mapId = importedMap.id;
+            const basePoints = payload.points.filter((point) => !serviceTypes[point.point_type]);
+            const servicePoints = payload.points.filter((point) => serviceTypes[point.point_type]).map((point) => ({
+              spot_id: point.spot_id,
+              name: point.name || point.spot_id,
+              x_ratio: Number(point.x_ratio),
+              y_ratio: Number(point.y_ratio),
+              point_type: point.point_type,
+              calibration_status: point.calibration_status || "pending_review",
+            }));
+            maps[mapId].basePoints = basePoints.map((point) => [point.spot_id, point.name || point.spot_id, point.x_ratio, point.y_ratio, point.point_type]);
+            state.points[mapId] = servicePoints;
+            selectedId = "";
+            $("mapSelect").value = mapId;
+            saveState();
+            renderAll();
+            setStatus(`已导入 ${servicePoints.length} 个服务点位，可继续标注`);
+          } catch {
+            setStatus("导入失败，请选择地图 JSON 文件");
+          }
+        };
+        reader.readAsText(file, "utf-8");
+      }
+
+      $("mapSelect").addEventListener("change", (event) => {
+        mapId = event.target.value;
+        selectedId = "";
+        scale = 1;
+        setStatus("选择类别和名称后，直接点击地图添加点位");
+        renderAll();
+      });
+
+      $("mapFrame").addEventListener("click", (event) => {
+        if (event.target.closest(".marker")) return;
+        const name = $("nameInput").value.trim();
+        const pointType = $("categorySelect").value;
+        if (!name) {
+          setStatus("请先填写服务点名称");
+          $("nameInput").focus();
+          return;
+        }
+        const coordinate = frameCoordinate(event);
+        const point = {
+          spot_id: createId(pointType),
+          name,
+          x_ratio: coordinate.x_ratio,
+          y_ratio: coordinate.y_ratio,
+          point_type: pointType,
+          calibration_status: "verified",
+        };
+        currentPoints().push(point);
+        selectedId = point.spot_id;
+        saveState();
+        setStatus(`已添加：${pointLabel(point)}`);
+        renderAll();
+      });
+
+      $("deleteSelected").addEventListener("click", () => {
+        if (!selectedId) return setStatus("请先选择一个服务点位");
+        state.points[mapId] = currentPoints().filter((point) => point.spot_id !== selectedId);
+        selectedId = "";
+        saveState();
+        setStatus("服务点位已删除");
+        renderAll();
+      });
+
+      $("clearSelection").addEventListener("click", () => {
+        selectedId = "";
+        $("nameInput").value = "";
+        renderAll();
+        setStatus("已取消选择");
+      });
+
+      $("zoomIn").addEventListener("click", () => {
+        scale = Math.min(2.4, +(scale + 0.1).toFixed(2));
+        renderMap();
+      });
+
+      $("zoomOut").addEventListener("click", () => {
+        scale = Math.max(0.55, +(scale - 0.1).toFixed(2));
+        renderMap();
+      });
+
+      $("resetView").addEventListener("click", () => {
+        scale = 1;
+        $("viewport").scrollTo({ left: 0, top: 0 });
+        renderMap();
+      });
+
+      $("copyService").addEventListener("click", () => copyJson(servicePayload(), "服务点 JSON"));
+      $("copyFull").addEventListener("click", () => copyJson(fullPayload(), "完整地图 JSON"));
+      $("downloadFull").addEventListener("click", () => downloadJson(fullPayload()));
+      $("importInput").addEventListener("change", (event) => {
+        const file = event.target.files?.[0];
+        if (file) importMapJson(file);
+      });
+
+      loadState();
+      renderAll();
+    </script>
+  </body>
+</html>

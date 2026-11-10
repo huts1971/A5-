@@ -1,0 +1,608 @@
+{
+  "id": "nianhua-bay-road-network-v1",
+  "map_id": "nianhua-bay",
+  "data_version": "nianhua-bay-road-network-v1",
+  "status": "provisional",
+  "is_active": true,
+  "source_note": "用户人工描绘的游客可走道路。所有道路统一按普通双向步行处理，时间仅为地图粗略估算。",
+  "map_width": 941,
+  "map_height": 1672,
+  "nodes": [
+    {
+      "id": "nh_v1_road_node_003",
+      "x_ratio": 0.395349,
+      "y_ratio": 0.54963
+    },
+    {
+      "id": "nh_v1_road_node_004",
+      "x_ratio": 0.381395,
+      "y_ratio": 0.585841
+    },
+    {
+      "id": "nh_v1_road_node_005",
+      "x_ratio": 0.372,
+      "y_ratio": 0.604
+    },
+    {
+      "id": "nh_v1_road_node_006",
+      "x_ratio": 0.367073,
+      "y_ratio": 0.622426
+    },
+    {
+      "id": "nh_v1_road_node_007",
+      "x_ratio": 0.4,
+      "y_ratio": 0.63
+    },
+    {
+      "id": "nh_v1_road_node_008",
+      "x_ratio": 0.435,
+      "y_ratio": 0.636
+    },
+    {
+      "id": "nh_v1_road_node_009",
+      "x_ratio": 0.468293,
+      "y_ratio": 0.639585
+    },
+    {
+      "id": "nh_v1_road_node_010",
+      "x_ratio": 0.418605,
+      "y_ratio": 0.538287
+    },
+    {
+      "id": "nh_v1_road_node_011",
+      "x_ratio": 0.4,
+      "y_ratio": 0.522581
+    },
+    {
+      "id": "nh_v1_road_node_012",
+      "x_ratio": 0.463415,
+      "y_ratio": 0.500257
+    },
+    {
+      "id": "nh_v1_road_node_013",
+      "x_ratio": 0.48,
+      "y_ratio": 0.54
+    },
+    {
+      "id": "nh_v1_road_node_014",
+      "x_ratio": 0.443411,
+      "y_ratio": 0.596312
+    },
+    {
+      "id": "nh_v1_road_node_015",
+      "x_ratio": 0.477519,
+      "y_ratio": 0.450595
+    },
+    {
+      "id": "nh_v1_road_node_016",
+      "x_ratio": 0.506202,
+      "y_ratio": 0.390388
+    },
+    {
+      "id": "nh_v1_road_node_017",
+      "x_ratio": 0.609302,
+      "y_ratio": 0.406094
+    },
+    {
+      "id": "nh_v1_road_node_018",
+      "x_ratio": 0.628682,
+      "y_ratio": 0.269103
+    },
+    {
+      "id": "nh_v1_road_node_019",
+      "x_ratio": 0.691463,
+      "y_ratio": 0.271019
+    },
+    {
+      "id": "nh_v1_road_node_020",
+      "x_ratio": 0.582171,
+      "y_ratio": 0.483752
+    },
+    {
+      "id": "nh_v1_road_node_021",
+      "x_ratio": 0.70155,
+      "y_ratio": 0.521272
+    },
+    {
+      "id": "nh_v1_road_node_022",
+      "x_ratio": 0.326357,
+      "y_ratio": 0.850663
+    },
+    {
+      "id": "nh_v1_road_node_023",
+      "x_ratio": 0.396899,
+      "y_ratio": 0.685749
+    },
+    {
+      "id": "nh_v1_road_node_024",
+      "x_ratio": 0.462791,
+      "y_ratio": 0.499894
+    }
+  ],
+  "edges": [
+    {
+      "id": "nh_v1_road_edge_004",
+      "from_node_id": "nh_v1_road_node_004",
+      "to_node_id": "nh_v1_road_node_005",
+      "points": [
+        {
+          "x_ratio": 0.381395,
+          "y_ratio": 0.585841
+        },
+        {
+          "x_ratio": 0.372,
+          "y_ratio": 0.604
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_005",
+      "from_node_id": "nh_v1_road_node_005",
+      "to_node_id": "nh_v1_road_node_006",
+      "points": [
+        {
+          "x_ratio": 0.372,
+          "y_ratio": 0.604
+        },
+        {
+          "x_ratio": 0.367073,
+          "y_ratio": 0.622426
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_006",
+      "from_node_id": "nh_v1_road_node_006",
+      "to_node_id": "nh_v1_road_node_007",
+      "points": [
+        {
+          "x_ratio": 0.367073,
+          "y_ratio": 0.622426
+        },
+        {
+          "x_ratio": 0.4,
+          "y_ratio": 0.63
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_007",
+      "from_node_id": "nh_v1_road_node_007",
+      "to_node_id": "nh_v1_road_node_008",
+      "points": [
+        {
+          "x_ratio": 0.4,
+          "y_ratio": 0.63
+        },
+        {
+          "x_ratio": 0.435,
+          "y_ratio": 0.636
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_008",
+      "from_node_id": "nh_v1_road_node_008",
+      "to_node_id": "nh_v1_road_node_009",
+      "points": [
+        {
+          "x_ratio": 0.435,
+          "y_ratio": 0.636
+        },
+        {
+          "x_ratio": 0.468293,
+          "y_ratio": 0.639585
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_009",
+      "from_node_id": "nh_v1_road_node_003",
+      "to_node_id": "nh_v1_road_node_010",
+      "points": [
+        {
+          "x_ratio": 0.395349,
+          "y_ratio": 0.54963
+        },
+        {
+          "x_ratio": 0.418605,
+          "y_ratio": 0.538287
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_010",
+      "from_node_id": "nh_v1_road_node_010",
+      "to_node_id": "nh_v1_road_node_011",
+      "points": [
+        {
+          "x_ratio": 0.418605,
+          "y_ratio": 0.538287
+        },
+        {
+          "x_ratio": 0.4,
+          "y_ratio": 0.522581
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_011",
+      "from_node_id": "nh_v1_road_node_011",
+      "to_node_id": "nh_v1_road_node_012",
+      "points": [
+        {
+          "x_ratio": 0.4,
+          "y_ratio": 0.522581
+        },
+        {
+          "x_ratio": 0.463415,
+          "y_ratio": 0.500257
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_012",
+      "from_node_id": "nh_v1_road_node_012",
+      "to_node_id": "nh_v1_road_node_013",
+      "points": [
+        {
+          "x_ratio": 0.463415,
+          "y_ratio": 0.500257
+        },
+        {
+          "x_ratio": 0.48,
+          "y_ratio": 0.54
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_013",
+      "from_node_id": "nh_v1_road_node_013",
+      "to_node_id": "nh_v1_road_node_014",
+      "points": [
+        {
+          "x_ratio": 0.48,
+          "y_ratio": 0.54
+        },
+        {
+          "x_ratio": 0.443411,
+          "y_ratio": 0.596312
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_014",
+      "from_node_id": "nh_v1_road_node_014",
+      "to_node_id": "nh_v1_road_node_009",
+      "points": [
+        {
+          "x_ratio": 0.443411,
+          "y_ratio": 0.596312
+        },
+        {
+          "x_ratio": 0.468293,
+          "y_ratio": 0.639585
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_015",
+      "from_node_id": "nh_v1_road_node_012",
+      "to_node_id": "nh_v1_road_node_015",
+      "points": [
+        {
+          "x_ratio": 0.463415,
+          "y_ratio": 0.500257
+        },
+        {
+          "x_ratio": 0.477519,
+          "y_ratio": 0.450595
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_016",
+      "from_node_id": "nh_v1_road_node_015",
+      "to_node_id": "nh_v1_road_node_016",
+      "points": [
+        {
+          "x_ratio": 0.477519,
+          "y_ratio": 0.450595
+        },
+        {
+          "x_ratio": 0.506202,
+          "y_ratio": 0.390388
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_017",
+      "from_node_id": "nh_v1_road_node_016",
+      "to_node_id": "nh_v1_road_node_017",
+      "points": [
+        {
+          "x_ratio": 0.506202,
+          "y_ratio": 0.390388
+        },
+        {
+          "x_ratio": 0.609302,
+          "y_ratio": 0.406094
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_018",
+      "from_node_id": "nh_v1_road_node_017",
+      "to_node_id": "nh_v1_road_node_018",
+      "points": [
+        {
+          "x_ratio": 0.609302,
+          "y_ratio": 0.406094
+        },
+        {
+          "x_ratio": 0.628682,
+          "y_ratio": 0.269103
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_019",
+      "from_node_id": "nh_v1_road_node_018",
+      "to_node_id": "nh_v1_road_node_019",
+      "points": [
+        {
+          "x_ratio": 0.628682,
+          "y_ratio": 0.269103
+        },
+        {
+          "x_ratio": 0.691463,
+          "y_ratio": 0.271019
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_020",
+      "from_node_id": "nh_v1_road_node_020",
+      "to_node_id": "nh_v1_road_node_021",
+      "points": [
+        {
+          "x_ratio": 0.582171,
+          "y_ratio": 0.483752
+        },
+        {
+          "x_ratio": 0.626357,
+          "y_ratio": 0.490296
+        },
+        {
+          "x_ratio": 0.656589,
+          "y_ratio": 0.504693
+        },
+        {
+          "x_ratio": 0.70155,
+          "y_ratio": 0.521272
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_021",
+      "from_node_id": "nh_v1_road_node_022",
+      "to_node_id": "nh_v1_road_node_008",
+      "points": [
+        {
+          "x_ratio": 0.326357,
+          "y_ratio": 0.850663
+        },
+        {
+          "x_ratio": 0.324806,
+          "y_ratio": 0.825359
+        },
+        {
+          "x_ratio": 0.330233,
+          "y_ratio": 0.817942
+        },
+        {
+          "x_ratio": 0.390698,
+          "y_ratio": 0.806162
+        },
+        {
+          "x_ratio": 0.396124,
+          "y_ratio": 0.8018
+        },
+        {
+          "x_ratio": 0.389147,
+          "y_ratio": 0.777368
+        },
+        {
+          "x_ratio": 0.389147,
+          "y_ratio": 0.760789
+        },
+        {
+          "x_ratio": 0.384496,
+          "y_ratio": 0.748574
+        },
+        {
+          "x_ratio": 0.384496,
+          "y_ratio": 0.735485
+        },
+        {
+          "x_ratio": 0.389147,
+          "y_ratio": 0.719779
+        },
+        {
+          "x_ratio": 0.397674,
+          "y_ratio": 0.706254
+        },
+        {
+          "x_ratio": 0.399225,
+          "y_ratio": 0.695784
+        },
+        {
+          "x_ratio": 0.405426,
+          "y_ratio": 0.687931
+        },
+        {
+          "x_ratio": 0.434109,
+          "y_ratio": 0.675715
+        },
+        {
+          "x_ratio": 0.448062,
+          "y_ratio": 0.67397
+        },
+        {
+          "x_ratio": 0.448062,
+          "y_ratio": 0.657391
+        },
+        {
+          "x_ratio": 0.442636,
+          "y_ratio": 0.652592
+        },
+        {
+          "x_ratio": 0.435,
+          "y_ratio": 0.636
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_022",
+      "from_node_id": "nh_v1_road_node_023",
+      "to_node_id": "nh_v1_road_node_006",
+      "points": [
+        {
+          "x_ratio": 0.396899,
+          "y_ratio": 0.685749
+        },
+        {
+          "x_ratio": 0.396899,
+          "y_ratio": 0.664372
+        },
+        {
+          "x_ratio": 0.370543,
+          "y_ratio": 0.63296
+        },
+        {
+          "x_ratio": 0.367073,
+          "y_ratio": 0.622426
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_023",
+      "from_node_id": "nh_v1_road_node_024",
+      "to_node_id": "nh_v1_road_node_015",
+      "points": [
+        {
+          "x_ratio": 0.462791,
+          "y_ratio": 0.499894
+        },
+        {
+          "x_ratio": 0.477519,
+          "y_ratio": 0.450595
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_024",
+      "from_node_id": "nh_v1_road_node_020",
+      "to_node_id": "nh_v1_road_node_015",
+      "points": [
+        {
+          "x_ratio": 0.582171,
+          "y_ratio": 0.483752
+        },
+        {
+          "x_ratio": 0.564341,
+          "y_ratio": 0.488115
+        },
+        {
+          "x_ratio": 0.544961,
+          "y_ratio": 0.479389
+        },
+        {
+          "x_ratio": 0.533333,
+          "y_ratio": 0.469791
+        },
+        {
+          "x_ratio": 0.530233,
+          "y_ratio": 0.45932
+        },
+        {
+          "x_ratio": 0.527132,
+          "y_ratio": 0.457139
+        },
+        {
+          "x_ratio": 0.508527,
+          "y_ratio": 0.45234
+        },
+        {
+          "x_ratio": 0.477519,
+          "y_ratio": 0.450595
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_025",
+      "from_node_id": "nh_v1_road_node_017",
+      "to_node_id": "nh_v1_road_node_020",
+      "points": [
+        {
+          "x_ratio": 0.609302,
+          "y_ratio": 0.406094
+        },
+        {
+          "x_ratio": 0.590698,
+          "y_ratio": 0.439251
+        },
+        {
+          "x_ratio": 0.590698,
+          "y_ratio": 0.466301
+        },
+        {
+          "x_ratio": 0.582171,
+          "y_ratio": 0.483752
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_026",
+      "from_node_id": "nh_v1_road_node_013",
+      "to_node_id": "nh_v1_road_node_020",
+      "points": [
+        {
+          "x_ratio": 0.48,
+          "y_ratio": 0.54
+        },
+        {
+          "x_ratio": 0.573643,
+          "y_ratio": 0.505566
+        },
+        {
+          "x_ratio": 0.577519,
+          "y_ratio": 0.500331
+        },
+        {
+          "x_ratio": 0.582171,
+          "y_ratio": 0.483752
+        }
+      ]
+    },
+    {
+      "id": "nh_v1_road_edge_027",
+      "from_node_id": "nh_v1_road_node_004",
+      "to_node_id": "nh_v1_road_node_003",
+      "points": [
+        {
+          "x_ratio": 0.381395,
+          "y_ratio": 0.585841
+        },
+        {
+          "x_ratio": 0.390698,
+          "y_ratio": 0.574498
+        },
+        {
+          "x_ratio": 0.395349,
+          "y_ratio": 0.54963
+        }
+      ]
+    }
+  ]
+}

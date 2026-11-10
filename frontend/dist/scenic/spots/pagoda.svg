@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="佛塔封面">
-  <rect width="960" height="540" fill="#e8f0ea"/>
-  <path d="M0 388c130-52 250-58 360-18 130 48 250 38 360-30 80-50 160-58 240-24v224H0z" fill="#d8e7d6"/>
-  <path d="M424 120h112l-56-60z" fill="#c9923f"/>
-  <path d="M368 180h224l-42 44H410zM348 260h264l-48 48H396zM326 350h308l-56 54H382z" fill="#1e625b"/>
-  <rect x="410" y="224" width="140" height="236" fill="#fff7e8"/>
-</svg>

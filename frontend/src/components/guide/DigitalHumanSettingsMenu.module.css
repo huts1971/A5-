@@ -1,0 +1,58 @@
+.root {
+  flex: 0 0 auto;
+  padding: 8px;
+  background: rgba(254, 253, 251, 0.96);
+  border-top: 1px solid var(--visitor-shell-border);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 12px;
+  color: var(--visitor-shell-muted);
+  font: 500 14px/1.35 Inter, "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  text-decoration: none;
+  background: transparent;
+  border-radius: 8px;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.link:hover,
+.link:focus-visible,
+.linkActive {
+  color: var(--visitor-shell-accent-strong);
+  background: var(--visitor-shell-accent-soft);
+  outline: none;
+}
+
+.link:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(217, 119, 87, 0.24);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.label :global(.anticon) {
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+.arrow {
+  flex: 0 0 auto;
+  font-size: 10px;
+  opacity: 0.58;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

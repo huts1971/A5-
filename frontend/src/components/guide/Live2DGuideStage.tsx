@@ -20,6 +20,7 @@ export interface Live2DGuideStageProps {
   emotionCue?: GuideEmotionCue;
   modelUrl: string;
   coreScriptUrl?: string;
+  showLoadingHint?: boolean;
   onReady?: () => void;
   onError?: (message: string) => void;
   onInteract?: () => void;
@@ -31,6 +32,7 @@ export default function Live2DGuideStage({
   emotionCue,
   modelUrl,
   coreScriptUrl = '/live2d/core/live2dcubismcore.min.js',
+  showLoadingHint = true,
   onReady,
   onError,
   onInteract,
@@ -122,7 +124,7 @@ export default function Live2DGuideStage({
       onPointerDown={triggerTap}
     >
       <canvas ref={canvasRef} className="live2d-canvas" aria-label="Live2D AI guide" />
-      {phase === 'loading' ? <div className="live2d-stage-hint">Live2D loading</div> : null}
+      {phase === 'loading' && showLoadingHint ? <div className="live2d-stage-hint">Live2D loading</div> : null}
     </div>
   );
 }

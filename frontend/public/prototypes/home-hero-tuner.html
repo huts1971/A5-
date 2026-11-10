@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Hero Tuner</title>
+    <style>
+      :root {
+        --bg: #080908;
+        --panel: #111310;
+        --panel-soft: #151813;
+        --line: rgba(242, 240, 233, 0.16);
+        --line-strong: rgba(242, 240, 233, 0.32);
+        --text: #f2f0e9;
+        --muted: rgba(242, 240, 233, 0.62);
+        --soft: rgba(242, 240, 233, 0.42);
+        --accent: #cdb06d;
+        --title-font: "Songti SC", "STSong", "Noto Serif CJK SC", "SimSun", serif;
+        --en-font: "Bodoni 72", "Didot", "Times New Roman", "Georgia", serif;
+        --mono: "SFMono-Regular", Menlo, Consolas, monospace;
+        --title-size: 112px;
+        --english-size: 27px;
+        --line-height: 0.9;
+        --title-x: 28%;
+        --title-y: 39%;
+        --title-width: 58%;
+        --title-color: #f2f0e9;
+        --english-x: 50%;
+        --english-y: 54%;
+        --image-scale: 1.08;
+        --image-x: 50%;
+        --image-y: 50%;
+        --image-pan-x: 0%;
+        --image-pan-y: 0%;
+        --brightness: 72%;
+        --contrast: 112%;
+        --saturation: 86%;
+        --overlay-opacity: 0.6;
+        --frame-opacity: 0.16;
+        --marquee-opacity: 0.15;
+        --avatar-x: 72%;
+        --avatar-y: 62%;
+        --avatar-scale: 1;
+        --avatar-opacity: 1;
+        --quick-links-display: flex;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-width: 320px;
+        min-height: 100%;
+        margin: 0;
+        color: var(--text);
+        background: var(--bg);
+        font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        min-height: 100svh;
+      }
+
+      .preview-shell {
+        position: sticky;
+        top: 0;
+        display: grid;
+        min-height: 100svh;
+        padding: 24px;
+        background:
+          linear-gradient(rgba(242, 240, 233, 0.018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(242, 240, 233, 0.014) 1px, transparent 1px),
+          #080908;
+        background-size: 64px 64px;
+      }
+
+      .stage {
+        position: relative;
+        min-height: calc(100svh - 48px);
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(8, 9, 8, 0.95), rgba(8, 9, 8, 0.32) 48%, rgba(8, 9, 8, 0.82)),
+          #080908;
+        border: 1px solid var(--line);
+      }
+
+      .stage::before {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(8, 9, 8, 0.96), rgba(8, 9, 8, 0.22) 48%, rgba(8, 9, 8, 0.82)),
+          radial-gradient(circle at 50% 50%, transparent 28%, rgba(0, 0, 0, var(--overlay-opacity)) 100%),
+          linear-gradient(180deg, rgba(8, 9, 8, 0.08), rgba(8, 9, 8, 0.76));
+        content: "";
+      }
+
+      .stage::after {
+        position: absolute;
+        inset: 18px;
+        z-index: 6;
+        pointer-events: none;
+        border: 1px solid rgba(242, 240, 233, var(--frame-opacity));
+        content: "";
+      }
+
+      .art-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+      }
+
+      .hero-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: var(--image-x) var(--image-y);
+        filter: brightness(var(--brightness)) contrast(var(--contrast)) saturate(var(--saturation));
+        transform: translate(var(--image-pan-x), var(--image-pan-y)) scale(var(--image-scale));
+        transform-origin: center;
+      }
+
+      .prototype-header {
+        position: absolute;
+        top: 24px;
+        right: 4.8vw;
+        left: 4.8vw;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        height: 64px;
+        padding: 0 18px;
+        color: var(--text);
+        background: rgba(8, 9, 8, 0.72);
+        border: 1px solid var(--line);
+      }
+
+      .prototype-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 240px;
+        font-family: var(--title-font);
+        font-size: 19px;
+        white-space: nowrap;
+      }
+
+      .prototype-brand-symbol {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid var(--line-strong);
+        border-radius: 50%;
+      }
+
+      .prototype-nav {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        gap: 30px;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .prototype-quick-links {
+        position: absolute;
+        top: 112px;
+        right: 4.8vw;
+        z-index: 20;
+        display: var(--quick-links-display);
+        gap: 10px;
+      }
+
+      .prototype-quick-links span,
+      .prototype-admin {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 0 15px;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 700;
+        background: transparent;
+        border: 1px solid var(--line-strong);
+      }
+
+      .prototype-admin {
+        margin-left: auto;
+      }
+
+      .prototype-marquee {
+        position: absolute;
+        right: -4vw;
+        bottom: 9vh;
+        left: -4vw;
+        z-index: 3;
+        overflow: hidden;
+        opacity: var(--marquee-opacity);
+        transform: rotate(-4deg);
+      }
+
+      .prototype-marquee-track {
+        display: flex;
+        width: max-content;
+      }
+
+      .prototype-marquee-track span {
+        flex: none;
+        padding-right: 4vw;
+        color: rgba(242, 240, 233, 0.03);
+        font-family: var(--title-font);
+        font-size: clamp(84px, 14vw, 196px);
+        font-weight: 900;
+        line-height: 0.82;
+        text-shadow: 0 16px 38px rgba(0, 0, 0, 0.26);
+        -webkit-text-stroke: 1.45px rgba(242, 240, 233, 0.5);
+        white-space: nowrap;
+      }
+
+      .prototype-avatar {
+        position: absolute;
+        top: var(--avatar-y);
+        left: var(--avatar-x);
+        z-index: 10;
+        width: min(28vw, 340px);
+        opacity: var(--avatar-opacity);
+        transform: translate(-50%, -50%) scale(var(--avatar-scale));
+        transform-origin: center bottom;
+      }
+
+      .prototype-avatar img {
+        display: block;
+        width: 100%;
+        height: auto;
+        filter: grayscale(0.06) saturate(0.9) contrast(1.04);
+      }
+
+      .poster-title-group {
+        position: absolute;
+        top: var(--title-y);
+        left: var(--title-x);
+        z-index: 4;
+        width: var(--title-width);
+        color: var(--title-color);
+        font-family: var(--title-font);
+        font-size: var(--title-size);
+        font-weight: 900;
+        line-height: var(--line-height);
+        letter-spacing: 0;
+        text-shadow: 0 20px 54px rgba(0, 0, 0, 0.34);
+        transform: translate(-50%, -50%);
+      }
+
+      .poster-title-line {
+        display: block;
+        white-space: pre;
+      }
+
+      .poster-title-en {
+        position: absolute;
+        top: var(--english-y);
+        left: var(--english-x);
+        z-index: 5;
+        max-width: 260px;
+        color: var(--title-color);
+        font-family: var(--en-font);
+        font-size: var(--english-size);
+        font-weight: 700;
+        line-height: 1.06;
+        letter-spacing: 0;
+        text-align: center;
+        text-shadow: 0 16px 42px rgba(0, 0, 0, 0.4);
+        white-space: pre-line;
+        transform: translate(-50%, -50%);
+      }
+
+      .poster-eyebrow,
+      .poster-subtitle {
+        position: absolute;
+        z-index: 5;
+        left: 6vw;
+        color: var(--muted);
+        letter-spacing: 0;
+      }
+
+      .poster-eyebrow {
+        top: 92px;
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .poster-subtitle {
+        bottom: 76px;
+        max-width: min(520px, 56vw);
+        font-size: 16px;
+        line-height: 1.86;
+      }
+
+      .stage-meta {
+        position: absolute;
+        right: 6vw;
+        bottom: 76px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .stage-meta i {
+        width: 82px;
+        height: 1px;
+        background: var(--line-strong);
+      }
+
+      .scroll-hint {
+        position: absolute;
+        left: 50%;
+        bottom: 48px;
+        z-index: 8;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        transform: translateX(-50%);
+      }
+
+      .controls {
+        min-height: 100svh;
+        padding: 18px;
+        overflow-y: auto;
+        background: #0d0f0d;
+        border-left: 1px solid var(--line);
+      }
+
+      .controls h1 {
+        margin: 0 0 4px;
+        color: var(--text);
+        font-family: var(--en-font);
+        font-size: 30px;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      .controls p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .section {
+        padding: 14px 0 18px;
+        border-top: 1px solid var(--line);
+      }
+
+      .section:first-of-type {
+        border-top: 0;
+      }
+
+      .section-title {
+        margin-bottom: 12px;
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .preset-row,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      button {
+        min-height: 36px;
+        padding: 0 12px;
+        color: var(--text);
+        background: transparent;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: rgba(242, 240, 233, 0.62);
+      }
+
+      button.primary {
+        color: #080908;
+        background: var(--text);
+        border-color: var(--text);
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .inline-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .value {
+        color: var(--soft);
+        font-family: var(--mono);
+      }
+
+      input[type="text"],
+      input[type="color"],
+      input[type="file"],
+      textarea {
+        width: 100%;
+        color: var(--text);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+
+      input[type="text"] {
+        min-height: 38px;
+        padding: 0 10px;
+      }
+
+      input[type="color"] {
+        height: 38px;
+        padding: 4px;
+      }
+
+      input[type="file"] {
+        padding: 9px;
+      }
+
+      textarea {
+        min-height: 78px;
+        padding: 10px;
+        resize: vertical;
+        line-height: 1.45;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--text);
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .json-output {
+        min-height: 260px;
+        font-family: var(--mono);
+        font-size: 12px;
+        white-space: pre;
+      }
+
+      .copy-state {
+        min-height: 18px;
+        margin-top: 8px;
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      @media (max-width: 1100px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-shell {
+          position: relative;
+          min-height: auto;
+        }
+
+        .stage {
+          min-height: 72svh;
+        }
+
+        .controls {
+          border-top: 1px solid var(--line);
+          border-left: 0;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .preview-shell {
+          padding: 12px;
+        }
+
+        .stage {
+          min-height: 78svh;
+        }
+
+        .poster-title-group {
+          width: min(86vw, var(--title-width));
+          font-size: min(var(--title-size), 68px);
+        }
+
+        .poster-title-en {
+          font-size: min(var(--english-size), 22px);
+        }
+
+        .poster-subtitle {
+          right: 22px;
+          max-width: none;
+          font-size: 13px;
+        }
+
+        .stage-meta {
+          display: none;
+        }
+
+        .controls {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="preview-shell" aria-label="Hero preview">
+        <div class="stage" id="stage">
+          <div class="art-wrap">
+            <img
+              id="heroImage"
+              class="hero-image"
+              src="/scenic/spots/photos/NH-001_拈花广场/2.jpg"
+              alt=""
+            />
+          </div>
+          <div class="prototype-header" aria-hidden="true">
+            <div class="prototype-brand">
+              <span class="prototype-brand-symbol">L</span>
+              <span id="brandPreview">灵山胜境景点导览</span>
+            </div>
+            <div class="prototype-nav">
+              <span>[ HOME ]</span>
+              <span>[ SPOTS ]</span>
+              <span>[ ROUTES ]</span>
+              <span>[ GUIDE ]</span>
+            </div>
+            <span class="prototype-admin">[ OPS ]</span>
+          </div>
+          <div class="prototype-quick-links" id="quickLinksPreview" aria-hidden="true">
+            <span>[ GUIDE ]</span>
+            <span>[ SPOTS ]</span>
+          </div>
+          <div class="prototype-marquee" aria-hidden="true">
+            <div class="prototype-marquee-track">
+              <span id="marqueePreviewA">灵山胜境导览</span>
+              <span id="marqueePreviewB">灵山胜境导览</span>
+              <span id="marqueePreviewC">灵山胜境导览</span>
+            </div>
+          </div>
+          <div class="poster-eyebrow" id="eyebrowPreview">Ling Shan Grand Buddha</div>
+          <div class="poster-title-group" id="titlePreview"></div>
+          <div class="poster-title-en" id="englishPreview">THE
+KANAGAWA
+NEWS</div>
+          <div class="poster-subtitle" id="subtitlePreview">
+            以数字人导游陪你看见山水、佛韵与游线之间的秩序。
+          </div>
+          <div class="prototype-avatar" id="avatarPreview" aria-hidden="true">
+            <img src="/avatar/guide-avatar.png" alt="" />
+          </div>
+          <div class="stage-meta"><span id="metaIndexPreview">01</span><i></i><span id="metaKeyPreview">TUNER</span></div>
+          <div class="scroll-hint">[SCROLL DOWN]</div>
+        </div>
+      </section>
+
+      <aside class="controls">
+        <h1>Hero Tuner</h1>
+        <p>调完后复制 JSON，后续可映射到首页 hero scene 配置。</p>
+
+        <section class="section">
+          <div class="section-title">Presets</div>
+          <div class="preset-row">
+            <button type="button" data-preset="lingShanJson">Ling Shan JSON</button>
+            <button type="button" data-preset="kanagawa">Kanagawa</button>
+            <button type="button" data-preset="afterWork">After Work</button>
+            <button type="button" data-preset="sunVertical">Sun Vertical</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Text</div>
+          <label>
+            标题文字
+            <textarea id="titleLines" spellcheck="false">神奈川
+新     闻</textarea>
+          </label>
+          <label>
+            英文副标题
+            <textarea id="englishText" spellcheck="false">THE
+KANAGAWA
+NEWS</textarea>
+          </label>
+          <label>
+            眉标文字
+            <input id="eyebrow" type="text" value="Ling Shan Grand Buddha" />
+          </label>
+          <label>
+            说明文字
+            <textarea id="subtitle">以数字人导游陪你看见山水、佛韵与游线之间的秩序。</textarea>
+          </label>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Typography</div>
+          <label>
+            <span class="inline-label">中文字号 <span class="value" data-value-for="fontSize"></span></span>
+            <input id="fontSize" type="range" min="42" max="180" step="1" value="112" />
+          </label>
+          <label>
+            <span class="inline-label">英文字号 <span class="value" data-value-for="englishFontSize"></span></span>
+            <input id="englishFontSize" type="range" min="12" max="58" step="1" value="27" />
+          </label>
+          <label>
+            <span class="inline-label">标题行高 <span class="value" data-value-for="lineHeight"></span></span>
+            <input id="lineHeight" type="range" min="0.72" max="1.22" step="0.01" value="0.9" />
+          </label>
+          <div class="grid-2">
+            <label>
+              标题颜色
+              <input id="titleColor" type="color" value="#f2f0e9" />
+            </label>
+            <label>
+              <span class="inline-label">标题宽度 <span class="value" data-value-for="titleWidth"></span></span>
+              <input id="titleWidth" type="range" min="24" max="92" step="1" value="58" />
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Position</div>
+          <div class="grid-2">
+            <label>
+              <span class="inline-label">标题 X <span class="value" data-value-for="titleX"></span></span>
+              <input id="titleX" type="range" min="8" max="92" step="1" value="28" />
+            </label>
+            <label>
+              <span class="inline-label">标题 Y <span class="value" data-value-for="titleY"></span></span>
+              <input id="titleY" type="range" min="12" max="88" step="1" value="39" />
+            </label>
+            <label>
+              <span class="inline-label">英文 X <span class="value" data-value-for="englishX"></span></span>
+              <input id="englishX" type="range" min="8" max="92" step="1" value="50" />
+            </label>
+            <label>
+              <span class="inline-label">英文 Y <span class="value" data-value-for="englishY"></span></span>
+              <input id="englishY" type="range" min="12" max="88" step="1" value="54" />
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Image</div>
+          <label>
+            图片上传
+            <input id="imageUpload" type="file" accept="image/*" />
+          </label>
+          <label>
+            图片路径
+            <input id="imagePath" type="text" value="/scenic/spots/photos/NH-001_拈花广场/2.jpg" />
+          </label>
+          <div class="grid-2">
+            <label>
+              <span class="inline-label">图片缩放 <span class="value" data-value-for="imageScale"></span></span>
+              <input id="imageScale" type="range" min="0.5" max="2.5" step="0.01" value="1.08" />
+            </label>
+            <label>
+              <span class="inline-label">图片 X 焦点 <span class="value" data-value-for="imageX"></span></span>
+              <input id="imageX" type="range" min="0" max="100" step="1" value="50" />
+            </label>
+            <label>
+              <span class="inline-label">图片 Y 焦点 <span class="value" data-value-for="imageY"></span></span>
+              <input id="imageY" type="range" min="0" max="100" step="1" value="50" />
+            </label>
+            <label>
+              <span class="inline-label">暗角遮罩 <span class="value" data-value-for="overlayOpacity"></span></span>
+              <input id="overlayOpacity" type="range" min="0" max="0.9" step="0.01" value="0.6" />
+            </label>
+            <label>
+              <span class="inline-label">边框透明度 <span class="value" data-value-for="frameOpacity"></span></span>
+              <input id="frameOpacity" type="range" min="0" max="0.6" step="0.01" value="0.16" />
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Color Grade</div>
+          <label>
+            <span class="inline-label">亮度 <span class="value" data-value-for="brightness"></span></span>
+            <input id="brightness" type="range" min="45" max="130" step="1" value="72" />
+          </label>
+          <label>
+            <span class="inline-label">对比度 <span class="value" data-value-for="contrast"></span></span>
+            <input id="contrast" type="range" min="80" max="150" step="1" value="112" />
+          </label>
+          <label>
+            <span class="inline-label">饱和度 <span class="value" data-value-for="saturation"></span></span>
+            <input id="saturation" type="range" min="45" max="150" step="1" value="86" />
+          </label>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Home Chrome</div>
+          <label>
+            品牌文字
+            <input id="brandText" type="text" value="灵山胜境景点导览" />
+          </label>
+          <label>
+            滚动字幕
+            <input id="marqueeText" type="text" value="灵山胜境导览" />
+          </label>
+          <div class="grid-2">
+            <label>
+              <span class="inline-label">字幕透明度 <span class="value" data-value-for="marqueeOpacity"></span></span>
+              <input id="marqueeOpacity" type="range" min="0" max="0.5" step="0.01" value="0.15" />
+            </label>
+            <label>
+              <span class="inline-label">数字人大小 <span class="value" data-value-for="avatarScale"></span></span>
+              <input id="avatarScale" type="range" min="0.45" max="1.8" step="0.01" value="1" />
+            </label>
+            <label>
+              <span class="inline-label">数字人 X <span class="value" data-value-for="avatarX"></span></span>
+              <input id="avatarX" type="range" min="0" max="100" step="1" value="72" />
+            </label>
+            <label>
+              <span class="inline-label">数字人 Y <span class="value" data-value-for="avatarY"></span></span>
+              <input id="avatarY" type="range" min="0" max="100" step="1" value="62" />
+            </label>
+            <label>
+              <span class="inline-label">数字人透明度 <span class="value" data-value-for="avatarOpacity"></span></span>
+              <input id="avatarOpacity" type="range" min="0" max="1" step="0.01" value="1" />
+            </label>
+            <label>
+              <span class="inline-label">显示入口按钮 <span class="value" data-value-for="showQuickLinks"></span></span>
+              <input id="showQuickLinks" type="range" min="0" max="1" step="1" value="1" />
+            </label>
+          </div>
+          <div class="grid-2">
+            <label>
+              Meta 序号
+              <input id="metaIndex" type="text" value="01" />
+            </label>
+            <label>
+              Meta Key
+              <input id="metaKey" type="text" value="TUNER" />
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Export</div>
+          <label>
+            Import JSON
+            <textarea id="jsonInput" class="json-output" spellcheck="false"></textarea>
+          </label>
+          <div class="button-row">
+            <button id="applyJson" type="button">Apply JSON</button>
+          </div>
+          <textarea id="jsonOutput" class="json-output" readonly spellcheck="false"></textarea>
+          <div class="button-row">
+            <button id="copyJson" class="primary" type="button">Copy JSON</button>
+          </div>
+          <div id="copyState" class="copy-state" aria-live="polite"></div>
+        </section>
+      </aside>
+    </main>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const root = document.documentElement;
+      const heroImage = $("heroImage");
+      const jsonOutput = $("jsonOutput");
+      const jsonInput = $("jsonInput");
+      const copyState = $("copyState");
+
+      const controls = [
+        "titleLines",
+        "englishText",
+        "eyebrow",
+        "subtitle",
+        "fontSize",
+        "englishFontSize",
+        "lineHeight",
+        "titleX",
+        "titleY",
+        "titleWidth",
+        "titleColor",
+        "englishX",
+        "englishY",
+        "imagePath",
+        "imageScale",
+        "imageX",
+        "imageY",
+        "brightness",
+        "contrast",
+        "saturation",
+        "overlayOpacity",
+        "frameOpacity",
+        "brandText",
+        "marqueeText",
+        "marqueeOpacity",
+        "avatarX",
+        "avatarY",
+        "avatarScale",
+        "avatarOpacity",
+        "showQuickLinks",
+        "metaIndex",
+        "metaKey",
+      ];
+
+      const percentFields = new Set([
+        "titleX",
+        "titleY",
+        "titleWidth",
+        "englishX",
+        "englishY",
+        "imageX",
+        "imageY",
+        "brightness",
+        "contrast",
+        "saturation",
+        "avatarX",
+        "avatarY",
+      ]);
+
+      const numberFields = new Set([
+        "fontSize",
+        "englishFontSize",
+        "lineHeight",
+        "titleX",
+        "titleY",
+        "titleWidth",
+        "englishX",
+        "englishY",
+        "imageScale",
+        "imageX",
+        "imageY",
+        "brightness",
+        "contrast",
+        "saturation",
+        "overlayOpacity",
+        "frameOpacity",
+        "marqueeOpacity",
+        "avatarX",
+        "avatarY",
+        "avatarScale",
+        "avatarOpacity",
+        "showQuickLinks",
+      ]);
+
+      const presets = {
+        lingShanJson: {
+          titleLines: "  灵山\n胜     景",
+          englishText: "Sacred Mountain\n Scenic Spot",
+          eyebrow: "",
+          subtitle: "以数字人导游陪你看见山水、佛韵与游线之间的秩序。",
+          fontSize: 110,
+          englishFontSize: 21,
+          lineHeight: 0.9,
+          titleX: 43,
+          titleY: 47,
+          titleWidth: 58,
+          titleColor: "#c7f0d3",
+          englishX: 36,
+          englishY: 50,
+          imagePath: "/scenic/spots/photos/NH-001_拈花广场/1.jpg",
+          imageScale: 1,
+          imageX: 28,
+          imageY: 40,
+          brightness: 130,
+          contrast: 116,
+          saturation: 101,
+          overlayOpacity: 0,
+          frameOpacity: 0.16,
+          brandText: "灵山胜境景点导览",
+          marqueeText: "灵山胜境导览",
+          marqueeOpacity: 0.15,
+          avatarX: 72,
+          avatarY: 62,
+          avatarScale: 1,
+          avatarOpacity: 1,
+          showQuickLinks: 1,
+          metaIndex: "01",
+          metaKey: "BUDDHA",
+        },
+        kanagawa: {
+          titleLines: "神奈川\n新     闻",
+          englishText: "THE\nKANAGAWA\nNEWS",
+          eyebrow: "Ling Shan Grand Buddha",
+          subtitle: "以数字人导游陪你看见山水、佛韵与游线之间的秩序。",
+          fontSize: 112,
+          englishFontSize: 27,
+          lineHeight: 0.9,
+          titleX: 43,
+          titleY: 47,
+          titleWidth: 58,
+          titleColor: "#06c37d",
+          englishX: 51,
+          englishY: 55,
+          imagePath: "/scenic/spots/photos/NH-001_拈花广场/2.jpg",
+          imageScale: 1.1,
+          imageX: 50,
+          imageY: 48,
+          brightness: 66,
+          contrast: 116,
+          saturation: 104,
+          overlayOpacity: 0.58,
+          frameOpacity: 0.16,
+          brandText: "灵山胜境景点导览",
+          marqueeText: "灵山胜境导览",
+          marqueeOpacity: 0.15,
+          avatarX: 72,
+          avatarY: 62,
+          avatarScale: 1,
+          avatarOpacity: 1,
+          showQuickLinks: 1,
+          metaIndex: "01",
+          metaKey: "TUNER",
+        },
+        afterWork: {
+          titleLines: "城中      山野\n10.16      10.22",
+          englishText: "AFTER\nWORK",
+          eyebrow: "Photography Exhibition",
+          subtitle: "THIS PARAGRAPH OF TEXT IS PURELY FOR DECORATION PLEASE DO NOT TRANSLATE CAREFULLY",
+          fontSize: 105,
+          englishFontSize: 34,
+          lineHeight: 1.05,
+          titleX: 50,
+          titleY: 50,
+          titleWidth: 76,
+          titleColor: "#f8f8f3",
+          englishX: 50,
+          englishY: 46,
+          imagePath: "/scenic/spots/photos/LS-013_灵山梵宫/2.jpg",
+          imageScale: 1.14,
+          imageX: 44,
+          imageY: 52,
+          brightness: 58,
+          contrast: 122,
+          saturation: 74,
+          overlayOpacity: 0.5,
+          frameOpacity: 0.16,
+          brandText: "灵山胜境景点导览",
+          marqueeText: "灵山胜境导览",
+          marqueeOpacity: 0.12,
+          avatarX: 73,
+          avatarY: 64,
+          avatarScale: 0.92,
+          avatarOpacity: 0.92,
+          showQuickLinks: 1,
+          metaIndex: "02",
+          metaKey: "PALACE",
+        },
+        sunVertical: {
+          titleLines: "阳光下\n的\n小确幸",
+          englishText: "In The SunOf\nXiao Quexing",
+          eyebrow: "Nianhua Bay",
+          subtitle: "让景点照片、标题和数字人舞台保持呼吸感。",
+          fontSize: 118,
+          englishFontSize: 29,
+          lineHeight: 0.86,
+          titleX: 43,
+          titleY: 50,
+          titleWidth: 44,
+          titleColor: "#ffffff",
+          englishX: 57,
+          englishY: 48,
+          imagePath: "/scenic/spots/photos/NH-002_梵天花海/2.jpg",
+          imageScale: 1.18,
+          imageX: 52,
+          imageY: 54,
+          brightness: 76,
+          contrast: 118,
+          saturation: 118,
+          overlayOpacity: 0.42,
+          frameOpacity: 0.16,
+          brandText: "灵山胜境景点导览",
+          marqueeText: "灵山胜境导览",
+          marqueeOpacity: 0.14,
+          avatarX: 72,
+          avatarY: 64,
+          avatarScale: 0.98,
+          avatarOpacity: 0.95,
+          showQuickLinks: 1,
+          metaIndex: "03",
+          metaKey: "WATER",
+        },
+      };
+
+      function readState() {
+        return controls.reduce((state, key) => {
+          const el = $(key);
+          if (!el) {
+            return state;
+          }
+          state[key] = numberFields.has(key) ? Number(el.value) : el.value;
+          return state;
+        }, {});
+      }
+
+      function setControlValues(next) {
+        Object.entries(next).forEach(([key, value]) => {
+          const el = $(key);
+          if (el) {
+            el.value = value;
+          }
+        });
+      }
+
+      function getExportPayload(state) {
+        return {
+          titleLines: state.titleLines.split("\n"),
+          englishText: state.englishText,
+          eyebrow: state.eyebrow,
+          subtitle: state.subtitle,
+          fontSize: state.fontSize,
+          lineHeight: state.lineHeight,
+          titleX: state.titleX,
+          titleY: state.titleY,
+          imageScale: state.imageScale,
+          imageX: state.imageX,
+          imageY: state.imageY,
+          brightness: state.brightness,
+          contrast: state.contrast,
+          saturation: state.saturation,
+          overlayOpacity: state.overlayOpacity,
+          titleWidth: state.titleWidth,
+          titleColor: state.titleColor,
+          englishFontSize: state.englishFontSize,
+          englishX: state.englishX,
+          englishY: state.englishY,
+          imagePath: state.imagePath,
+          frameOpacity: state.frameOpacity,
+          brandText: state.brandText,
+          marqueeText: state.marqueeText,
+          marqueeOpacity: state.marqueeOpacity,
+          avatarX: state.avatarX,
+          avatarY: state.avatarY,
+          avatarScale: state.avatarScale,
+          avatarOpacity: state.avatarOpacity,
+          showQuickLinks: Boolean(state.showQuickLinks),
+          metaIndex: state.metaIndex,
+          metaKey: state.metaKey,
+        };
+      }
+
+      function updateValueLabels(state) {
+        document.querySelectorAll("[data-value-for]").forEach((node) => {
+          const key = node.dataset.valueFor;
+          const value = state[key];
+          if (key === "imageScale" || key === "lineHeight" || key === "overlayOpacity") {
+            node.textContent = value;
+          } else if (
+            key === "frameOpacity" ||
+            key === "marqueeOpacity" ||
+            key === "avatarScale" ||
+            key === "avatarOpacity"
+          ) {
+            node.textContent = value;
+          } else if (key === "showQuickLinks") {
+            node.textContent = value ? "显示" : "隐藏";
+          } else if (percentFields.has(key)) {
+            node.textContent = `${value}%`;
+          } else if (key === "fontSize" || key === "englishFontSize") {
+            node.textContent = `${value}px`;
+          } else {
+            node.textContent = value;
+          }
+        });
+      }
+
+      function updatePreview() {
+        const state = readState();
+
+        root.style.setProperty("--title-size", `${state.fontSize}px`);
+        root.style.setProperty("--english-size", `${state.englishFontSize}px`);
+        root.style.setProperty("--line-height", state.lineHeight);
+        root.style.setProperty("--title-x", `${state.titleX}%`);
+        root.style.setProperty("--title-y", `${state.titleY}%`);
+        root.style.setProperty("--title-width", `${state.titleWidth}%`);
+        root.style.setProperty("--title-color", state.titleColor);
+        root.style.setProperty("--english-x", `${state.englishX}%`);
+        root.style.setProperty("--english-y", `${state.englishY}%`);
+        root.style.setProperty("--image-scale", state.imageScale);
+        root.style.setProperty("--image-x", `${state.imageX}%`);
+        root.style.setProperty("--image-y", `${state.imageY}%`);
+        root.style.setProperty("--image-pan-x", `${50 - state.imageX}%`);
+        root.style.setProperty("--image-pan-y", `${50 - state.imageY}%`);
+        root.style.setProperty("--brightness", `${state.brightness}%`);
+        root.style.setProperty("--contrast", `${state.contrast}%`);
+        root.style.setProperty("--saturation", `${state.saturation}%`);
+        root.style.setProperty("--overlay-opacity", state.overlayOpacity);
+        root.style.setProperty("--frame-opacity", state.frameOpacity);
+        root.style.setProperty("--marquee-opacity", state.marqueeOpacity);
+        root.style.setProperty("--avatar-x", `${state.avatarX}%`);
+        root.style.setProperty("--avatar-y", `${state.avatarY}%`);
+        root.style.setProperty("--avatar-scale", state.avatarScale);
+        root.style.setProperty("--avatar-opacity", state.avatarOpacity);
+        root.style.setProperty("--quick-links-display", state.showQuickLinks ? "flex" : "none");
+
+        $("titlePreview").innerHTML = state.titleLines
+          .split("\n")
+          .map((line) => `<span class="poster-title-line">${escapeHtml(line)}</span>`)
+          .join("");
+        $("englishPreview").textContent = state.englishText;
+        $("eyebrowPreview").textContent = state.eyebrow;
+        $("subtitlePreview").textContent = state.subtitle;
+        $("brandPreview").textContent = state.brandText;
+        $("marqueePreviewA").textContent = state.marqueeText;
+        $("marqueePreviewB").textContent = state.marqueeText;
+        $("marqueePreviewC").textContent = state.marqueeText;
+        $("metaIndexPreview").textContent = state.metaIndex;
+        $("metaKeyPreview").textContent = state.metaKey;
+
+        if (state.imagePath && heroImage.dataset.uploaded !== "true") {
+          heroImage.src = state.imagePath;
+        }
+
+        jsonOutput.value = JSON.stringify(getExportPayload(state), null, 2);
+        updateValueLabels(state);
+      }
+
+      function normalizeImportPayload(payload) {
+        const next = { ...presets.lingShanJson, ...payload };
+        if (Array.isArray(next.titleLines)) {
+          next.titleLines = next.titleLines.join("\n");
+        }
+        if (typeof next.showQuickLinks === "boolean") {
+          next.showQuickLinks = next.showQuickLinks ? 1 : 0;
+        }
+        return next;
+      }
+
+      function escapeHtml(value) {
+        return value
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      controls.forEach((key) => {
+        const el = $(key);
+        if (el) {
+          el.addEventListener("input", () => {
+            if (key === "imagePath") {
+              heroImage.dataset.uploaded = "false";
+            }
+            updatePreview();
+          });
+        }
+      });
+
+      $("imageUpload").addEventListener("change", (event) => {
+        const [file] = event.target.files;
+        if (!file) {
+          return;
+        }
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          heroImage.dataset.uploaded = "true";
+          heroImage.src = reader.result;
+          updatePreview();
+        });
+        reader.readAsDataURL(file);
+      });
+
+      document.querySelectorAll("[data-preset]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const preset = presets[button.dataset.preset];
+          if (!preset) {
+            return;
+          }
+          heroImage.dataset.uploaded = "false";
+          setControlValues(preset);
+          updatePreview();
+        });
+      });
+
+      $("copyJson").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(jsonOutput.value);
+          copyState.textContent = "Copied.";
+        } catch {
+          jsonOutput.focus();
+          jsonOutput.select();
+          document.execCommand("copy");
+          copyState.textContent = "Copied by fallback.";
+        }
+        window.setTimeout(() => {
+          copyState.textContent = "";
+        }, 1600);
+      });
+
+      $("applyJson").addEventListener("click", () => {
+        try {
+          const payload = JSON.parse(jsonInput.value);
+          heroImage.dataset.uploaded = "false";
+          setControlValues(normalizeImportPayload(payload));
+          updatePreview();
+          copyState.textContent = "Imported.";
+        } catch (error) {
+          copyState.textContent = `Import failed: ${error.message}`;
+        }
+        window.setTimeout(() => {
+          copyState.textContent = "";
+        }, 2200);
+      });
+
+      setControlValues(presets.lingShanJson);
+      jsonInput.value = JSON.stringify(getExportPayload(readState()), null, 2);
+      updatePreview();
+    </script>
+  </body>
+</html>

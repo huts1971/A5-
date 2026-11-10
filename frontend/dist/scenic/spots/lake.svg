@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="湖面景观封面">
-  <rect width="960" height="540" fill="#d9ebe8"/>
-  <path d="M0 286c150-54 292-54 426 0 140 56 318 42 534-42v296H0z" fill="#bddbd9"/>
-  <path d="M96 390c190 30 384 30 582 0M160 456c150 20 300 20 450 0" stroke="#fff8ea" stroke-width="14" stroke-linecap="round" opacity=".72"/>
-  <path d="M588 276h210l-104-78z" fill="#1e625b" opacity=".84"/>
-  <rect x="620" y="276" width="146" height="74" fill="#fff8e8"/>
-  <circle cx="742" cy="128" r="60" fill="#d59d45" opacity=".68"/>
-</svg>

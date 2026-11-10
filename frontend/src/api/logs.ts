@@ -1,4 +1,4 @@
-import { requestJson } from './client';
+import { requestAdminJson } from './adminClient';
 import { USE_MOCK_API } from './config';
 import type { ChatLogDeleteResult, ChatLogItem, ChatLogQuery } from '../types/api';
 
@@ -66,7 +66,7 @@ export async function getChatLogs(query: ChatLogQuery = {}): Promise<ChatLogItem
     }
 
     const queryString = params.toString();
-    const response = await requestJson<{
+    const response = await requestAdminJson<{
       items: Array<{
         id: number;
         session_id: string;
@@ -150,7 +150,7 @@ function mapDeleteResult(payload: { status: 'deleted'; deleted_count: number }):
 
 export async function deleteChatLog(id: string): Promise<ChatLogDeleteResult> {
   if (!USE_MOCK_API) {
-    const response = await requestJson<{ status: 'deleted'; deleted_count: number }>(
+    const response = await requestAdminJson<{ status: 'deleted'; deleted_count: number }>(
       `/api/logs/chats/${id}`,
       { method: 'DELETE' },
     );
@@ -168,7 +168,7 @@ export async function deleteChatLog(id: string): Promise<ChatLogDeleteResult> {
 
 export async function deleteChatLogs(ids: string[]): Promise<ChatLogDeleteResult> {
   if (!USE_MOCK_API) {
-    const response = await requestJson<{ status: 'deleted'; deleted_count: number }>(
+    const response = await requestAdminJson<{ status: 'deleted'; deleted_count: number }>(
       '/api/logs/chats/delete',
       {
         method: 'POST',
@@ -190,7 +190,7 @@ export async function deleteChatLogs(ids: string[]): Promise<ChatLogDeleteResult
 
 export async function clearChatLogs(): Promise<ChatLogDeleteResult> {
   if (!USE_MOCK_API) {
-    const response = await requestJson<{ status: 'deleted'; deleted_count: number }>(
+    const response = await requestAdminJson<{ status: 'deleted'; deleted_count: number }>(
       '/api/logs/chats/delete',
       {
         method: 'POST',

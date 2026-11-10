@@ -1,0 +1,29 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="36%" r="70%">
+      <stop offset="0%" stop-color="#F9EEE5"/>
+      <stop offset="55%" stop-color="#D7BBA1"/>
+      <stop offset="100%" stop-color="#4A332F"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="76" y1="36" x2="184" y2="158" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4DFB8"/>
+      <stop offset="1" stop-color="#8B5B3E"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="72" y1="154" x2="184" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2A3138"/>
+      <stop offset="1" stop-color="#0F151A"/>
+    </linearGradient>
+  </defs>
+  <circle cx="128" cy="128" r="124" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="119" stroke="rgba(255,255,255,.62)" stroke-width="4"/>
+  <path d="M71 120c0-46 25-84 58-84s58 38 58 84c0 34-13 60-28 74H99c-15-14-28-40-28-74Z" fill="url(#hair)"/>
+  <path d="M88 226c5-42 23-67 40-67s35 25 40 67H88Z" fill="url(#cloth)"/>
+  <ellipse cx="128" cy="120" rx="43" ry="50" fill="#F1CDB6"/>
+  <path d="M82 109c20-15 38-29 86-28 10 12 14 25 16 42-21-9-38-18-56-34-10 16-26 25-46 20Z" fill="url(#hair)"/>
+  <circle cx="111" cy="125" r="5" fill="#28313A"/>
+  <circle cx="145" cy="125" r="5" fill="#28313A"/>
+  <path d="M117 149c8 6 15 6 23 0" stroke="#7F5143" stroke-width="5" stroke-linecap="round"/>
+  <path d="M76 104c-12 2-22 11-25 24 16-1 30-8 38-21l-13-3Z" fill="#B98755"/>
+  <path d="M180 104c12 2 22 11 25 24-16-1-30-8-38-21l13-3Z" fill="#B98755"/>
+  <text x="128" y="238" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#F5E8D5">AI GUIDE</text>
+</svg>

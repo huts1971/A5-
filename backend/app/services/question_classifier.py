@@ -5,7 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
-from app.models import EntityAlias, ScenicSpot
+from app.models import EntityAlias, MapPoint, ScenicSpot
+from app.services.map_point_types import ROUTEABLE_MAP_POINT_TYPES
 from app.services.mimo import MimoClient
 
 
@@ -18,10 +19,79 @@ FACT_KEYWORDS = {
     "suitability": ["适合", "能不能", "可不可以"],
 }
 
-ROUTE_WORDS = ["路线", "怎么逛", "几个小时", "两个小时", "多久逛", "带老人", "带小朋友"]
-SERVICE_WORDS = ["厕所", "洗手间", "停车", "餐饮", "游客中心", "出口", "无障碍"]
-HIGH_RISK_REALTIME_WORDS = ["今天", "现在", "变了吗", "开放时间", "票价", "门票", "安全", "天气"]
-EXPLANATION_WORDS = ["有什么", "特色", "故事", "讲解", "介绍", "看点"]
+ROUTE_WORDS = [
+    "路线",
+    "行程",
+    "规划",
+    "安排",
+    "生成路线",
+    "怎么逛",
+    "怎么玩",
+    "怎么游",
+]
+ROUTE_STRONG_WORDS = [
+    "生成路线",
+    "规划路线",
+    "安排路线",
+    "帮我规划",
+    "帮我安排",
+    "排路线",
+    "一条路线",
+    "走一条",
+    "安排行程",
+    "规划行程",
+]
+ROUTE_CONTEXT_WORDS = [
+    "分钟",
+    "小时",
+    "可游览",
+    "我有",
+    "喜欢",
+    "兴趣",
+    "偏好",
+    "体力",
+    "强度",
+    "佛教",
+    "建筑",
+    "自然",
+    "摄影",
+    "亲子",
+    "老人",
+    "轻松",
+]
+SERVICE_WORDS = [
+    "厕所",
+    "洗手间",
+    "停车",
+    "餐饮",
+    "游客中心",
+    "出口",
+    "无障碍",
+    "老人",
+    "孩子",
+    "小朋友",
+    "休息",
+    "累",
+    "注意",
+    "提醒",
+]
+HIGH_RISK_REALTIME_WORDS = ["今天", "现在", "变了吗", "开放时间", "营业时间", "表演时间", "票价", "门票", "安全", "天气", "人多", "客流", "排队"]
+EXPLANATION_WORDS = ["有什么", "特色", "故事", "讲解", "介绍", "了解", "看点"]
+VAGUE_SCENIC_RECOMMENDATION_WORDS = [
+    "出片",
+    "拍照",
+    "摄影",
+    "打卡",
+    "朋友圈",
+    "发朋友圈",
+    "好看",
+    "建筑感",
+    "建筑",
+    "自然风光",
+    "自然休闲",
+    "第一次来",
+    "初次来",
+]
 EXTERNAL_FACT_WORDS = ["官方", "售价", "价格", "多少钱", "参数", "配置", "型号", "上市", "发布"]
 ALLOWED_INTENTS = {
     "scenic_fact",
@@ -53,13 +123,20 @@ def classify_question(db: Session, question: str, settings: Settings | None = No
     if classification["needs_llm_classification"] and settings:
         llm_classification = _llm_classify(settings, question)
         if llm_classification:
-            return llm_classification
+            return _sanitize_llm_classification(question, llm_classification)
     return classification
 
 
 def _matched_entities(db: Session, question: str) -> list[dict]:
     candidates: list[dict] = []
-    spots = db.scalars(select(ScenicSpot).order_by(ScenicSpot.name.desc())).all()
+    routeable_spot_ids = select(MapPoint.spot_id).where(
+        MapPoint.point_type.in_(ROUTEABLE_MAP_POINT_TYPES),
+    )
+    spots = db.scalars(
+        select(ScenicSpot)
+        .where(ScenicSpot.id.in_(routeable_spot_ids))
+        .order_by(ScenicSpot.name.desc())
+    ).all()
     for spot in spots:
         if spot.name in question:
             candidates.append(
@@ -108,23 +185,101 @@ def _matched_fact_keys(question: str) -> list[str]:
 def _intent(question: str, entities: list[dict], fact_keys: list[str]) -> str:
     emotional = _has_emotion(question)
     high_risk = any(word in question for word in HIGH_RISK_REALTIME_WORDS)
-    if high_risk and (entities or fact_keys):
+    if _is_casual_question(question):
+        return "casual"
+    if high_risk:
         return "high_risk_realtime"
     if emotional and (entities or fact_keys):
         return "mixed_emotional_fact"
+    if entities and any(phrase in question for phrase in ("适合做什么", "适合干什么", "适合怎么玩")):
+        return "scenic_explanation"
     if entities and fact_keys:
         return "scenic_fact"
     if entities and any(word in question for word in EXPLANATION_WORDS):
         return "scenic_explanation"
-    if any(word in question for word in ROUTE_WORDS):
+    if _is_route_intent(question) and not _negates_route_request(question):
         return "route"
     if any(word in question for word in SERVICE_WORDS):
         return "service"
+    if any(word in question for word in VAGUE_SCENIC_RECOMMENDATION_WORDS):
+        return "scenic_explanation"
     if any(word in question for word in ["你好", "谢谢", "你是谁"]):
         return "casual"
     if not entities and any(word in question for word in EXTERNAL_FACT_WORDS):
         return "external_factual"
     return "unknown"
+
+
+def _is_route_intent(question: str) -> bool:
+    compact = re.sub(r"\s+", "", question)
+    if any(word in compact for word in ROUTE_STRONG_WORDS):
+        return True
+    if "路线" in compact and any(word in compact for word in ("推荐", "生成", "规划", "安排", "怎么", "帮我", "做", "排")):
+        return True
+    if "行程" in compact and any(word in compact for word in ("推荐", "生成", "规划", "安排", "怎么", "帮我")):
+        return True
+    if any(word in compact for word in ("怎么逛", "怎么玩", "怎么游")):
+        return any(context_word in compact for context_word in ROUTE_CONTEXT_WORDS)
+    return False
+
+
+def _negates_route_request(question: str) -> bool:
+    compact = re.sub(r"\s+", "", question)
+    return any(
+        phrase in compact
+        for phrase in (
+            "不需要路线",
+            "不要路线",
+            "不用路线",
+            "不想规划路线",
+            "不想生成路线",
+            "不想安排路线",
+            "不想要路线",
+            "不规划路线",
+            "不用规划",
+            "只是想了解",
+            "只想了解",
+        )
+    )
+
+
+def _is_casual_question(question: str) -> bool:
+    compact = re.sub(r"\s+", "", question).lower()
+    if not compact:
+        return False
+    exact = {
+        "你好",
+        "您好",
+        "您好呀",
+        "嗨",
+        "哈喽",
+        "hello",
+        "在吗",
+        "哈喽在吗",
+        "谢谢",
+        "谢谢你",
+        "你是谁",
+        "你是谁？",
+        "你叫什么",
+        "你叫什么名字",
+        "你叫什么名字？",
+        "你会干什么",
+        "你会干什么？",
+        "你能做什么",
+        "你能做什么？",
+        "介绍一下你自己",
+    }
+    if compact in exact:
+        return True
+    greeting_terms = ("你好", "您好", "嗨", "哈喽", "hello")
+    if len(compact) <= 8 and any(term in compact for term in greeting_terms):
+        return True
+    self_intro_terms = ("你是谁", "叫什么", "名字", "会干什么", "能做什么", "像真人导游", "陪我逛", "在吗")
+    if "你" in compact and any(term in compact for term in self_intro_terms):
+        return True
+    if "第一次来" in compact and ("不知道问什么" in compact or "问什么" in compact):
+        return True
+    return False
 
 
 def _confidence(intent: str, entities: list[dict], fact_keys: list[str]) -> float:
@@ -171,7 +326,7 @@ def _llm_classify(settings: Settings, question: str) -> dict | None:
 
     return {
         "intent": intent,
-        "confidence": float(payload.get("confidence", 0.75)),
+        "confidence": _parse_confidence(payload.get("confidence", 0.75)),
         "entities": entities,
         "fact_keys": fact_keys or (["external"] if intent == "external_factual" else []),
         "tags": [str(item) for item in payload.get("tags", []) if isinstance(item, str)],
@@ -179,6 +334,35 @@ def _llm_classify(settings: Settings, question: str) -> dict | None:
         "needs_llm_classification": False,
         "classification_method": "llm",
     }
+
+
+def _parse_confidence(value) -> float:
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    text = str(value).strip().lower()
+    mapped = {
+        "high": 0.9,
+        "medium": 0.7,
+        "mid": 0.7,
+        "low": 0.45,
+    }
+    if text in mapped:
+        return mapped[text]
+    try:
+        return max(0.0, min(1.0, float(text)))
+    except ValueError:
+        return 0.75
+
+
+def _sanitize_llm_classification(question: str, classification: dict) -> dict:
+    if classification.get("intent") != "route":
+        return classification
+    if _is_route_intent(question) and not _negates_route_request(question):
+        return classification
+    sanitized = dict(classification)
+    sanitized["intent"] = "service" if any(word in question for word in SERVICE_WORDS) else "unknown"
+    sanitized["classification_method"] = "llm_sanitized"
+    return sanitized
 
 
 def _classification_system_prompt() -> str:

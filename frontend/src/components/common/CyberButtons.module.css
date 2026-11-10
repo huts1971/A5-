@@ -1,0 +1,371 @@
+.content {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+}
+
+.icon :global(svg) {
+  display: block;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.block {
+  width: 100%;
+}
+
+.glitchButton {
+  --primary-hue: 0;
+  --primary-lightness: 50;
+  --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness) * 1%));
+  --shadow-primary-hue: 180;
+  --shadow-primary: hsl(var(--shadow-primary-hue), 90%, 50%);
+  --shadow-secondary-hue: 60;
+  --shadow-secondary: hsl(var(--shadow-secondary-hue), 90%, 60%);
+  --color: #fff;
+  --border: 4px;
+  --shimmy-distance: 5;
+  --clip: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 95% 90%, 85% 90%, 85% 100%, 8% 100%, 0 70%);
+  --clip-one: polygon(0 2%, 100% 2%, 100% 95%, 95% 95%, 95% 90%, 85% 90%, 85% 95%, 8% 95%, 0 70%);
+  --clip-two: polygon(0 78%, 100% 78%, 100% 100%, 95% 100%, 95% 90%, 85% 90%, 85% 100%, 8% 100%, 0 78%);
+  --clip-three: polygon(0 44%, 100% 44%, 100% 54%, 95% 54%, 95% 54%, 85% 54%, 85% 54%, 8% 54%, 0 54%);
+  --clip-four: polygon(0 0, 100% 0, 100% 0, 95% 0, 95% 0, 85% 0, 85% 0, 8% 0, 0 0);
+  --clip-five: polygon(0 0, 100% 0, 100% 0, 95% 0, 95% 0, 85% 0, 85% 0, 8% 0, 0 0);
+  --clip-six: polygon(0 40%, 100% 40%, 100% 85%, 95% 85%, 95% 85%, 85% 85%, 85% 85%, 8% 85%, 0 70%);
+  --clip-seven: polygon(0 63%, 100% 63%, 100% 80%, 95% 80%, 95% 80%, 85% 80%, 85% 80%, 8% 80%, 0 70%);
+  position: relative;
+  isolation: isolate;
+  min-width: 138px;
+  min-height: 46px;
+  padding: 0 30px 5px 18px;
+  overflow: visible;
+  color: var(--color);
+  font: 800 15px/1 var(--route-cyber-font-primary, "Microsoft YaHei", sans-serif);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  background: transparent;
+  border: 0;
+  outline: transparent;
+  cursor: pointer;
+  transition:
+    filter 180ms ease,
+    transform 180ms ease;
+}
+
+.glitchButton::before,
+.glitchButton::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  clip-path: var(--clip);
+  content: "";
+}
+
+.glitchButton::before {
+  background: var(--shadow-primary);
+  transform: translate(var(--border), 0);
+}
+
+.glitchButton::after {
+  background: var(--primary);
+}
+
+.glitchButton:hover {
+  --primary-lightness: 42;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--shadow-primary) 55%, transparent));
+  transform: translateY(-1px);
+}
+
+.glitchButton:active {
+  --primary-lightness: 34;
+  transform: translateY(0);
+}
+
+.glitchButton:focus-visible {
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--shadow-primary) 72%, transparent));
+}
+
+.glitchButton:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.35);
+  opacity: 0.58;
+  transform: none;
+}
+
+.glitchLayer {
+  position: absolute;
+  inset: calc(var(--border) * -1);
+  z-index: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 30px 5px 18px;
+  overflow: hidden;
+  color: var(--color);
+  text-shadow: 2px 2px var(--shadow-primary), -2px -2px var(--shadow-secondary);
+  background: var(--shadow-primary);
+  clip-path: var(--clip);
+  pointer-events: none;
+}
+
+.glitchLayer::before {
+  position: absolute;
+  inset: var(--border);
+  z-index: -1;
+  background: var(--primary);
+  clip-path: var(--clip);
+  content: "";
+}
+
+.glitchButton:hover .glitchLayer,
+.glitchButton:focus-visible .glitchLayer {
+  display: flex;
+  animation: cyber-button-glitch 2s infinite;
+}
+
+.glitchButton:disabled .glitchLayer {
+  display: none;
+}
+
+.glitchTag {
+  position: absolute;
+  right: 7%;
+  bottom: -4px;
+  z-index: 3;
+  padding: 1px 5px;
+  color: #050507;
+  font: 800 9px/1 var(--route-cyber-font-secondary, monospace);
+  letter-spacing: 0.1em;
+  background: var(--shadow-secondary);
+}
+
+.glitch_primary {
+  --primary-hue: 0;
+  --shadow-primary-hue: 180;
+  --shadow-secondary-hue: 60;
+}
+
+.glitch_secondary {
+  --primary-hue: 260;
+  --shadow-primary-hue: 180;
+  --shadow-secondary-hue: 60;
+}
+
+.glitch_danger {
+  --primary-hue: 350;
+  --primary-lightness: 45;
+  --shadow-primary-hue: 48;
+  --shadow-secondary-hue: 180;
+}
+
+.glitch_ghost {
+  --primary-hue: 188;
+  --primary-lightness: 43;
+  --shadow-primary-hue: 0;
+  --shadow-secondary-hue: 60;
+}
+
+.cornerButton {
+  --accent-color: var(--route-cyber-secondary-500, #2be4ea);
+  --accent-fill: transparent;
+  --accent-text: var(--accent-color);
+  --notch: 12px;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 92px;
+  min-height: 36px;
+  padding: 8px 15px 9px;
+  overflow: hidden;
+  color: var(--accent-text);
+  font: 700 14px/1.1 var(--route-cyber-font-primary, "Microsoft YaHei", sans-serif);
+  letter-spacing: 0.055em;
+  text-align: center;
+  text-transform: uppercase;
+  background: var(--accent-fill);
+  border: 1px solid var(--accent-color);
+  border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%);
+  cursor: pointer;
+  transition:
+    box-shadow 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.cornerButton::after {
+  position: absolute;
+  right: -5px;
+  bottom: 4px;
+  width: 17px;
+  height: 2px;
+  background: var(--accent-color);
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.cornerButton:hover,
+.cornerButton:focus-visible {
+  box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 58%, transparent);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.cornerButton:active {
+  transform: translateY(0);
+}
+
+.cornerButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.corner_primary {
+  --accent-color: var(--route-cyber-tertiary-500, #fed33f);
+  --accent-fill: var(--route-cyber-tertiary-500, #fed33f);
+  --accent-text: var(--route-cyber-bg-500, #191a1e);
+}
+
+.corner_secondary {
+  --accent-color: var(--route-cyber-secondary-500, #2be4ea);
+}
+
+.corner_danger {
+  --accent-color: var(--route-cyber-primary-500, #e8615a);
+}
+
+.corner_ghost {
+  --accent-color: var(--route-cyber-tertiary-500, #fed33f);
+}
+
+.compact {
+  min-width: 38px;
+  min-height: 34px;
+  padding-inline: 10px;
+}
+
+.compact .label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+}
+
+@keyframes cyber-button-glitch {
+  0% {
+    clip-path: var(--clip-one);
+  }
+
+  2%,
+  8% {
+    clip-path: var(--clip-two);
+    transform: translate(calc(var(--shimmy-distance) * -1%), 0);
+  }
+
+  6% {
+    clip-path: var(--clip-two);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  9% {
+    clip-path: var(--clip-two);
+    transform: translate(0, 0);
+  }
+
+  10% {
+    clip-path: var(--clip-three);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  13% {
+    clip-path: var(--clip-three);
+    transform: translate(0, 0);
+  }
+
+  14%,
+  21% {
+    clip-path: var(--clip-four);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  25% {
+    clip-path: var(--clip-five);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  30% {
+    clip-path: var(--clip-five);
+    transform: translate(calc(var(--shimmy-distance) * -1%), 0);
+  }
+
+  35%,
+  45% {
+    clip-path: var(--clip-six);
+    transform: translate(calc(var(--shimmy-distance) * -1%), 0);
+  }
+
+  40% {
+    clip-path: var(--clip-six);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  50% {
+    clip-path: var(--clip-six);
+    transform: translate(0, 0);
+  }
+
+  55% {
+    clip-path: var(--clip-seven);
+    transform: translate(calc(var(--shimmy-distance) * 1%), 0);
+  }
+
+  60% {
+    clip-path: var(--clip-seven);
+    transform: translate(0, 0);
+  }
+
+  31%,
+  61%,
+  100% {
+    clip-path: var(--clip-four);
+  }
+}
+
+@media (max-width: 680px) {
+  .glitchButton {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .cornerButton {
+    min-width: 0;
+  }
+}

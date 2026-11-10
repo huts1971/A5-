@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="花海封面">
-  <rect width="960" height="540" fill="#eaf3e8"/>
-  <path d="M0 342c144-54 286-58 426-12 154 50 332 24 534-78v288H0z" fill="#d8e9d2"/>
-  <g fill="#d59d45" opacity=".9"><circle cx="160" cy="390" r="20"/><circle cx="254" cy="438" r="18"/><circle cx="376" cy="382" r="22"/><circle cx="520" cy="434" r="18"/><circle cx="670" cy="376" r="22"/><circle cx="808" cy="430" r="20"/></g>
-  <path d="M120 464c214-78 454-78 720 0" stroke="#fff8e8" stroke-width="18" stroke-linecap="round" opacity=".68"/>
-  <circle cx="752" cy="126" r="58" fill="#d59d45" opacity=".66"/>
-</svg>

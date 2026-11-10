@@ -6,6 +6,7 @@ import type { ScenicSpot } from '../../types/scenic';
 
 export interface SpotCardProps {
   spot?: ScenicSpot;
+  index?: number;
   loading?: boolean;
   error?: string;
   emptyText?: string;
@@ -15,6 +16,7 @@ export interface SpotCardProps {
 
 export default function SpotCard({
   spot,
+  index,
   loading = false,
   error,
   emptyText = '暂无景点数据',
@@ -62,6 +64,7 @@ export default function SpotCard({
     <Card
       className="spot-card"
       hoverable
+      data-cue="[ OPEN ]"
       cover={
         spot.imageUrl ? (
           <img
@@ -80,13 +83,17 @@ export default function SpotCard({
       }
       actions={[
         <Link to={detailHref(spot)} key="detail">
-          <Button type="link" icon={<EnvironmentOutlined />}>
-            查看讲解
+          <Button type="link" icon={<EnvironmentOutlined />} data-cue="[ OPEN ]">
+            [ OPEN ]
           </Button>
         </Link>,
       ]}
     >
       <Space className="spot-card-content" direction="vertical" size={10} style={{ width: '100%' }}>
+        <div className="spot-card-kicker">
+          <span>{index ? String(index).padStart(2, '0') : spot.id}</span>
+          <span>[ SPOT ]</span>
+        </div>
         <div className="spot-card-heading">
           <Typography.Title level={4} style={{ margin: 0 }}>
             {spot.name}

@@ -1,0 +1,33 @@
+复活赛作品源码使用说明
+
+一、已完成的脱敏处理
+
+1. 未打包 backend/.env 和 frontend/.env.local。
+2. LLM、TTS、地图、图片生成、向量检索等外部服务的 API Key、Token 和安全码均未包含。
+3. backend/.env.example 保留了全部配置项和安全默认值，所有外部服务 Key 均为空。
+4. 未携带开发电脑上的账号、聊天、手账、上传文件和历史数据库。
+5. GitHub 源码目录不携带数据库、模型权重或前端构建产物，部署时按 README.md 初始化。
+
+二、运行环境
+
+- Windows 10/11
+- Python 3.11 或 3.12
+- Node.js 20 或更高版本
+- Agentic 问答还需本地检索模型、Qwen3 服务和 Milvus。
+
+三、快速启动
+
+1. 解压整个文件夹，不要单独移动其中的子目录。
+2. 按 README.md 安装依赖，执行 scripts/configure-local.py，并配置模型服务与索引。
+3. 开发使用 uvicorn 和 npm run dev；静态模式先 BUILD-FRONTEND.bat，再 START-HERE.bat。
+4. 游客端：http://127.0.0.1:5173/
+5. 管理端：http://127.0.0.1:5174/
+6. 后端接口文档：http://127.0.0.1:8001/docs
+
+源码目录不包含 frontend/dist。静态模式首次使用及修改前端后，均需重新构建。
+
+四、关于外部 AI 能力
+
+默认 Agentic 问答缺少模型或索引时明确报错，不伪装模型成功。若仅使用比赛版离线问答，可显式设置 GUIDE_ENGINE=legacy。原地图、语音与创作能力仍由各自服务配置控制。
+
+真实配置放在 backend/.env 和 configs/core.local.toml，均不提交 Git。公开数字人模型、动作和景区图片前，请核对 THIRD_PARTY_NOTICES.md 的资源授权说明。
